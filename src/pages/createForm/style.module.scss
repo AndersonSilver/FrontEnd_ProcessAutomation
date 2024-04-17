@@ -1,0 +1,234 @@
+.container {
+    max-width: 1120px;
+    display: flex;
+    flex-direction: column;
+    margin: 0 auto;
+}
+
+.tabSkill {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+
+    .rowObjects {
+        min-width: 40%;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+
+        .input {
+            max-width: 85%;
+            flex: 1;
+            height: 40px;
+            border: 1px solid var(--gray-100);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            background-color: var(--dark-900);
+            color: var(--white);
+        }
+    }
+
+    .titles {
+        padding: 6px;
+        font-size: 1.0rem;
+        color: white;
+    }
+
+}
+
+.topContainer {
+    margin-top: 0.5rem;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.input {
+    flex: 1;
+    height: 40px;
+    border: 1px solid var(--gray-100);
+    border-radius: 0.5rem;
+    padding: 1rem;
+    background-color: var(--dark-900);
+    color: var(--white);
+}
+
+.buttonCommand {
+    padding: 0.5rem;
+    height: 40px;
+    border: 0;
+    border-radius: 0.5rem;
+    max-width: 600px;
+    background-color: var(--blue-tech2);
+    border: 1px solid var(--gray-100);
+    transition: filter 0.2s;
+    margin-left: 0.5rem;
+    color: black;
+    cursor: pointer;
+
+    &[disabled] {
+        cursor: not-allowed;
+
+        svg {
+            animation: animate 2s infinite;
+        }
+    }
+
+    &:hover {
+        // filter: brightness(1.1);
+        background-color: #06088a;
+    }
+}
+
+.fieldSinGroup {
+    margin-top: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 0.5rem;
+    padding: 6px;
+
+    .field {
+        display: flex;
+        justify-content: space-between;
+        padding: 6px;
+    }
+}
+
+.groupContainer {
+    margin-top: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 0.5rem;
+    padding: 6px;
+
+    .groupField {
+        display: flex;
+        justify-content: space-between;
+        border: 1px solid #ccc;
+        padding: 6px;
+        border-radius: 0.5rem;
+    }
+
+    .fieldContainerGroup {
+        margin-top: 0.5rem;
+        display: flex;
+        justify-content: space-between;
+        border: 1px solid #ccc;
+        padding: 6px;
+        border-radius: 0.5rem;
+    }
+}
+
+.button {
+    padding: 0.5rem;
+    height: 40px;
+    border: 0;
+    border-radius: 0.5rem;
+    max-width: 600px;
+    background-color: var(--blue-tech2);
+    border: 1px solid var(--gray-100);
+    transition: filter 0.2s;
+    margin-left: 0.5rem;
+    color: black;
+    cursor: pointer;
+
+    &[disabled] {
+        cursor: not-allowed;
+
+        svg {
+            animation: animate 2s infinite;
+        }
+    }
+
+    &:hover {
+        // filter: brightness(1.1);
+        background-color: #06088a;
+    }
+}
+
+.removeButton {
+    padding: 0.5rem;
+    height: 40px;
+    border: 0;
+    border-radius: 0.5rem;
+    max-width: 600px;
+    background-color: var(--red-900);
+    border: 1px solid var(--gray-100);
+    transition: filter 0.2s;
+    margin-left: 0.5rem;
+    color: black;
+    cursor: pointer;
+
+    &[disabled] {
+        cursor: not-allowed;
+
+        svg {
+            animation: animate 2s infinite;
+        }
+    }
+
+    &:hover {
+        // filter: brightness(1.1);
+        background-color: #b30412;
+    }
+}
+
+
+.buttonCommandSave {
+    min-width: 150px;
+    padding: 0.5rem;
+    height: 40px;
+    border: 0;
+    border-radius: 0.5rem;
+    max-width: 600px;
+    background-color: var(--green-600);
+    border: 1px solid var(--gray-100);
+    transition: filter 0.2s;
+    margin-left: 0.5rem;
+    color: black;
+    cursor: pointer;
+
+    &[disabled] {
+        cursor: not-allowed;
+
+        svg {
+            animation: animate 2s infinite;
+        }
+    }
+
+    &:hover {
+        // filter: brightness(1.1);
+        background-color: var(--green-900);
+    }
+}
+
+.buttonCommandPublish {
+    min-width: 150px;
+    padding: 0.5rem;
+    height: 40px;
+    border: 0;
+    border-radius: 0.5rem;
+    max-width: 600px;
+    background-color: var(--blue-tech2);
+    border: 1px solid var(--gray-100);
+    transition: filter 0.2s;
+    margin-left: 0.5rem;
+    color: black;
+    cursor: pointer;
+
+    &[disabled] {
+        cursor: not-allowed;
+
+        svg {
+            animation: animate 2s infinite;
+        }
+    }
+
+    &:hover {
+        // filter: brightness(1.1);
+        background-color: var(--blue-tech);
+    }
+}
+
+.disabled {
+    opacity: 0.3;
+}

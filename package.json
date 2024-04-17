@@ -1,0 +1,39 @@
+{
+  "name": "FRONTEND",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "devDependencies": {
+    "@types/node": "^20.12.2",
+    "@types/react": "^18.2.74",
+    "@types/react-dom": "^18.2.23",
+    "@types/react-modal": "^3.16.3",
+    "typescript": "^5.4.3"
+  },
+  "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^6.5.2",
+    "@fortawesome/free-solid-svg-icons": "^6.5.2",
+    "@fortawesome/react-fontawesome": "^0.2.0",
+    "ace-builds": "^1.32.9",
+    "axios": "^1.6.8",
+    "fs": "^0.0.1-security",
+    "jwt-decode": "^4.0.0",
+    "next": "^14.1.4",
+    "nookies": "^2.5.2",
+    "path": "^0.12.7",
+    "react": "^18.2.0",
+    "react-ace": "^11.0.1",
+    "react-dom": "^18.2.0",
+    "react-icons": "^5.0.1",
+    "react-modal": "^3.16.1",
+    "react-select": "^5.8.0",
+    "react-toastify": "^10.0.5",
+    "sass": "^1.72.0"
+  }
+}

@@ -1,0 +1,158 @@
+.containerCenter {
+  min-height: 105vh;
+  min-width: 500px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  background-color: var(--blue-tech3);
+
+  p{
+    margin-top: 2%;
+    color: var(--white);
+    font-family: sans-serif;
+    font-size: 0.8rem;
+  }
+
+  a{
+    margin-top: 1%;
+    color: var(--white);
+    font-family: sans-serif;
+    font-size: 0.8rem;
+  }
+}
+
+.containerLogo {
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  border-radius: 50%;
+  background-color: var(--blue-tech4);
+  padding: 1rem;
+}
+
+.containerPictury {
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  margin-top: -2rem;
+  margin-left: 0.8rem;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--blue-tech5);
+  padding: 0.8rem;
+  border-radius: 0.3rem;
+  width: 55vh;
+}
+
+.logoTech {
+  width: 50px;
+  height: 50px;
+}
+
+.logoTechOne {
+  width: 200px;
+  height: 140px;
+}
+
+.containerTwo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 5rem;
+}
+
+.containerTop {
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-start;
+  flex-direction: column;
+  padding: 1rem;
+  font-family: sans-serif;
+  background-color: #38446c;
+  border-radius: 0.3rem;
+}
+
+.login {
+  margin-top: 2rem;
+  width: 52vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  padding: 1.5rem;
+  font-family: sans-serif;
+
+  input[type="checkbox"] {
+    margin-right: 8px;
+  }
+
+  h1 {
+    color: var(--white);
+    padding-bottom: 0.8rem;
+    font-family: sans-serif;
+    font-size: 1.2rem;
+  }
+
+  form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  formButton {
+    height: 35px;
+    font-size: 1rem;
+  }
+
+  label {
+    color: var(--white);
+    font-family: sans-serif;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: flex-start;
+    font-size: 0.8rem;
+  }
+
+  button {
+    width: 100%;
+    height: 35px;
+    padding: 0.4rem;
+    border-radius: 0.3rem;
+    border: 1px solid #ffffff3f;
+    color: var(--white);
+    font-size: 1rem;
+    cursor: pointer;
+  }
+  h4 {
+    color: var(--blue-tech7);
+    font-family: sans-serif;
+    font-size: 0.8rem;
+  }
+}
+
+.text {
+  margin-top: 0.8rem;
+  color: var(--white);
+  font-family: sans-serif;
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+
+.titulo{
+  h3{
+    color: var(--blue-tech3);
+    font-family: sans-serif;
+    font-size: 1rem;
+  }
+  h4{
+    color: var(--blue-tech3);
+    font-family: sans-serif;
+    font-size: 0.8rem;
+  }
+}
+
