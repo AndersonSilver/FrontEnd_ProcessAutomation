@@ -131,7 +131,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
   async function getAllFluxo() {
     try {
       const response = await ApiGetAllFluxo.get("/search-all-flows");
-
+      localStorage.setItem(
+        "All_Flows",
+        JSON.stringify(response.data)
+      );
       return response.data;
     } catch (error) {
       console.log("Erro ao acessar o fluxo");
@@ -144,6 +147,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
           flowId: flowId,
         },
       });
+      localStorage.setItem(
+        "Get_One_Flows",
+        JSON.stringify(response.data)
+      );
+
       return response.data;
     } catch (error) {
       console.log("Erro ao acessar o fluxo", error);
@@ -151,7 +159,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }
   async function trigger(validate: boolean) {
     try {
-      console.log(validate);
       if (validate === false) {
         return toast.error("Habilidade ou tabulação não informadas!", {
           position: "top-right",
@@ -176,7 +183,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
           theme: "colored",
           transition: Zoom,
         });
-  
+        localStorage.setItem(
+          "Json Salvo",
+          JSON.stringify(response.data)
+        ); 
         return response.data;
       }
     } catch (error) {
@@ -210,8 +220,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
             habs: habs,
           },
         });
+        localStorage.setItem(
+          "Habilidades Informadas",
+          JSON.stringify(response.data)
+        );  
         return response.data;
-      }     
+      }   
+
 
     } catch (error) {
       return error.message;
@@ -228,6 +243,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
             tabs: tabs,
           },
         });
+        localStorage.setItem(
+          "Tabulações Informadas",
+          JSON.stringify(response.data)
+        ); 
         return response.data;
       }     
 
@@ -266,6 +285,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
   async function verifyHabilidades() {
     try {
       const response = await ApiGetFluxo.get("/get-habs", {});
+      localStorage.setItem(
+        "Habilidades existentes na instância",
+        JSON.stringify(response.data)
+      ); 
       return response.data;
     } catch (error) {
       console.log("Erro ao acessar habilidades");
@@ -274,6 +297,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
   async function verifyTabulacoes() {
     try {
       const response = await ApiGetFluxo.get("/get-tabs", {});
+      localStorage.setItem(
+        "Tabulações existentes na instância",
+        JSON.stringify(response.data)
+      ); 
       return response.data;
     } catch (error) {
       console.log("Erro ao acessar tabulações");

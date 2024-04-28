@@ -122,7 +122,7 @@ export function apiGetFluxo(ctx = undefined, authContext: any) {
   });
 
   api.interceptors.request.use(request => {
-    const { '@nextAuth.Authorization': token } = parseCookies(ctx);
+    const { '@nextAuth.AuthorizationRA': token } = parseCookies(ctx);
     request.headers['Authorization'] = `Bearer ${token}`;
     return request;
   });

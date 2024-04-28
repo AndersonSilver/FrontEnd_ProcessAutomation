@@ -58,14 +58,18 @@ export function Gatilho() {
 
   const handleSelectChange = async (selectedOption) => {
     setSelectedFluxo(selectedOption);
+    if (selectedFluxo){
+      await getFluxo(selectedFluxo.value);
+      console.log("selectFluxo", selectedFluxo.value);
+      console.log("Entrou");
+    }
+    
 };
 
 const handleSave = async (formattedHabs, formattedTabs) => {
   let validate = true;
 
   if (selectedFluxo) {
-    await getFluxo(selectedFluxo.value);
-
     validate = !(formattedHabs === "[]" || formattedTabs === "[]");
     await trigger(validate);
   }
@@ -97,7 +101,7 @@ const formatJson = async () => {
   const getTabs = await verifyTabulacoes();
 
   const allHabsExist = habsArray.every(habId => getHabs.includes(habId));
-  const allTabsExist = tabsArray.every(tabId => getHabs.includes(tabId));
+  const allTabsExist = tabsArray.every(tabId => getTabs.includes(tabId));
 
     if (!allHabsExist || !allTabsExist) {
       toast.error("Alguns desses IDS não existe na instância logada!", {
