@@ -1,18 +1,28 @@
-import { useContext } from "react";
+import { useRouter } from 'next/router';
 import style from "./styles.module.scss";
 import Link from "next/link";
-import { useRouter } from 'next/router';
 
 export function Section() {
 
   const router = useRouter();
 
-  const buttons = [
-    // { href: "", label: "Habilidade" },
-    // { href: "", label: "Tabulações" },
-    // { href: "", label: "Formulário" },
+  const gatilhoButtons = [
     { href: "/gatilho", label: "Gatilho" },
-    // Add more buttons here
+    // Add more buttons for "Gatilho" here
+  ];
+
+  const webAppButtons = [
+    { href: "/webapp", label: "Login WebApp" },
+    { href: "/workflow", label: "WorkFlow" },
+    { href: "", label: "Workflow Group" },
+    { href: "", label: "Workflow G. Itens" },
+    { href: "", label: "Workflow Product" },
+    { href: "", label: "Workflow Step" },
+    { href: "", label: "Workflow S. Form" },
+    { href: "", label: "Workflow Form" },
+    { href: "", label: "Workflow F. Group" },
+    { href: "", label: "Workflow File" },
+    // Add more buttons for "WebApp" here
   ];
 
   return (
@@ -22,7 +32,7 @@ export function Section() {
           <h2>- Ferramentas -</h2>
         </div>
         <div className={style.sectionContentButton}>
-          {buttons.map((button) => (
+          {gatilhoButtons.map((button) => (
             <Link href={button.href} key={button.label}>
               <button
                 className={`${style.button} ${
@@ -33,65 +43,23 @@ export function Section() {
               </button>
             </Link>
           ))}
-
         </div>
         <div className={style.sectionContentFerramenta}>
-          <h2>- Deploy -</h2>
-        </div>
-        <div className={style.sectionContentButton}>
-          <Link href={""}>
-            <button className={style.button}>Deploy</button>
-          </Link>
-
-        </div>
-        {/* <div className={style.sectionContentFerramenta}>
           <h2>- WebApp -</h2>
         </div>
         <div className={style.sectionContentButton}>
-          <Link href={""}>
-            <button className={style.button}>WorkFlow</button>
-          </Link>
+          {webAppButtons.map((button) => (
+            <Link href={button.href} key={button.label}>
+              <button
+                className={`${style.button} ${
+                  router.pathname === button.href ? style.buttonActive : ""
+                }`}
+              >
+                {button.label}
+              </button>
+            </Link>
+          ))}
         </div>
-        <div className={style.sectionContentButton}>
-          <Link href={""}>
-            <button className={style.button}>Workflow Group</button>
-          </Link>
-        </div>
-        <div className={style.sectionContentButton}>
-          <Link href={""}>
-            <button className={style.button}>Workflow G. Itens</button>
-          </Link>
-        </div>
-        <div className={style.sectionContentButton}>
-          <Link href={""}>
-            <button className={style.button}>Workflow Product</button>
-          </Link>
-        </div>
-        <div className={style.sectionContentButton}>
-          <Link href={""}>
-            <button className={style.button}>Workflow Step</button>
-          </Link>
-        </div>
-        <div className={style.sectionContentButton}>
-          <Link href={""}>
-            <button className={style.button}>Workflow S. Form</button>
-          </Link>
-        </div>
-        <div className={style.sectionContentButton}>
-          <Link href={""}>
-            <button className={style.button}>Workflow Form</button>
-          </Link>
-        </div>
-        <div className={style.sectionContentButton}>
-          <Link href={""}>
-            <button className={style.button}>Workflow F. Group</button>
-          </Link>
-        </div>
-        <div className={style.sectionContentButton}>
-          <Link href={""}>
-            <button className={style.button}>Workflow File</button>
-          </Link>
-        </div> */}
       </div>
     </section>
   );

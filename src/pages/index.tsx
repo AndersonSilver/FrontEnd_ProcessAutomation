@@ -71,8 +71,8 @@ export default function Home() {
 
     signIn(data);
 
-    localStorage.setItem("slug", slug);
-    localStorage.setItem("email", email);
+    localStorage.setItem("Slug", slug);
+    localStorage.setItem("Email", email);
 
     setLoading(false);
   }

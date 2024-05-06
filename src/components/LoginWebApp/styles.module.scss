@@ -1,0 +1,187 @@
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap");
+
+.AsideContainer {
+  position: absolute;
+  z-index: 1;
+  background-color: var(--blue-tech5);
+  border-style: solid 3px var(--blue-tech);
+  opacity: 0.7;
+  border-radius: 5px;
+  height: auto;
+  width: auto;
+  margin-top: 10rem;
+  margin-left: 17rem;
+  margin-right: 7rem;
+  padding: 50px;
+
+  form {
+    display: flex;
+    flex-direction: column;
+    width: 300px;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    background-color: white;
+    margin-left: 30rem;
+  }
+
+  label {
+    margin-bottom: 10px;
+  }
+
+  input[type="text"],
+  input[type="email"],
+  input[type="password"] {
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #000000;
+    margin-bottom: 10px;
+    margin-top: 5px;
+    width: 16rem;
+  }
+
+  input[type="submit"] {
+    padding: 10px;
+    border-radius: 5px;
+    border: none;
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+  }
+
+  input[type="submit"]:hover {
+    background-color: #0056b3;
+  }
+}
+
+.AsideContainer p {
+  font-size: 1.5em;
+  color: #f1f1f1;
+  text-align: center;
+  padding: 20px;
+  border: 2px solid #ffffff;
+  border-radius: 10px;
+  margin: 20px;
+  background-color: #007bff;
+  transition: all 0.5s ease;
+}
+
+.AsideContainer p:hover {
+  box-shadow: 0 0 10px rgba(255, 253, 253, 0.5);
+}
+.buttonLogoff {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  font-size: 1.5em;
+  color: white;
+  background-color: #f44336; /* Red */
+  padding: 14px 20px;
+  margin: auto;
+  border: none;
+  cursor: pointer;
+  width: 10%;
+  opacity: 0.9;
+  transition: all 0.3s ease;
+  border-radius: 5px;
+}
+
+.buttonLogoff:hover {
+  opacity: 1;
+  background-color: #d32f2f; /* Darker red on hover */
+}
+
+.buttonLogoff:active {
+  background-color: #b71c1c; /* Even darker red on click */
+}
+
+@media screen and (min-width: 320px) {
+  .AsideContainer {
+    width: 300%;
+  }
+}
+
+@media screen and (min-width: 400px) {
+  .AsideContainer {
+    width: 320%;
+  }
+}
+
+@media screen and (min-width: 420px) {
+  .AsideContainer {
+    width: 300%;
+  }
+}
+
+@media screen and (min-width: 520px) {
+  .AsideContainer {
+    width: 280%;
+  }
+}
+
+@media screen and (min-width: 620px) {
+  .AsideContainer {
+    width: 200%;
+  }
+}
+
+@media screen and (min-width: 720px) {
+  .AsideContainer {
+    width: 175%;
+  }
+}
+
+@media screen and (min-width: 820px) {
+  .AsideContainer {
+    width: 160%;
+  }
+}
+
+@media screen and (min-width: 920px) {
+  .AsideContainer {
+    width: 138%;
+  }
+}
+
+@media screen and (min-width: 1020px) {
+  .AsideContainer {
+    width: 138%;
+  }
+}
+
+@media screen and (min-width: 1120px) {
+  .AsideContainer {
+    width: 118%;
+  }
+}
+
+@media screen and (min-width: 1220px) {
+  .AsideContainer {
+    width: 100%;
+  }
+}
+
+@media screen and (min-width: 1320px) {
+  .AsideContainer {
+    width: 95%;
+  }
+}
+
+@media screen and (min-width: 1420px) {
+  .AsideContainer {
+    width: 91%;
+  }
+}
+
+@media screen and (min-width: 1520px) {
+  .AsideContainer {
+    width: 90%;
+  }
+}
+
+@media screen and (min-width: 1620px) {
+  .AsideContainer {
+    width: 80%;
+  }
+}

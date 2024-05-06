@@ -1,14 +1,49 @@
 import axios, { AxiosError } from "axios";
-import { parseCookies } from "nookies";
 import { AuthTokenError } from "./errors/authTokenError";
 
 export function apiGetLoginAuthorizationRA(ctx = undefined, authContext: any) {
-  let cookies = parseCookies(ctx);
+  let token;
+  if (typeof window !== 'undefined') {
+    token = localStorage.getItem("AuthorizationRA");
+  }
 
   const api = axios.create({
     baseURL: "http://localhost:3001",
     headers: {
-      Authorization: `Bearer ${cookies["@nextAuth.AuthorizationRA"]}`,
+      Authorization: `Bearer ${token}`,
+    },
+    maxBodyLength: Infinity,
+  });
+  
+  api.interceptors.response.use(
+    (response) => {
+      return response;
+    },
+    (error: AxiosError) => {
+      if (error.response?.status === 401) {
+        if (typeof window !== undefined) {
+          authContext.signOut();
+        } else {
+          return Promise.reject(new AuthTokenError());
+        }
+      }
+      return Promise.reject(error);
+    }
+  );
+
+  return api;
+}
+
+export function setupApiGetAuthorization(ctx = undefined, authContext: any) {
+    let token;
+  if (typeof window !== 'undefined') {
+    token = localStorage.getItem("AuthorizationRA");
+  }
+
+  const api = axios.create({
+    baseURL: "http://localhost:3001",
+    headers: {
+      Authorization: `Bearer ${token}`,
     },
     maxBodyLength: Infinity,
   });
@@ -32,16 +67,12 @@ export function apiGetLoginAuthorizationRA(ctx = undefined, authContext: any) {
   return api;
 }
 
-export function setupApiGetAuthorization(ctx = undefined, authContext: any) {
-  let cookies = parseCookies(ctx);
-
+export function apiGetLoginWebApp(ctx?: any, authContext?: any) {
+  
   const api = axios.create({
     baseURL: "http://localhost:3001",
-    headers: {
-      Authorization: `Bearer ${cookies["@nextAuth.Authorization"]}`,
-    },
-    maxBodyLength: Infinity,
   });
+
 
   api.interceptors.response.use(
     (response) => {
@@ -63,9 +94,11 @@ export function setupApiGetAuthorization(ctx = undefined, authContext: any) {
 }
 
 export function apiGetLogin(ctx = undefined, authContext: any) {
+  console.log('apiGetLogin');
   const api = axios.create({
     baseURL: "http://localhost:3001",
   });
+
 
   api.interceptors.response.use(
     (response) => {
@@ -92,7 +125,10 @@ export function apiGetAllFluxo(ctx = undefined, authContext: any) {
   });
 
   api.interceptors.request.use(request => {
-    const { '@nextAuth.AuthorizationRA': token } = parseCookies(ctx);
+    let token = localStorage.getItem('AuthorizationRA');
+    if (token) {
+      token = token.replace(/"/g, '');
+    }
     request.headers['Authorization'] = `Bearer ${token}`;
     return request;
   });
@@ -122,7 +158,10 @@ export function apiGetFluxo(ctx = undefined, authContext: any) {
   });
 
   api.interceptors.request.use(request => {
-    const { '@nextAuth.AuthorizationRA': token } = parseCookies(ctx);
+    let token = localStorage.getItem('AuthorizationRA');
+    if (token) {
+      token = token.replace(/"/g, '');
+    }
     request.headers['Authorization'] = `Bearer ${token}`;
     return request;
   });
@@ -152,7 +191,10 @@ export function apiTriggers(ctx = undefined, authContext: any) {
   });
 
   api.interceptors.request.use(request => {
-    const { '@nextAuth.AuthorizationRA': token } = parseCookies(ctx);
+    let token = localStorage.getItem('AuthorizationRA');
+    if (token) {
+      token = token.replace(/"/g, '');
+    }
     request.headers['Authorization'] = `Bearer ${token}`;
     return request;
   });
@@ -182,7 +224,11 @@ export function apiHabs(ctx = undefined, authContext: any) {
   });
 
   api.interceptors.request.use(request => {
-    const { '@nextAuth.AuthorizationRA': token } = parseCookies(ctx);
+    let token = localStorage.getItem('Authorization');
+    if (token) {
+      token = token.replace(/"/g, '');
+    }
+    console.log(token);
     request.headers['Authorization'] = `Bearer ${token}`;
     return request;
   });
@@ -212,7 +258,10 @@ export function apiTabs(ctx = undefined, authContext: any) {
   });
 
   api.interceptors.request.use(request => {
-    const { '@nextAuth.AuthorizationRA': token } = parseCookies(ctx);
+    let token = localStorage.getItem('Authorization');
+    if (token) {
+      token = token.replace(/"/g, '');
+    }
     request.headers['Authorization'] = `Bearer ${token}`;
     return request;
   });
@@ -242,7 +291,10 @@ export function apiSaveTriggers(ctx = undefined, authContext: any) {
   });
 
   api.interceptors.request.use(request => {
-    const { '@nextAuth.AuthorizationRA': token } = parseCookies(ctx);
+    let token = localStorage.getItem('AuthorizationRA');
+    if (token) {
+      token = token.replace(/"/g, '');
+    }
     request.headers['Authorization'] = `Bearer ${token}`;
     return request;
   });
@@ -272,7 +324,10 @@ export function verifyHabilidades(ctx = undefined, authContext: any) {
   });
 
   api.interceptors.request.use(request => {
-    const { '@nextAuth.Authorization': token } = parseCookies(ctx);
+    let token = localStorage.getItem('Authorization');
+    if (token) {
+      token = token.replace(/"/g, '');
+    }
     request.headers['Authorization'] = `Bearer ${token}`;
     return request;
   });
@@ -302,7 +357,48 @@ export function verifyTabulacoes(ctx = undefined, authContext: any) {
   });
 
   api.interceptors.request.use(request => {
-    const { '@nextAuth.Authorization': token } = parseCookies(ctx);
+    let token = localStorage.getItem('Authorization');
+    if (token) {
+      token = token.replace(/"/g, '');
+    }
+    request.headers['Authorization'] = `Bearer ${token}`;
+    return request;
+  });
+
+  api.interceptors.response.use(
+    (response) => {
+      return response;
+    },
+    (error: AxiosError) => {
+      if (error.response?.status === 401) {
+        if (typeof window !== undefined) {
+          authContext.signOut();
+        } else {
+          return Promise.reject(new AuthTokenError());
+        }
+      }
+      return Promise.reject(error);
+    }
+  );
+
+  return api;
+}
+
+export function workflow(ctx = undefined, authContext: any) {
+  const api = axios.create({
+    baseURL: "http://localhost:3001",
+  });
+
+  api.interceptors.request.use(request => {
+    const webApp = localStorage.getItem('WebApp');
+    let token;
+    if (webApp) {
+      const webAppObject = JSON.parse(webApp);
+      token = webAppObject[0]?.acess_token;
+    }
+    if (token) {
+      token = token.replace(/"/g, '');
+    }
     request.headers['Authorization'] = `Bearer ${token}`;
     return request;
   });

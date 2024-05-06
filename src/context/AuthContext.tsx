@@ -1,20 +1,23 @@
 import { createContext, ReactNode, useState } from "react";
 import {
+  ApiGetTab,
   ApiGetLogin,
   ApiAuthenticated,
   ApiGetAllFluxo,
   ApiGetFluxo,
   ApiTriggers,
+  ApiHabs,
+  ApiTabs,
   ApiSaveTrigger,
+  Workflow,
 } from "../services/apiClient";
 import { toast, Zoom } from "react-toastify";
-import { destroyCookie, setCookie } from "nookies";
 import Router from "next/router";
-import { parseCookies } from "nookies";
 
 type AuthContextData = {
   user: UserProps;
   signIn: (credentials: SignInProps) => Promise<void>;
+  signInWebApp: (credentials: SignInPropsWebApp) => Promise<void>;
   signOut: () => void;
   getFluxo: (flowId: any) => Promise<any>;
   getAllFluxo: () => Promise<any>;
@@ -24,6 +27,7 @@ type AuthContextData = {
   saveTrigger: () => void;
   verifyHabilidades: () => Promise<any>;
   verifyTabulacoes: () => Promise<any>;
+  workflow: (credentials: WorkflowPropsWebApp) => Promise<void>;
 };
 
 type UserProps = {
@@ -40,8 +44,20 @@ type SignInProps = {
   password: string;
 };
 
+type SignInPropsWebApp = {
+  client: string;
+  clientServices: string;
+  email: string;
+  password: string;
+};
+
 type AuthProviderProps = {
   children: ReactNode;
+};
+
+type WorkflowPropsWebApp = {
+  client: string;
+  clientServices: string;
 };
 
 export const AuthContext = createContext({} as AuthContextData);
@@ -54,6 +70,47 @@ export function AuthProvider({ children }: AuthProviderProps) {
     companyId: "",
     companyName: "",
   });
+
+
+
+  async function signInWebApp(credentials: SignInPropsWebApp) {
+    try {
+      const response = await ApiGetLogin.post("/auth-user-webapp", {}, {
+        params: {
+          client: credentials.client,
+          client_services: credentials.clientServices,
+          email: credentials.email,
+          password: credentials.password,
+        }
+      });
+  
+      const result = [{
+        client: credentials.client,
+        clientServices: credentials.clientServices,
+        password: credentials.password,
+        acess_token: response.data.acess_token,
+      }];
+  
+      localStorage.setItem(
+        "WebApp",
+        JSON.stringify(result)
+      );
+  
+      toast.success("Logado com sucesso!", {
+        position: "top-right",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: "colored",
+        transition: Zoom,
+      });
+  
+    } catch (error) {
+      throw new Error("Erro ao acessar!");
+    }
+  }
   async function signIn(credentials: SignInProps) {
     try {
       const response = await ApiGetLogin.post("/auth-user", {
@@ -70,26 +127,15 @@ export function AuthProvider({ children }: AuthProviderProps) {
         companyName: response.data.company.name,
       };
 
-      setCookie(
-        undefined,
-        "@nextAuth.Authorization",
-        response.data.tokens.Authorization,
-        {
-          maxAge: 24 * 60 * 60,
-          path: "/",
-        }
+      localStorage.setItem(
+        "Authorization",
+        JSON.stringify(response.data.tokens.Authorization)
       );
 
-      setCookie(
-        undefined,
-        "@nextAuth.AuthorizationRA",
-        response.data.tokens.AuthorizationRA,
-        {
-          maxAge: 24 * 60 * 60,
-          path: "/",
-        }
+      localStorage.setItem(
+        "AuthorizationRA",
+        JSON.stringify(response.data.tokens.AuthorizationRA)
       );
-
       setUser(userData);
 
       ApiAuthenticated.defaults.headers[
@@ -122,7 +168,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }
   async function signOut() {
     try {
-      destroyCookie(undefined, "@nextAuth.token");
+      localStorage.removeItem("Authorization");
+      localStorage.removeItem("AuthorizationRA");
       Router.push("/");
     } catch (error) {
       console.log("Erro ao deslogar");
@@ -132,7 +179,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     try {
       const response = await ApiGetAllFluxo.get("/search-all-flows");
       localStorage.setItem(
-        "All_Flows",
+        "Todos Fluxos",
         JSON.stringify(response.data)
       );
       return response.data;
@@ -148,7 +195,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         },
       });
       localStorage.setItem(
-        "Get_One_Flows",
+        "Fluxo Selecionado",
         JSON.stringify(response.data)
       );
 
@@ -170,9 +217,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
           theme: "colored",
         });
       }else{
-        console.log("GOl");
         const response = await ApiGetFluxo.get("/search-trigger", {});
-        
+        localStorage.setItem(
+          "Trigger",
+          JSON.stringify(response.data)
+        );
         toast.success("Salvo com sucesso!", {
           position: "top-right",
           autoClose: 5000,
@@ -258,7 +307,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
     try {
       const response = await ApiGetFluxo.put("/save-trigger", {});
-      
+      localStorage.setItem(
+        "Trigger Salvo",
+        JSON.stringify(response.data)
+      );
       toast.success("Publicado com sucesso!", {
         position: "top-right",
         autoClose: 2000,
@@ -284,7 +336,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }
   async function verifyHabilidades() {
     try {
-      const response = await ApiGetFluxo.get("/get-habs", {});
+      const response = await ApiHabs.get("/get-habs", {});
       localStorage.setItem(
         "Habilidades existentes na instância",
         JSON.stringify(response.data)
@@ -296,7 +348,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }
   async function verifyTabulacoes() {
     try {
-      const response = await ApiGetFluxo.get("/get-tabs", {});
+      const response = await ApiTabs.get("/get-tabs", {});
       localStorage.setItem(
         "Tabulações existentes na instância",
         JSON.stringify(response.data)
@@ -304,6 +356,27 @@ export function AuthProvider({ children }: AuthProviderProps) {
       return response.data;
     } catch (error) {
       console.log("Erro ao acessar tabulações");
+    }
+  }
+  async function workflow(credentials: WorkflowPropsWebApp) {
+    try {
+      const response = await Workflow.get("/search-workflow-webapp", {
+        params: {
+          client: credentials.client,
+          client_services: credentials.clientServices,
+        }
+      });
+  
+      const result = [{
+        Workflow: response.data.data,
+      }];
+  
+      localStorage.setItem(
+        "Workflow",
+        JSON.stringify(result)
+      );
+    } catch (error) {
+      throw new Error("Erro ao trazer os Workflows!");
     }
   }
 
@@ -321,6 +394,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
         saveTrigger,
         verifyHabilidades,
         verifyTabulacoes,
+        signInWebApp,
+        workflow,
       }}
     >
       {children}

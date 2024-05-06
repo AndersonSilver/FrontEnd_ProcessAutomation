@@ -6,16 +6,25 @@ import { parseCookies } from 'nookies';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { AuthProvider } from '../context/AuthContext';
+import { useState } from 'react';
 
 function MyApp({ Component, pageProps }: AppProps) {
   const router = useRouter();
+  const [authorizationRA, setAuthorizationRA] = useState("");
+  const [authorization, setAuthorization] = useState("");
+  const [isAuthLoaded, setIsAuthLoaded] = useState(false);
 
   useEffect(() => {
-    const { '@nextAuth.Authorization': authToken, '@nextAuth.AuthorizationRA': authTokenRA } = parseCookies();
-    if ((!authToken || !authTokenRA) && router.pathname !== '/') {
+    setAuthorizationRA(localStorage.getItem("AuthorizationRA") || "");
+    setAuthorization(localStorage.getItem("Authorization") || "");
+    setIsAuthLoaded(true);
+  }, []);
+
+  useEffect(() => {
+    if (isAuthLoaded && !authorizationRA && !authorization && router.pathname !== '/') {
       router.push('/');
     }
-  }, [router.pathname]);
+  }, [router.pathname, isAuthLoaded, authorizationRA, authorization]);
 
   return (
     <AuthProvider>

@@ -1,5 +1,4 @@
 import { GetServerSideProps, GetServerSidePropsContext, GetServerSidePropsResult } from "next";
-import { parseCookies, destroyCookie } from "nookies";
 import { AuthTokenError } from "../services/errors/authTokenError";
 
 export function canSSRAuth<P extends { [key: string]: any }>(
@@ -8,9 +7,8 @@ export function canSSRAuth<P extends { [key: string]: any }>(
   return async (
     ctx: GetServerSidePropsContext
   ): Promise<GetServerSidePropsResult<P>> => {
-    const cookies = parseCookies(ctx);
-    const authToken = cookies["@nextAuth.Authorization"];
-    const authTokenRA = cookies["@nextAuth.AuthorizationRA"];
+    const authToken = localStorage.getItem('Authorization');
+    const authTokenRA = localStorage.getItem('AuthorizationRA');
 
     if (!authToken || !authTokenRA) {
       return {
@@ -26,8 +24,8 @@ export function canSSRAuth<P extends { [key: string]: any }>(
       return result;
     } catch (err) {
       if (err instanceof AuthTokenError) {
-        destroyCookie(ctx, "@nextAuth.Authorization");
-        destroyCookie(ctx, "@nextAuth.AuthorizationRA");
+        localStorage.removeItem("Authorization");
+        localStorage.removeItem("AuthorizationRA");
       }
 
       return {

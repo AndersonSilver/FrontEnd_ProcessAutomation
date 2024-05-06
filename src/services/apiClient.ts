@@ -10,6 +10,8 @@ import {
   apiSaveTriggers,
   verifyHabilidades,
   verifyTabulacoes,
+  apiGetLoginWebApp,
+  workflow,
 } from "./setupApis";
 // import { setupApiAuthenticated } from "./setupApis";
 
@@ -35,3 +37,7 @@ export const ApiSaveTrigger = apiSaveTriggers();
 export const VerifyHabilidades = verifyHabilidades();
 //@ts-ignore :todo
 export const VerifyTabulacoes = verifyTabulacoes();
+//@ts-ignore :todo
+export const ApiGetLoginWebApp = apiGetLoginWebApp();
+//@ts-ignore :todo
+export const Workflow = workflow();

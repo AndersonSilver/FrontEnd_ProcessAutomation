@@ -4,23 +4,24 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
+    "clean": "rimraf .next node_modules && yarn install",
+    "dev": "yarn clean && next dev",
+    "build": "yarn clean && next build",
+    "start": "next start"
   },
   "devDependencies": {
     "@types/node": "^20.12.2",
     "@types/react": "^18.2.74",
     "@types/react-dom": "^18.2.23",
     "@types/react-modal": "^3.16.3",
+    "rimraf": "^5.0.5",
     "typescript": "^5.4.3"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.5.2",
     "@fortawesome/free-solid-svg-icons": "^6.5.2",
     "@fortawesome/react-fontawesome": "^0.2.0",
-    "ace-builds": "^1.32.9",
+    "ace-builds": "^1.33.1",
     "axios": "^1.6.8",
     "fs": "^0.0.1-security",
     "jwt-decode": "^4.0.0",

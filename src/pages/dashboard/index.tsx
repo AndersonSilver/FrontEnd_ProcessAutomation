@@ -3,7 +3,6 @@ import { Header } from "../../components/Header";
 import { Section } from "../../components/Section";
 import { Aside } from "../../components/Aside";
 import style from "./style.module.scss";
-import Link from "next/link";
 import { AuthContext } from "../../context/AuthContext";
 
 

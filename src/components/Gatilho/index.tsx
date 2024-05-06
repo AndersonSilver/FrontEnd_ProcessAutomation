@@ -58,10 +58,8 @@ export function Gatilho() {
 
   const handleSelectChange = async (selectedOption) => {
     setSelectedFluxo(selectedOption);
-    if (selectedFluxo){
-      await getFluxo(selectedFluxo.value);
-      console.log("selectFluxo", selectedFluxo.value);
-      console.log("Entrou");
+    if (selectedOption){
+      const fluxo = await getFluxo(selectedOption.value);
     }
     
 };
