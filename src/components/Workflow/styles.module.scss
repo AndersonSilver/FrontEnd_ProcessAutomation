@@ -106,3 +106,46 @@
     width: 80%;
   }
 }
+
+.containerTable {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.table {
+  border-collapse: collapse;
+  width: 100%;
+
+  th {
+      background-color: var(--dark-900);
+      color: var(--white);
+      font-weight: bold;
+      border: 1px solid var(--white);
+      padding: 8px;
+  }
+
+  td {
+      border: 1px solid var(--dark-900);
+      padding: 8px;
+      text-align: center;
+      justify-content: center;
+  }
+}
+
+.tableBody {
+  color: var(--dark-900);
+  background-color: var(--white);
+  border: var(--dark-900);
+}
+
+.titleTable {
+  background-color: #f2f2f2;
+  font-weight: bold;
+
+  titleTableCell {
+      text-align: center;
+      justify-content: center;
+  }
+}

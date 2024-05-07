@@ -4,10 +4,10 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "clean": "rimraf .next node_modules && yarn install",
-    "dev": "yarn clean && next dev",
-    "build": "yarn clean && next build",
-    "start": "next start"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
   },
   "devDependencies": {
     "@types/node": "^20.12.2",

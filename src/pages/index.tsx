@@ -1,5 +1,5 @@
 import { useContext, FormEvent, useState } from "react";
-import { toast } from "react-toastify";
+import { Bounce, toast } from "react-toastify";
 import Head from "next/head";
 import Image from "next/image";
 import logoImg from "../../public/tech.png";
