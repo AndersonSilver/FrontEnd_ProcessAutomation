@@ -6,10 +6,10 @@ export function Section() {
 
   const router = useRouter();
 
-  const gatilhoButtons = [
-    { href: "/gatilho", label: "Gatilho" },
-    // Add more buttons for "Gatilho" here
-  ];
+  // const gatilhoButtons = [
+  //   { href: "/gatilho", label: "Gatilho" },
+  //   // Add more buttons for "Gatilho" here
+  // ];
 
   const webAppButtons = [
     { href: "/webapp", label: "Login WebApp" },
@@ -28,7 +28,7 @@ export function Section() {
   return (
     <section className={style.sectionContainer}>
       <div className={style.sectionContent}>
-        <div className={style.sectionContentFerramenta}>
+        {/* <div className={style.sectionContentFerramenta}>
           <h2>- Ferramentas -</h2>
         </div>
         <div className={style.sectionContentButton}>
@@ -43,7 +43,7 @@ export function Section() {
               </button>
             </Link>
           ))}
-        </div>
+        </div> */}
         <div className={style.sectionContentFerramenta}>
           <h2>- WebApp -</h2>
         </div>

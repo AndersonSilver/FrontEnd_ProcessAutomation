@@ -27,7 +27,7 @@ type AuthContextData = {
   saveTrigger: () => void;
   verifyHabilidades: () => Promise<any>;
   verifyTabulacoes: () => Promise<any>;
-  workflow: (credentials: WorkflowPropsWebApp) => Promise<void>;
+  workflow: (credentials: WorkflowPropsWebApp) => Promise<any>;
 };
 
 type UserProps = {
@@ -384,6 +384,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         "Workflow",
         JSON.stringify(result)
       );
+      return result;
     } catch (error: any) {
       throw new Error("Erro ao trazer os Workflows!");
     }
