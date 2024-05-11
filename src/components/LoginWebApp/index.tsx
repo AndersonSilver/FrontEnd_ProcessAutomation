@@ -2,14 +2,8 @@ import style from "./styles.module.scss";
 import { useEffect, FormEvent, useState } from "react";
 import { useContext } from "react";
 import { AuthContext } from "../../context/AuthContext";
-// import Select from "react-select";
-// import AceEditor from "react-ace";
-// import ace from 'ace-builds';
 import { toast, Zoom } from "react-toastify";
 import { Button } from "../../components/ui/Button";
-
-// import "ace-builds/src-noconflict/mode-json";
-// import "ace-builds/src-noconflict/theme-monokai";
 
 export function LoginWebApp() {
   const { signInWebApp } = useContext(AuthContext);

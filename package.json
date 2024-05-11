@@ -34,6 +34,7 @@
     "react-icons": "^5.0.1",
     "react-modal": "^3.16.1",
     "react-select": "^5.8.0",
+    "react-selectable-fast": "^3.4.0",
     "react-toastify": "^10.0.5",
     "sass": "^1.72.0"
   }

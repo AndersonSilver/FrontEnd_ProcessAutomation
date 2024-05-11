@@ -7,17 +7,142 @@
   border-style: solid 3px var(--blue-tech);
   opacity: 0.7;
   border-radius: 5px;
-  height: auto;
-  width: auto;
-  margin-top: 10rem;
+  margin-top: 5rem;
   margin-left: 17rem;
   margin-right: 7rem;
   padding: 50px;
-  overflow: auto;
+  max-height: 50rem;
+}
+
+.modalClass{
+  display: flex;
+  justify-content: flex;
+  align-items: center;
+  z-index: 2;
+}
+
+#modal{
+  display: flex;
 }
 
 
-.containerTable {
+.containerTableTwo{
+  overflow-y: auto;
+  max-height: 500px;
+}
+
+.buttonSave{
+  background-color: #4CAF50;
+  border-radius: 8px;
+  border: none;
+  color: white;
+  padding: 10px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 15px 2px;
+  cursor: pointer;
+  transition-duration: 0.4s;
+  &:hover {
+    background-color: #45a049;
+  }
+}
+
+.buttonCancelar{
+  background-color: #f44336; /* Green */
+  border-radius: 8px;
+  border: none;
+  color: white;
+  padding: 10px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 15px 2px;
+  cursor: pointer;
+  transition-duration: 0.4s;
+  &:hover {
+    background-color: #45a049;
+  }
+}
+
+.buttonDeletar{
+  background-color: #f44336; /* Red */
+  border-radius: 8px;
+  border: none;
+  color: white;
+  padding: 10px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 15px 2px;
+  cursor: pointer;
+  transition-duration: 0.4s;
+  &:hover {
+    background-color: #da190b;
+  }
+}
+
+.selectedRow {
+  background-color: #d46961; /* Altere para a cor desejada */
+}
+
+.deleteMode{
+  background-color: #6766aa;
+}
+
+.menuFiltro{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  padding: 0.2rem;
+}
+
+.filterContainer {
+  display: flex;
+  align-items: center;
+}
+
+.filterLabel {
+  padding: 5px;
+  border: 1px solid #fff;
+  border-radius: 10px;
+  background-color: var(--dark-900);
+  color: var(--white);
+  margin-right: 2px;
+  margin-top: -1.3rem;
+}
+
+.body_td_empty {
+  height: 25px;
+}
+
+.inputEdit {
+
+  border: none;
+  background-color: #292929;
+  color: #fff;
+  font-size: 16px;
+  min-width: 200px;
+}
+
+.filterText {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
+  margin-left: 15px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  padding: 0.3rem;
+  border-radius: 10px;
+}
+
+.buttonContainer{
+  margin-top: 20px;
 }
 
 .table {
@@ -28,7 +153,6 @@
   th {
       background-color: var(--dark-900);
       color: var(--white);
-      font-weight: bold;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       border: 1px solid var(--white);
       padding: 5px;
@@ -40,10 +164,12 @@
       padding-left: 15px;
       padding-right: 15px;
       padding-top: 3px;
+      padding-bottom: 5px;
       text-align: center;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       justify-content: center;
       white-space: nowrap;
+      width: 150%;
   }
 }
 
@@ -51,11 +177,15 @@
   color: #fff;
   background-color: #292929;
   border: var(--dark-900);
+  padding: 150px;
+}
+
+.espaço{
+  margin: 30px;
 }
 
 .titleTable {
   background-color: #f2f2f2;
-  font-weight: bold;
 
   titleTableCell {
       text-align: center;
