@@ -7,6 +7,7 @@ import {
   KeyboardEvent,
 } from "react";
 import { AuthContext } from "../../context/AuthContext";
+import ReactModal from 'react-modal';
 
 type EditableCellProps = {
   item: any;
@@ -16,6 +17,9 @@ type EditableCellProps = {
   changes: any[];
   deleteMode: boolean;
   setDeleteRowIndex: (index: number | null) => void;
+  editedItems: any[]; // Adicione esta linha
+  setEditedItems: React.Dispatch<React.SetStateAction<any[]>>;
+
 };
 
 interface Filter {
@@ -28,32 +32,103 @@ const EditableCell = ({
   className,
   setChanges,
   changes,
+  editedItems,
+  setEditedItems,
   deleteMode,
 }: EditableCellProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [value, setValue] = useState<any>("");
+  const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [modalInputValue, setModalInputValue] = useState('');
 
   useEffect(() => {
     setValue(item[keyName]);
   }, [item, keyName]);
 
   const handleDoubleClick = () => {
-    setIsEditing(true);
+    console.log('handleDoubleClick was called');
+    setModalIsOpen(true);
+    console.log('modalIsOpen', modalIsOpen);
+    setModalInputValue(value);
+    console.log('modalInputValue', modalInputValue);
+  };
+
+  const handleModalChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setModalInputValue(event.target.value);
+  };
+
+  const handleModalClose = () => {
+    setModalIsOpen(false);
+    setValue(modalInputValue);
   };
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     setValue(event.target.value);
   };
 
+  useEffect(() => {
+    console.log("Editado", editedItems);
+  }
+    , [editedItems]);
+
+
   const handleBlur = () => {
     setIsEditing(false);
-    item[keyName] = value;
+    const updatedItem = { ...item, [keyName]: value };
+
     const newChanges = [...changes, { keyName, value }];
     setChanges(newChanges);
+
+    const itemIndex = editedItems.findIndex(i => i.id === updatedItem.id);
+
+    if (itemIndex !== -1) {
+      setEditedItems((prevItems: any[]) => prevItems.map((item, index) => index === itemIndex ? updatedItem : item));
+    } else {
+      setEditedItems((prevItems: any[]) => [...prevItems, updatedItem]);
+    }
   };
 
   return (
     <td className={className} onDoubleClick={handleDoubleClick}>
+<ReactModal 
+  isOpen={modalIsOpen} 
+  onRequestClose={handleModalClose}
+  style={{
+    overlay: {
+      backgroundColor: 'rgba(0, 0, 0, 0.75)',
+      zIndex: 1000
+    },
+    content: {
+      color: '#fff', // Changed text color to white for contrast
+      backgroundColor: '#1E1E1E', // Changed background color to black
+      width: '550px',
+      height: '500px',
+      marginLeft: 'auto',
+      marginRight: 'auto',
+      marginTop: '100px',
+      textAlign: 'center',
+      lineHeight: '200px',
+      overflow: 'hidden',
+      borderRadius: '20px',
+    }
+  }}
+>
+<textarea
+  value={typeof modalInputValue === 'object' ? JSON.stringify(modalInputValue, null, 2) : String(modalInputValue)}
+  onChange={handleModalChange}
+  style={{
+    backgroundColor: '#1E1E1E', // VSCode-like background color
+    color: '#D4D4D4', // VSCode-like text color
+    fontFamily: 'Courier New, Monaco, monospace', // Monospace font
+    padding: '10px', // Some padding
+    width: '500px',
+    height: '450px',
+    marginBottom: '20px',
+    border: 'none', // Remove border
+    outline: 'none' // Remove outline
+  }}
+/>
+</ReactModal>
       {isEditing ? (
         <input
           type="text"
@@ -64,8 +139,10 @@ const EditableCell = ({
           className={style.inputEdit}
         />
       ) : (
-        String(value)
-      )}
+        <span>
+        {value && typeof value === 'object' && JSON.stringify(value).length > 50 ? JSON.stringify(value).substring(0, 50) + '...' : 
+        typeof value === 'string' && value.length > 50 ? value.substring(0, 50) + '...' : value}
+      </span>)}
     </td>
   );
 };
@@ -80,6 +157,7 @@ export function Workflow() {
   const [selectedRow, setSelectedRow] = useState<number | null>(null);
   const [deleteMode, setDeleteMode] = useState(false);
   const [deleteRowIndex, setDeleteRowIndex] = useState<number | null>(null);
+  const [editedItems, setEditedItems] = useState<any[]>([]);
 
   const columnOrder = [
     "id",
@@ -139,15 +217,15 @@ export function Workflow() {
       list = list.filter((item) =>
         Array.isArray(filter.value)
           ? filter.value.some((fv) =>
-              String(item[filter.field])
-                .trim()
-                .toLowerCase()
-                .includes(fv.trim().toLowerCase())
-            )
-          : String(item[filter.field])
+            String(item[filter.field])
               .trim()
               .toLowerCase()
-              .includes(filter.value.trim().toLowerCase())
+              .includes(fv.trim().toLowerCase())
+          )
+          : String(item[filter.field])
+            .trim()
+            .toLowerCase()
+            .includes(filter.value.trim().toLowerCase())
       );
       while (list.length < workflowList.length) {
         list.push({});
@@ -219,6 +297,8 @@ export function Workflow() {
                   deleteMode={deleteMode}
                   deleteRowIndex={deleteRowIndex}
                   setDeleteRowIndex={setDeleteRowIndex}
+                  editedItems={editedItems}
+                  setEditedItems={setEditedItems}
                 />
               </tbody>
             </table>
@@ -255,9 +335,10 @@ function ListWorkflow({
   deleteMode,
   deleteRowIndex,
   setDeleteRowIndex,
+  editedItems, // Use apenas os props
+  setEditedItems, // Use apenas os props
 }: any) {
   const [selectedRow, setSelectedRowLocal] = useState<number | null>(null);
-
   const handleRowClick = (index: number) => {
     setSelectedRowLocal(index);
     setSelectedRow(index);
@@ -270,9 +351,8 @@ function ListWorkflow({
         <tr
           key={index}
           onClick={() => handleRowClick(index)}
-          className={`${index === selectedRow ? style.selectedRow : ""} ${
-            index === deleteRowIndex ? style.deleteMode : ""
-          }`}
+          className={`${index === selectedRow ? style.selectedRow : ""} ${index === deleteRowIndex ? style.deleteMode : ""
+            }`}
         >
           <td>{item.id ? index + 1 : ""}</td>
           {columnOrder.map((key: any, i: any) =>
@@ -286,6 +366,8 @@ function ListWorkflow({
                 changes={changes}
                 deleteMode={deleteMode}
                 setDeleteRowIndex={setDeleteRowIndex}
+                editedItems={editedItems}
+                setEditedItems={setEditedItems}
               />
             ) : (
               <td className={`${style.body_td} ${style.body_td_empty}`}></td>
