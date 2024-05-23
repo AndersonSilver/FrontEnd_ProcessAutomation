@@ -17,7 +17,7 @@ export function Header() {
             <img src="/tech.png" width={190} height={60} />
           </Link>
           <div className={style.infoCompany}>
-            <h5>{user?.companyName}</h5>
+            <h5>Desenvolvimento WebApp - {user?.client}</h5>
           </div>
         </div>
       </div>
@@ -25,7 +25,7 @@ export function Header() {
       <div className={style.headerContentButtons}>
         <nav className={style.menuNav}>
           <div className={style.info}>
-            <h5>{user?.name}</h5>
+            <h5>{user?.email  }</h5>
           </div>
           <button onClick={signOut}>
             <FiLogOut color="#FFF" size={24} />

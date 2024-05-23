@@ -1,47 +1,25 @@
-import { createContext, ReactNode, useState } from "react";
-import {
-  ApiGetTab,
-  ApiGetLogin,
-  ApiAuthenticated,
-  ApiGetAllFluxo,
-  ApiGetFluxo,
-  ApiTriggers,
-  ApiHabs,
-  ApiTabs,
-  ApiSaveTrigger,
-  Workflow,
-} from "../services/apiClient";
-import { toast, Zoom } from "react-toastify";
-import Router from "next/router";
+'use client'
+import { useRouter } from 'next/router'
+import { createContext, ReactNode, useEffect, useState } from 'react'
+import {  ApiGetLogin } from "../services/apiClient";
+import { displayError, displaySuccess } from '../utils/functions/messageToast'
+import { workflow } from '../services/setupApis';
+
+export const AUTHORIZATION_KEY = 'Authorization' as const
+export const SESSION_KEY = 'SESSION_KEY' as const
 
 type AuthContextData = {
-  user: UserProps;
-  signIn: (credentials: SignInProps) => Promise<void>;
-  signInWebApp: (credentials: SignInPropsWebApp) => Promise<void>;
+  signIn: (credentials: SignInPropsWebApp) => Promise<void>;
   signOut: () => void;
-  getFluxo: (flowId: any) => Promise<any>;
-  getAllFluxo: () => Promise<any>;
-  trigger: (validate: boolean) => void;
-  getHabs: (habs: any, validate: boolean) => Promise<any>;
-  getTabs: (tabs: any, validate: boolean) => Promise<any>;
-  saveTrigger: () => void;
-  verifyHabilidades: () => Promise<any>;
-  verifyTabulacoes: () => Promise<any>;
-  workflow: (credentials: WorkflowPropsWebApp) => Promise<any>;
-};
+  Workflow: ( client: string, clientServices: string, token: string) => Promise<any>;
+  authorization: string
+  user: LoggedInUserProps | null
+}
 
-type UserProps = {
-  id: string;
-  name: string;
-  email: string;
-  companyId: string;
-  companyName: string;
-};
-
-type SignInProps = {
-  slug: string;
-  email: string;
-  password: string;
+type WorkflowPropsWebApp = {
+  client: string;
+  clientServices: string;
+  token: string;
 };
 
 type SignInPropsWebApp = {
@@ -51,31 +29,49 @@ type SignInPropsWebApp = {
   password: string;
 };
 
+type LoggedInUserProps = {
+  client: string
+  clientServices: string
+  email: string
+  acess_token: string
+}
+
 type AuthProviderProps = {
-  children: ReactNode;
-};
+  children: ReactNode
+}
 
-type WorkflowPropsWebApp = {
-  client: string;
-  clientServices: string;
-};
-
-export const AuthContext = createContext({} as AuthContextData);
+export const AuthContext = createContext({} as AuthContextData)
 
 export function AuthProvider({ children }: AuthProviderProps) {
-  const [user, setUser] = useState<UserProps>({
-    id: "",
-    name: "",
-    email: "",
-    companyId: "",
-    companyName: "",
-  });
+  const router = useRouter()
+  const [authorization, setAuthorization] = useState<string>('')
+  const [user, setUser] = useState<LoggedInUserProps | null>(null)
 
+  useEffect(() => {
+    const authorizationData = JSON.stringify(
+      localStorage.getItem(AUTHORIZATION_KEY)
+    )
+    const authorizationParsed = JSON.parse(authorizationData ?? '')
 
+    const userData = localStorage.getItem(SESSION_KEY)
+    const userParsed = userData ? JSON.parse(userData) : ''
 
-  async function signInWebApp(credentials: SignInPropsWebApp) {
+    if (
+      !authorizationParsed &&
+      !userParsed &&
+      router.pathname !== '/'
+    ) {
+      console.log('Invalid')
+      router.push('/')
+    } else {
+      setAuthorization(authorizationParsed)
+      setUser(userParsed)
+    }
+  }, [router.pathname,  authorization, router])
+
+  async function signIn(credentials: SignInPropsWebApp) {
     try {
-      const response = await ApiGetLogin.post("/auth-user-webapp", {}, {
+      const response = await ApiGetLogin.post("/auth-user", {}, {
         params: {
           client: credentials.client,
           client_services: credentials.clientServices,
@@ -84,331 +80,65 @@ export function AuthProvider({ children }: AuthProviderProps) {
         }
       });
 
-      const result = [{
+      const loggedInUserProps = {
         client: credentials.client,
         clientServices: credentials.clientServices,
-        password: credentials.password,
         acess_token: response.data.acess_token,
-      }];
-
-      localStorage.setItem(
-        "WebApp",
-        JSON.stringify(result)
-      );
-
-      toast.success("Logado com sucesso!", {
-        position: "top-right",
-        autoClose: 2000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        theme: "colored",
-        transition: Zoom,
-      });
-
-    } catch (error: any) {
-      throw new Error("Erro ao acessar!");
-    }
-  }
-
-  async function signIn(credentials: SignInProps) {
-    try {
-      const response = await ApiGetLogin.post("/auth-user", {
-        slug: credentials.slug,
         email: credentials.email,
-        password: credentials.password,
-      });
+      }
 
-      const userData = {
-        id: response.data.user.id,
-        name: response.data.user.name,
-        email: response.data.user.email,
-        companyId: response.data.company.id,
-        companyName: response.data.company.name,
-      };
+      setUser(loggedInUserProps as LoggedInUserProps)
 
       localStorage.setItem(
-        "Authorization",
-        JSON.stringify(response.data.tokens.Authorization)
-      );
+        AUTHORIZATION_KEY,
+        response.data.acess_token
+      )
 
-      localStorage.setItem(
-        "AuthorizationRA",
-        JSON.stringify(response.data.tokens.AuthorizationRA)
-      );
-      setUser(userData);
+      localStorage.setItem(SESSION_KEY, JSON.stringify(loggedInUserProps))
 
-      ApiAuthenticated.defaults.headers[
-        "Authorization"
-      ] = `Bearer ${response.data.tokens.AuthorizationRA}`;
+      displaySuccess('Login efetuado com sucesso!')
 
-      toast.success("Logado com sucesso!", {
-        position: "top-right",
-        autoClose: 2000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        theme: "colored",
-        transition: Zoom,
-      });
-
-      Router.push(`/dashboard?clientId=${response.data.company.id}`);
+      router.push(`/dashboard?clientId=${credentials.client}&clientServices=${credentials.clientServices}`)
     } catch (error: any) {
-      toast.error("Erro ao acessar!", {
-        position: "top-right",
-        autoClose: 2000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        theme: "colored",
-      });
+      console.log(error)
+      displayError('Erro ao fazer login!')
     }
   }
 
-  async function signOut() {
+  function signOut() {
     try {
-      localStorage.removeItem("Authorization");
-      localStorage.removeItem("AuthorizationRA");
-      Router.push("/");
-    } catch (error) {
-      console.log("Erro ao deslogar");
-    }
-  }
-
-  async function getAllFluxo() {
-    try {
-      const response = await ApiGetAllFluxo.get("/search-all-flows");
-      localStorage.setItem(
-        "Todos Fluxos",
-        JSON.stringify(response.data)
-      );
-      return response.data;
+      localStorage.clear()
+      router.push('/')
     } catch (error: any) {
-      console.log("Erro ao acessar o fluxo");
+      displayError('Erro ao deslogar!')
     }
   }
 
-  async function getFluxo(flowId: string) {
+  async function Workflow( client: any, clientServices: string, token: string) {
     try {
-      const response = await ApiGetFluxo.get("/search-flow", {
+
+      const apiClient = workflow(undefined, undefined, token);
+
+      const response = await apiClient.get("/search-workflow-webapp", {
         params: {
-          flowId: flowId,
-        },
+          client,
+          client_services: clientServices,
+        }        
       });
-      localStorage.setItem(
-        "Fluxo Selecionado",
-        JSON.stringify(response.data)
-      );
-
-      return response.data;
-    } catch (error: any) {
-      console.log("Erro ao acessar o fluxo", error);
-    }
-  }
-
-  async function trigger(validate: boolean) {
-    try {
-      if (validate === false) {
-        return toast.error("Habilidade ou tabulação não informadas!", {
-          position: "top-right",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          theme: "colored",
-        });
-      } else {
-        const response = await ApiGetFluxo.get("/search-trigger", {});
-        localStorage.setItem(
-          "Trigger",
-          JSON.stringify(response.data)
-        );
-        toast.success("Salvo com sucesso!", {
-          position: "top-right",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          theme: "colored",
-          transition: Zoom,
-        });
-        localStorage.setItem(
-          "Json Salvo",
-          JSON.stringify(response.data)
-        );
-        return response.data;
-      }
-    } catch (error: any) {
-      toast.error("Algo deu errado!", {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        theme: "colored",
-      });
-      toast.error("Esses id's não existe sua MULA!", {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        theme: "colored",
-      });
-    }
-  }
-
-  async function getHabs(habs: string, validate: boolean) {
-    try {
-      if (validate === false) {
-        throw new Error("Habilidades não informadas")
-      } else {
-        const response = await ApiGetFluxo.get("/search-habs", {
-          params: {
-            habs: habs,
-          },
-        });
-        localStorage.setItem(
-          "Habilidades Informadas",
-          JSON.stringify(response.data)
-        );
-        return response.data;
-      }
-
-
-    } catch (error: any) {
-      return error.message;
-    }
-  }
-
-  async function getTabs(tabs: string, validate: boolean) {
-    try {
-
-      if (validate === false) {
-        throw new Error("Tabulaçoes não informadas")
-      } else {
-        const response = await ApiGetFluxo.get("/search-tabs", {
-          params: {
-            tabs: tabs,
-          },
-        });
-        localStorage.setItem(
-          "Tabulações Informadas",
-          JSON.stringify(response.data)
-        );
-        return response.data;
-      }
-
-    } catch (error: any) {
-      return error.message;
-    }
-  }
-
-  async function saveTrigger() {
-
-    try {
-      const response = await ApiGetFluxo.put("/save-trigger", {});
-      localStorage.setItem(
-        "Trigger Salvo",
-        JSON.stringify(response.data)
-      );
-      toast.success("Publicado com sucesso!", {
-        position: "top-right",
-        autoClose: 2000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        theme: "colored",
-        transition: Zoom,
-      });
-      return response.data;
-    } catch (error: any) {
-      toast.error("Erro ao publicar!", {
-        position: "top-right",
-        autoClose: 2000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        theme: "colored",
-      });
-    }
-  }
-
-  async function verifyHabilidades() {
-    try {
-      const response = await ApiHabs.get("/get-habs", {});
-      localStorage.setItem(
-        "Habilidades existentes na instância",
-        JSON.stringify(response.data)
-      );
-      return response.data;
-    } catch (error: any) {
-      console.log("Erro ao acessar habilidades");
-    }
-  }
-
-  async function verifyTabulacoes() {
-    try {
-      const response = await ApiTabs.get("/get-tabs", {});
-      localStorage.setItem(
-        "Tabulações existentes na instância",
-        JSON.stringify(response.data)
-      );
-      return response.data;
-    } catch (error: any) {
-      console.log("Erro ao acessar tabulações");
-    }
-  }
-
-  async function workflow(credentials: WorkflowPropsWebApp) {
-    try {
-      const response = await Workflow.get("/search-workflow-webapp", {
-        params: {
-          client: credentials.client,
-          client_services: credentials.clientServices,
-        }
-      });
-
       const result = response.data.data
-      
-      localStorage.setItem(
-        "Workflow",
-        JSON.stringify(result)
-      );
+
       return result;
     } catch (error: any) {
-      throw new Error("Erro ao trazer os Workflows!");
+      console.log(error)
+      displayError('Erro ao fazer ao trazer os workflows!')
     }
   }
 
   return (
     <AuthContext.Provider
-      value={{
-        user,
-        signIn,
-        signOut,
-        getAllFluxo,
-        getFluxo,
-        trigger,
-        getHabs,
-        getTabs,
-        saveTrigger,
-        verifyHabilidades,
-        verifyTabulacoes,
-        signInWebApp,
-        workflow,
-      }}
+      value={{ signIn, signOut, authorization, user, Workflow }}
     >
       {children}
     </AuthContext.Provider>
-  );
+  )
 }

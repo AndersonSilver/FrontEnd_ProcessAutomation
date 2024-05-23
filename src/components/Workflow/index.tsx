@@ -1,13 +1,14 @@
-import style from "./styles.module.scss";
+import { useAuthContext } from '@/src/hooks/auth';
 import {
-  useEffect,
-  useState,
-  useContext,
   ChangeEvent,
   KeyboardEvent,
-} from "react";
-import { AuthContext } from "../../context/AuthContext";
+  useContext,
+  useEffect,
+  useState
+} from 'react';
 import ReactModal from 'react-modal';
+import { AuthContext } from '../../context/AuthContext';
+import style from './styles.module.scss';
 
 type EditableCellProps = {
   item: any;
@@ -17,9 +18,9 @@ type EditableCellProps = {
   changes: any[];
   deleteMode: boolean;
   setDeleteRowIndex: (index: number | null) => void;
-  editedItems: any[]; // Adicione esta linha
+  editedItems: any[];
   setEditedItems: React.Dispatch<React.SetStateAction<any[]>>;
-
+  notValue: unknown | undefined;
 };
 
 interface Filter {
@@ -35,22 +36,28 @@ const EditableCell = ({
   editedItems,
   setEditedItems,
   deleteMode,
+  notValue
 }: EditableCellProps) => {
   const [isEditing, setIsEditing] = useState(false);
-  const [value, setValue] = useState<any>("");
+  const [value, setValue] = useState<any>('');
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [modalInputValue, setModalInputValue] = useState('');
 
+  const [editedItem, setEditedItem] = useState<any>([]);
+  console.log("editedItem", editedItem);
+
   useEffect(() => {
-    setValue(item[keyName]);
+    if (item) {
+      setValue(item[keyName]);
+    }
   }, [item, keyName]);
 
   const handleDoubleClick = () => {
-    console.log('handleDoubleClick was called');
-    setModalIsOpen(true);
-    console.log('modalIsOpen', modalIsOpen);
-    setModalInputValue(value);
-    console.log('modalInputValue', modalInputValue);
+
+    if (keyName !== 'id') {
+      setModalIsOpen(true);
+      setModalInputValue(value);
+    }
   };
 
   const handleModalChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -59,96 +66,139 @@ const EditableCell = ({
 
   const handleModalClose = () => {
     setModalIsOpen(false);
-    setValue(modalInputValue);
+    if (modalInputValue) {
+      setValue(modalInputValue);
+    }
   };
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const updatedItem = { ...item, [keyName]: event.target.value };
     setValue(event.target.value);
+    
+    setEditedItem(prev => {
+      const itemIndex = prev?.find(i => i.id === updatedItem.id);
+
+      if (itemIndex){
+        setEditedItem({ ...item, [keyName]: event.target.value });
+      }else{
+        return [ ...prev, updatedItem ];
+      }
+
+    });
   };
 
-  useEffect(() => {
-    console.log("Editado", editedItems);
-  }
-    , [editedItems]);
 
+  const handleBlur = (event: ChangeEvent<HTMLTextAreaElement>) => {
+    console.log("handleBlur")
+    setValue(event.target.value);
+    // event.preventDefault();
 
-  const handleBlur = () => {
-    setIsEditing(false);
-    const updatedItem = { ...item, [keyName]: value };
+    // setIsEditing(false);
+    if (item) {
+      
+      const newChanges = [...changes, { keyName, value }];
+      
+      // setChanges(newChanges);
+      console.log("newChanges", newChanges);
+      const itemIndex = editedItems.findIndex(i => i.id === updatedItem.id);
 
-    const newChanges = [...changes, { keyName, value }];
-    setChanges(newChanges);
-
-    const itemIndex = editedItems.findIndex(i => i.id === updatedItem.id);
-
-    if (itemIndex !== -1) {
-      setEditedItems((prevItems: any[]) => prevItems.map((item, index) => index === itemIndex ? updatedItem : item));
-    } else {
-      setEditedItems((prevItems: any[]) => [...prevItems, updatedItem]);
+      // if (itemIndex !== -1) {
+      //   setEditedItem((prevItems: any[]) =>
+      //     prevItems?.map((item, index) =>
+      //       index === itemIndex ? updatedItem : item
+      //     )
+      //   );
+      //   console.log('Item Atualizado', updatedItem);
+      // } else {
+      //   // setEditedItem((prevItems: any[]) => [...prevItems, updatedItem]);
+      //   console.log('Item nao Atualizado', updatedItem);
+      // }
     }
+  };
+
+  const renderItemValue = () => {
+    if (!notValue) return '---';
+    return (
+      <span>
+        {value &&
+        (typeof value === 'object' ? JSON.stringify(value) : value.toString())
+          .length > 80
+          ? (typeof value === 'object'
+              ? JSON.stringify(value)
+              : value.toString()
+            ).substring(0, 80) + '...'
+          : typeof value === 'object'
+            ? JSON.stringify(value)
+            : value.toString()}
+      </span>
+    );
   };
 
   return (
-    <td className={className} onDoubleClick={handleDoubleClick}>
-<ReactModal 
-  isOpen={modalIsOpen} 
-  onRequestClose={handleModalClose}
-  style={{
-    overlay: {
-      backgroundColor: 'rgba(0, 0, 0, 0.75)',
-      zIndex: 1000
-    },
-    content: {
-      color: '#fff', // Changed text color to white for contrast
-      backgroundColor: '#1E1E1E', // Changed background color to black
-      width: '550px',
-      height: '500px',
-      marginLeft: 'auto',
-      marginRight: 'auto',
-      marginTop: '100px',
-      textAlign: 'center',
-      lineHeight: '200px',
-      overflow: 'hidden',
-      borderRadius: '20px',
-    }
-  }}
->
-<textarea
-  value={typeof modalInputValue === 'object' ? JSON.stringify(modalInputValue, null, 2) : String(modalInputValue)}
-  onChange={handleModalChange}
-  style={{
-    backgroundColor: '#1E1E1E', // VSCode-like background color
-    color: '#D4D4D4', // VSCode-like text color
-    fontFamily: 'Courier New, Monaco, monospace', // Monospace font
-    padding: '10px', // Some padding
-    width: '500px',
-    height: '450px',
-    marginBottom: '20px',
-    border: 'none', // Remove border
-    outline: 'none' // Remove outline
-  }}
-/>
-</ReactModal>
+    <div className={className} onDoubleClick={handleDoubleClick}>
+      <ReactModal
+        isOpen={modalIsOpen}
+        ariaHideApp={false}
+        onRequestClose={handleModalClose}
+        style={{
+          overlay: {
+            backgroundColor: 'rgba(0, 0, 0, 0.75)',
+            zIndex: 1000
+          },
+          content: {
+            color: '#fff',
+            backgroundColor: '#1E1E1E',
+            width: '550px',
+            height: '500px',
+            marginLeft: 'auto',
+            marginRight: 'auto',
+            marginTop: '100px',
+            textAlign: 'center',
+            lineHeight: '200px',
+            overflow: 'hidden',
+            borderRadius: '20px'
+          }
+        }}
+      >
+        <textarea
+          value={
+            typeof modalInputValue === 'object'
+              ? JSON.stringify(modalInputValue, null, 2)
+              : String(modalInputValue)
+          }
+          onChange={(e) => handleBlur(e)}
+          style={{
+            backgroundColor: '#1E1E1E',
+            color: '#D4D4D4',
+            fontFamily: 'Courier New, Monaco, monospace',
+            padding: '10px',
+            width: '500px',
+            height: '450px',
+            marginBottom: '20px',
+            border: 'none',
+            outline: 'none'
+          }}
+        />
+      </ReactModal>
       {isEditing ? (
+        console.log("isEditing"),
         <input
           type="text"
           value={value}
-          onChange={handleChange}
-          onBlur={handleBlur}
+          // onChange={handleBlur}
+          // onBlur={handleBlur}
           autoFocus
           className={style.inputEdit}
         />
       ) : (
-        <span>
-        {value && typeof value === 'object' && JSON.stringify(value).length > 50 ? JSON.stringify(value).substring(0, 50) + '...' : 
-        typeof value === 'string' && value.length > 50 ? value.substring(0, 50) + '...' : value}
-      </span>)}
-    </td>
+        renderItemValue()
+      )}
+    </div>
   );
 };
 
 export function Workflow() {
-  const { workflow } = useContext(AuthContext);
+  const { Workflow } = useContext(AuthContext);
 
   const [workflowList, setWorkflowList] = useState<any[]>([]);
   const [filter, setFilter] = useState<Filter | null>(null);
@@ -159,53 +209,34 @@ export function Workflow() {
   const [deleteRowIndex, setDeleteRowIndex] = useState<number | null>(null);
   const [editedItems, setEditedItems] = useState<any[]>([]);
 
-  const columnOrder = [
-    "id",
-    "title",
-    "description",
-    "alternative_title",
-    "workflow_key",
-    "filters",
-    "sla",
-    "created_at",
-    "updated_at",
-    "index",
-    "flow_form_id",
-    "client_service_id",
-    "client_product_key",
-    "optional_config",
-    "workflow_group_id",
-    "execute_before_create_protocol",
-    "client_product_request_id",
-    "get_external_identification_function",
-    "execute_filter_workflow_protocols_before_create_draft",
-    "get_main_user_account_data_function",
-    "format_products_field_function",
-    "update_workflow_protocol_function_id",
-    "workflow_protocol_duplicity_rule_function_id",
-  ];
+  const columnOrder = Object.keys(workflowList[0] || {});
+
+  const { user } = useAuthContext();
+
   useEffect(() => {
     const fetchData = async () => {
-      const webApp = localStorage.getItem("WebApp");
+      if (user && Workflow) {
+        const webApp = JSON.stringify(user);
 
-      if (webApp !== null) {
         const webAppObject = JSON.parse(webApp);
-        const client = webAppObject[0]?.client;
-        const clientServices = webAppObject[0]?.clientServices;
+        const client = webAppObject?.client;
+        const clientServices = webAppObject?.clientServices;
+        const token = webAppObject?.acess_token;
 
-        const result = await workflow({ client, clientServices });
+        const result = await Workflow(client, clientServices, token);
+
         setWorkflowList(result);
       }
     };
-
     fetchData();
-  }, [workflow]);
+  }, [Workflow, user]);
+
   const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === "Enter") {
+    if (event.key === 'Enter') {
       setFilter(null);
       const match = event.currentTarget.value.match(/(\w+)\s*=\s*'([^']*)'/);
       if (match) {
-        const values = match[2].split(",").map((value) => value.trim());
+        const values = match[2].split(',').map(value => value.trim());
         setFilter({ field: match[1], value: values });
       }
     }
@@ -214,18 +245,18 @@ export function Workflow() {
   useEffect(() => {
     let list = [...workflowList];
     if (filter) {
-      list = list.filter((item) =>
+      list = list.filter(item =>
         Array.isArray(filter.value)
-          ? filter.value.some((fv) =>
-            String(item[filter.field])
+          ? filter.value.some(fv =>
+              String(item[filter.field])
+                .trim()
+                .toLowerCase()
+                .includes(fv.trim().toLowerCase())
+            )
+          : String(item[filter.field])
               .trim()
               .toLowerCase()
-              .includes(fv.trim().toLowerCase())
-          )
-          : String(item[filter.field])
-            .trim()
-            .toLowerCase()
-            .includes(filter.value.trim().toLowerCase())
+              .includes(filter.value.trim().toLowerCase())
       );
       while (list.length < workflowList.length) {
         list.push({});
@@ -236,10 +267,9 @@ export function Workflow() {
 
   const handleSave = () => {
     const newList = [...workflowList];
-    changes.forEach((change) => {
-      const item = newList.find(
-        (item) => item[change.keyName] === change.value
-      );
+
+    changes.forEach(change => {
+      const item = newList.find(item => item.isNew);
       if (item) {
         item[change.keyName] = change.value;
       }
@@ -258,9 +288,30 @@ export function Workflow() {
   };
 
   const handleCancel = () => {
-    setSelectedRow(null); // Desmarcar a linha
-    window.location.reload();
+    setSelectedRow(null);
+    setDeleteRowIndex(null);
+    setDeleteMode(false);
   };
+
+  const handleAdd = () => {
+    if (workflowList.length > 0) {
+      const firstItem = workflowList[0];
+
+      const newItem: { isNew: boolean; rowIndex: number; [key: string]: any } =
+        Object.keys(firstItem).reduce((obj: any, key) => {
+          obj[key] = '---';
+          return obj;
+        }, {});
+
+      newItem.isNew = true;
+
+      setWorkflowList([...workflowList, newItem]);
+    }
+  };
+
+  const handleAtt = () => {
+    window.location.reload();
+  }
 
   return (
     <aside className={style.AsideContainer}>
@@ -299,6 +350,7 @@ export function Workflow() {
                   setDeleteRowIndex={setDeleteRowIndex}
                   editedItems={editedItems}
                   setEditedItems={setEditedItems}
+                  selectedRow={selectedRow}
                 />
               </tbody>
             </table>
@@ -309,17 +361,23 @@ export function Workflow() {
           <button className={style.buttonSave} onClick={handleSave}>
             Salvar
           </button>
+          <button className={style.buttonAtualizar} onClick={handleAtt}>
+            Atualizar
+          </button>
           <button
             className={style.buttonDeletar}
             onClick={handleDeleteOrConfirm}
           >
-            {deleteMode ? "Confirmar" : "Deletar"}
+            {deleteMode ? 'Confirmar' : '-'}
           </button>
           {deleteMode && (
             <button className={style.buttonCancelar} onClick={handleCancel}>
               Cancelar
             </button>
           )}
+          <button className={style.buttonAdd} onClick={handleAdd}>
+            +
+          </button>
         </div>
       </div>
     </aside>
@@ -335,46 +393,41 @@ function ListWorkflow({
   deleteMode,
   deleteRowIndex,
   setDeleteRowIndex,
-  editedItems, // Use apenas os props
-  setEditedItems, // Use apenas os props
+  editedItems,
+  setEditedItems,
+  selectedRow
 }: any) {
-  const [selectedRow, setSelectedRowLocal] = useState<number | null>(null);
   const handleRowClick = (index: number) => {
-    setSelectedRowLocal(index);
     setSelectedRow(index);
     setDeleteRowIndex(index);
   };
 
-  return (
-    <>
-      {filteredWorkflowList.map((item: any, index: number) => (
-        <tr
-          key={index}
-          onClick={() => handleRowClick(index)}
-          className={`${index === selectedRow ? style.selectedRow : ""} ${index === deleteRowIndex ? style.deleteMode : ""
-            }`}
-        >
-          <td>{item.id ? index + 1 : ""}</td>
-          {columnOrder.map((key: any, i: any) =>
-            item.id ? (
-              <EditableCell
-                key={i}
-                item={item}
-                keyName={key}
-                className={style.body_td}
-                setChanges={setChanges}
-                changes={changes}
-                deleteMode={deleteMode}
-                setDeleteRowIndex={setDeleteRowIndex}
-                editedItems={editedItems}
-                setEditedItems={setEditedItems}
-              />
-            ) : (
-              <td className={`${style.body_td} ${style.body_td_empty}`}></td>
-            )
-          )}
-        </tr>
+  return filteredWorkflowList.map((item: any, index: number) => (
+    <tr
+      key={`item-${item?.id}-${index}`}
+      className={`${index === selectedRow ? style.selectedRow : ''} ${
+        index === deleteRowIndex ? style.deleteMode : ''
+      } ${item.isNew ? style.newId : ''}`}
+      onClick={() => handleRowClick(index)}
+    >
+      <td>{item.id ? index + 1 : ''}</td>
+
+      {columnOrder?.map((column: any, position: number) => (
+        <td key={`row-${Math.random()}-${position}`}>
+          <EditableCell
+            item={item}
+            keyName={column}
+            className={style.body_td}
+            setChanges={setChanges}
+            changes={changes}
+            deleteMode={deleteMode}
+            setDeleteRowIndex={setDeleteRowIndex}
+            editedItems={editedItems}
+            setEditedItems={setEditedItems}
+            notValue={item[column]}
+          />
+        </td>
       ))}
-    </>
-  );
+    </tr>
+  ));
 }

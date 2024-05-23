@@ -25,10 +25,52 @@
   display: flex;
 }
 
+.newId {
+  background-color: green;
+}
+
 
 .containerTableTwo{
   overflow-y: auto;
   max-height: 500px;
+}
+
+.buttonAdd{
+  background-color: #4CAF50;
+  border-radius: 8px;
+  border: none;
+  color: white;
+  padding: 10px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 15px 2px;
+  cursor: pointer;
+  transition-duration: 0.4s;
+  &:hover {
+    background-color: #45a049;
+  }
+
+}
+
+.buttonAtualizar{
+  background-color: #4CAF50;
+  border-radius: 8px;
+  border: none;
+  color: white;
+  padding: 10px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 15px 2px;
+  cursor: pointer;
+  transition-duration: 0.4s;
+  &:hover {
+    background-color: #45a049;
+  }
+
 }
 
 .buttonSave{
@@ -118,6 +160,10 @@
 
 .body_td_empty {
   height: 25px;
+}
+
+.body_td{
+  cursor: pointer;
 }
 
 .inputEdit {

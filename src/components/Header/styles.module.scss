@@ -48,7 +48,6 @@
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-        font-style: oblique;
 
     }
 }
@@ -59,10 +58,10 @@
         color: var(--white);
         padding: 3rem;
         font-family:  Poppins;
-        font-style: oblique;
         font-weight: 400;
         font-size: 1.4rem;
         white-space: nowrap;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
 }
 .menuNav {

@@ -12,18 +12,32 @@ import { AuthContext } from "../context/AuthContext";
 export default function Home() {
   const { signIn } = useContext(AuthContext);
 
-  const [slug, setInstance] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [client, setClient] = useState("");
+  const [clientServices, setclientServices] = useState("");
 
   const [rememberPassword, setRememberPassword] = useState(false);
 
   async function handleLogin(event: FormEvent) {
     event.preventDefault();
 
-    if (slug === "") {
-      toast.warn("Preencha o dominio!", {
+    if (client === "") {
+      toast.warn("Preencha o cliente!", {
+        position: "top-right",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: "colored",
+      });
+      return;
+    }
+
+    if (clientServices === "") {
+      toast.warn("Preencha o servico!", {
         position: "top-right",
         autoClose: 2000,
         hideProgressBar: false,
@@ -64,16 +78,13 @@ export default function Home() {
     setLoading(true);
 
     let data = {
-      slug,
+      client,
+      clientServices,
       email,
       password,
     };
 
     signIn(data);
-
-    localStorage.setItem("Slug", slug);
-    localStorage.setItem("Email", email);
-
     setLoading(false);
   }
 
@@ -113,20 +124,29 @@ export default function Home() {
           </div>
           <div className={styles.login}>
             <form onSubmit={handleLogin}>
-              <h4>Domínio da empresa</h4>
+              <h4>Client</h4>
               <br />
               <Input
-                placeholder="Domínio da empresa"
+                placeholder="Cliente"
                 type="text"
-                value={slug}
-                onChange={(e) => setInstance(e.target.value)}
+                value={client}
+                onChange={(e) => setClient(e.target.value)}
+              />
+
+              <h4>Client Service</h4>
+              <br />
+              <Input
+                placeholder="Serviço do Cliente"
+                type="text"
+                value={clientServices}
+                onChange={(e) => setclientServices(e.target.value)}
               />
 
               <h4>Email</h4>
               <br />
               <Input
                 placeholder="E-mail"
-                type="text"
+                type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
