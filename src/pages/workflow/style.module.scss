@@ -1,61 +1,57 @@
 .container {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    align-items: center;
-    
-    
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
 }
 
 .topContainer {
-    min-width: 800px;
-    display: flex;
-    flex-direction: column;
-    padding: 10px;
-    margin-top: 2rem;
+  min-width: 800px;
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  margin-top: 2rem;
 }
 
 .button {
-    width: 100%;
-    height: 100px;
-    border: 1px solid #ccc;
-    align-items: center;
-    justify-content: center;
-    color: black;
-    cursor: pointer;
-    font-size: 1.5rem;
-    margin-top: 1rem;
-    background-color: var(--blue-tech2);
+  width: 100%;
+  height: 100px;
+  border: 1px solid #ccc;
+  align-items: center;
+  justify-content: center;
+  color: black;
+  cursor: pointer;
+  font-size: 1.5rem;
+  margin-top: 1rem;
+  background-color: var(--blue-tech2);
 
-    &[disabled] {
-        cursor: not-allowed;
+  &[disabled] {
+    cursor: not-allowed;
 
-        svg {
-            animation: animate 2s infinite;
-        }
+    svg {
+      animation: animate 2s infinite;
     }
+  }
 
-    &:hover {
-        // filter: brightness(1.1);
-        background-color: var(--blue-tech);
-    }
-    
+  &:hover {
+    // filter: brightness(1.1);
+    background-color: var(--blue-tech);
+  }
 }
 
 .dashboardContainer {
-    position: relative;
-    /* rest of your styles */
-  }
-
-.dashboardContainerCenter{
-    display: flex;
-    flex-direction: row;
-    gap: 20rem;
-    min-width: 1000px;    
+  position: relative;
+  /* rest of your styles */
 }
 
-.dashboardContainerCenterAside{
-    margin-top: 150px;
-    min-width: 1000px;
+.dashboardContainerCenter {
+  display: flex;
+  flex-direction: row;
+  gap: 20rem;
+  min-width: 1000px;
 }
 
+.dashboardContainerCenterAside {
+  margin-top: 150px;
+  min-width: 1000px;
+}

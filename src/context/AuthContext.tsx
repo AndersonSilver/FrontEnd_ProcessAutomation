@@ -1,39 +1,38 @@
 'use client'
+import axios from 'axios'
 import { useRouter } from 'next/router'
 import { createContext, ReactNode, useEffect, useState } from 'react'
-import {  ApiGetLogin } from "../services/apiClient";
 import { displayError, displaySuccess } from '../utils/functions/messageToast'
-import { workflow } from '../services/setupApis';
 
 export const AUTHORIZATION_KEY = 'Authorization' as const
 export const SESSION_KEY = 'SESSION_KEY' as const
 
 type AuthContextData = {
-  signIn: (credentials: SignInPropsWebApp) => Promise<void>;
-  signOut: () => void;
-  Workflow: ( client: string, clientServices: string, token: string) => Promise<any>;
+  signIn: (credentials: SignInPropsWebApp) => Promise<void>
+  signOut: () => void
+  Workflow: () => Promise<any>
   authorization: string
   user: LoggedInUserProps | null
 }
 
 type WorkflowPropsWebApp = {
-  client: string;
-  clientServices: string;
-  token: string;
-};
+  client: string
+  clientServices: string
+  token: string
+}
 
 type SignInPropsWebApp = {
-  client: string;
-  clientServices: string;
-  email: string;
-  password: string;
-};
+  client: string
+  clientServices: string
+  email: string
+  password: string
+}
 
 type LoggedInUserProps = {
   client: string
   clientServices: string
   email: string
-  acess_token: string
+  access_token: string
 }
 
 type AuthProviderProps = {
@@ -56,49 +55,43 @@ export function AuthProvider({ children }: AuthProviderProps) {
     const userData = localStorage.getItem(SESSION_KEY)
     const userParsed = userData ? JSON.parse(userData) : ''
 
-    if (
-      !authorizationParsed &&
-      !userParsed &&
-      router.pathname !== '/'
-    ) {
+    if (!authorizationParsed && !userParsed && router.pathname !== '/') {
       console.log('Invalid')
       router.push('/')
     } else {
       setAuthorization(authorizationParsed)
       setUser(userParsed)
     }
-  }, [router.pathname,  authorization, router])
+  }, [router.pathname, authorization, router])
 
   async function signIn(credentials: SignInPropsWebApp) {
     try {
-      const response = await ApiGetLogin.post("/auth-user", {}, {
-        params: {
-          client: credentials.client,
-          client_services: credentials.clientServices,
-          email: credentials.email,
+      const response = await axios.post(
+        `https://webapp-qa-api.hml-tech4h.com.br/${credentials.client}/${credentials.clientServices}/authentication/access-session/password`,
+        {
+          login: credentials.email,
           password: credentials.password,
         }
-      });
+      )
 
       const loggedInUserProps = {
         client: credentials.client,
         clientServices: credentials.clientServices,
-        acess_token: response.data.acess_token,
         email: credentials.email,
+        ...response?.data,
       }
 
       setUser(loggedInUserProps as LoggedInUserProps)
 
-      localStorage.setItem(
-        AUTHORIZATION_KEY,
-        response.data.acess_token
-      )
+      localStorage.setItem(AUTHORIZATION_KEY, response.data.acess_token)
 
       localStorage.setItem(SESSION_KEY, JSON.stringify(loggedInUserProps))
 
       displaySuccess('Login efetuado com sucesso!')
 
-      router.push(`/dashboard?clientId=${credentials.client}&clientServices=${credentials.clientServices}`)
+      router.push(
+        `/dashboard?clientId=${credentials.client}&clientServices=${credentials.clientServices}`
+      )
     } catch (error: any) {
       console.log(error)
       displayError('Erro ao fazer login!')
@@ -114,20 +107,15 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   }
 
-  async function Workflow( client: any, clientServices: string, token: string) {
+  async function Workflow() {
     try {
-
-      const apiClient = workflow(undefined, undefined, token);
-
-      const response = await apiClient.get("/search-workflow-webapp", {
-        params: {
-          client,
-          client_services: clientServices,
-        }        
-      });
+      const response = await axios.get(
+        `https://webapp-qa-api.hml-tech4h.com.br/${user?.client}/${user?.clientServices}/techforms/workflow`,
+        { headers: { Authorization: `Bearer ${user?.access_token}` } }
+      )
       const result = response.data.data
 
-      return result;
+      return result
     } catch (error: any) {
       console.log(error)
       displayError('Erro ao fazer ao trazer os workflows!')

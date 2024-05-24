@@ -1,91 +1,91 @@
-import { useContext, FormEvent, useState } from "react";
-import { Bounce, toast } from "react-toastify";
-import Head from "next/head";
-import Image from "next/image";
-import logoImg from "../../public/tech.png";
-import logoTechOne from "../../public/techOne.png";
-import styles from "../../styles/home.module.scss";
-import { Input } from "../components/ui/input";
-import { Button } from "../components/ui/Button";
-import { AuthContext } from "../context/AuthContext";
+import { useContext, FormEvent, useState } from 'react'
+import { Bounce, toast } from 'react-toastify'
+import Head from 'next/head'
+import Image from 'next/image'
+import logoImg from '../../public/tech.png'
+import logoTechOne from '../../public/techOne.png'
+import styles from '../../styles/home.module.scss'
+import { Input } from '../components/ui/input'
+import { Button } from '../components/ui/Button'
+import { AuthContext } from '../context/AuthContext'
 
 export default function Home() {
-  const { signIn } = useContext(AuthContext);
+  const { signIn } = useContext(AuthContext)
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [client, setClient] = useState("");
-  const [clientServices, setclientServices] = useState("");
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [client, setClient] = useState('')
+  const [clientServices, setclientServices] = useState('')
 
-  const [rememberPassword, setRememberPassword] = useState(false);
+  const [rememberPassword, setRememberPassword] = useState(false)
 
   async function handleLogin(event: FormEvent) {
-    event.preventDefault();
+    event.preventDefault()
 
-    if (client === "") {
-      toast.warn("Preencha o cliente!", {
-        position: "top-right",
+    if (client === '') {
+      toast.warn('Preencha o cliente!', {
+        position: 'top-right',
         autoClose: 2000,
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: true,
         draggable: true,
-        theme: "colored",
-      });
-      return;
+        theme: 'colored',
+      })
+      return
     }
 
-    if (clientServices === "") {
-      toast.warn("Preencha o servico!", {
-        position: "top-right",
+    if (clientServices === '') {
+      toast.warn('Preencha o servico!', {
+        position: 'top-right',
         autoClose: 2000,
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: true,
         draggable: true,
-        theme: "colored",
-      });
-      return;
+        theme: 'colored',
+      })
+      return
     }
 
-    if (email === "") {
-      toast.warn("Preencha o email!", {
-        position: "top-right",
+    if (email === '') {
+      toast.warn('Preencha o email!', {
+        position: 'top-right',
         autoClose: 2000,
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: true,
         draggable: true,
-        theme: "colored",
-      });
-      return;
+        theme: 'colored',
+      })
+      return
     }
 
-    if (password === "") {
-      toast.warn("Preencha a senha!", {
-        position: "top-right",
+    if (password === '') {
+      toast.warn('Preencha a senha!', {
+        position: 'top-right',
         autoClose: 2000,
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: true,
         draggable: true,
-        theme: "colored",
-      });
-      return;
+        theme: 'colored',
+      })
+      return
     }
 
-    setLoading(true);
+    setLoading(true)
 
     let data = {
       client,
       clientServices,
       email,
       password,
-    };
+    }
 
-    signIn(data);
-    setLoading(false);
+    signIn(data)
+    setLoading(false)
   }
 
   return (
@@ -106,7 +106,7 @@ export default function Home() {
                 <Image
                   className={styles.logoTechOne}
                   src={logoTechOne}
-                  alt="Logo Tech One"
+                  alt='Logo Tech One'
                   priority
                 />
               </div>
@@ -117,7 +117,7 @@ export default function Home() {
               <Image
                 className={styles.logoTech}
                 src={logoImg}
-                alt="Logo Tech"
+                alt='Logo Tech'
                 priority
               />
             </div>
@@ -127,8 +127,8 @@ export default function Home() {
               <h4>Client</h4>
               <br />
               <Input
-                placeholder="Cliente"
-                type="text"
+                placeholder='Cliente'
+                type='text'
                 value={client}
                 onChange={(e) => setClient(e.target.value)}
               />
@@ -136,8 +136,8 @@ export default function Home() {
               <h4>Client Service</h4>
               <br />
               <Input
-                placeholder="Serviço do Cliente"
-                type="text"
+                placeholder='Serviço do Cliente'
+                type='text'
                 value={clientServices}
                 onChange={(e) => setclientServices(e.target.value)}
               />
@@ -145,8 +145,8 @@ export default function Home() {
               <h4>Email</h4>
               <br />
               <Input
-                placeholder="E-mail"
-                type="email"
+                placeholder='E-mail'
+                type='email'
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
@@ -154,8 +154,8 @@ export default function Home() {
               <h4>Senha</h4>
               <br />
               <Input
-                placeholder="Senha"
-                type="password"
+                placeholder='Senha'
+                type='password'
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
@@ -163,7 +163,7 @@ export default function Home() {
 
               <label>
                 <input
-                  type="checkbox"
+                  type='checkbox'
                   checked={rememberPassword}
                   onChange={(e) => setRememberPassword(e.target.checked)}
                 />
@@ -171,7 +171,7 @@ export default function Home() {
               </label>
               <br />
 
-              <Button type="submit" loading={loading}>
+              <Button type='submit' loading={loading}>
                 Entrar
               </Button>
             </form>
@@ -181,5 +181,5 @@ export default function Home() {
         <a>v1.0.0</a>
       </div>
     </>
-  );
+  )
 }

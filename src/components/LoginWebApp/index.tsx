@@ -1,124 +1,126 @@
-import style from "./styles.module.scss";
-import { useEffect, FormEvent, useState } from "react";
-import { useContext } from "react";
-import { AuthContext } from "../../context/AuthContext";
-import { toast, Zoom } from "react-toastify";
-import { Button } from "../../components/ui/Button";
+import style from './styles.module.scss'
+import { useEffect, FormEvent, useState } from 'react'
+import { useContext } from 'react'
+import { AuthContext } from '../../context/AuthContext'
+import { toast, Zoom } from 'react-toastify'
+import { Button } from '../../components/ui/Button'
 
 export function LoginWebApp() {
-  const { signInWebApp } = useContext(AuthContext);
+  const { signInWebApp } = useContext(AuthContext)
 
-  const [client, setClient] = useState("");
-  const [clientServices, setClientServices] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [client, setClient] = useState('')
+  const [clientServices, setClientServices] = useState('')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
 
   useEffect(() => {
-    const token = localStorage.getItem('WebApp');
+    const token = localStorage.getItem('WebApp')
     if (token) {
-      setIsLoggedIn(true);
+      setIsLoggedIn(true)
     }
-  }, []);
+  }, [])
 
   async function handleSubmit(event: FormEvent) {
-    event.preventDefault();
+    event.preventDefault()
 
-    if (client === "") {
-      toast.warn("Preencha o Client!", {
-        position: "top-right",
+    if (client === '') {
+      toast.warn('Preencha o Client!', {
+        position: 'top-right',
         autoClose: 2000,
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: true,
         draggable: true,
-        theme: "colored",
-      });
-      return;
+        theme: 'colored',
+      })
+      return
     }
 
-    if (clientServices === "") {
-      toast.warn("Preencha o Client Services!", {
-        position: "top-right",
+    if (clientServices === '') {
+      toast.warn('Preencha o Client Services!', {
+        position: 'top-right',
         autoClose: 2000,
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: true,
         draggable: true,
-        theme: "colored",
-      });
-      return;
+        theme: 'colored',
+      })
+      return
     }
 
-    if (email === "") {
-      toast.warn("Preencha o email!", {
-        position: "top-right",
+    if (email === '') {
+      toast.warn('Preencha o email!', {
+        position: 'top-right',
         autoClose: 2000,
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: true,
         draggable: true,
-        theme: "colored",
-      });
-      return;
+        theme: 'colored',
+      })
+      return
     }
 
-    if (password === "") {
-      toast.warn("Preencha a senha!", {
-        position: "top-right",
+    if (password === '') {
+      toast.warn('Preencha a senha!', {
+        position: 'top-right',
         autoClose: 2000,
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: true,
         draggable: true,
-        theme: "colored",
-      });
-      return;
+        theme: 'colored',
+      })
+      return
     }
 
-    setLoading(true);
+    setLoading(true)
 
     let data = {
       client,
       clientServices,
       email,
       password,
-    };
+    }
 
     const handleSignIn = async () => {
       try {
-        await signInWebApp(data);
-        setLoading(false);
-        setIsLoggedIn(true);
+        await signInWebApp(data)
+        setLoading(false)
+        setIsLoggedIn(true)
       } catch (error) {
-        setLoading(false);
-        toast.error("Erro ao acessar!", {
-          position: "top-right",
+        setLoading(false)
+        toast.error('Erro ao acessar!', {
+          position: 'top-right',
           autoClose: 2000,
           hideProgressBar: false,
           closeOnClick: true,
           pauseOnHover: true,
           draggable: true,
-          theme: "colored",
-        });
+          theme: 'colored',
+        })
       }
-    };
-    handleSignIn();
+    }
+    handleSignIn()
   }
 
   function handleLogout() {
-    localStorage.removeItem('WebApp');
-    setIsLoggedIn(false);
+    localStorage.removeItem('WebApp')
+    setIsLoggedIn(false)
   }
 
   if (isLoggedIn) {
     return (
       <aside className={style.AsideContainer}>
         <p>Você está logado!</p>
-        <button className={style.buttonLogoff} onClick={handleLogout}>Sair</button>
+        <button className={style.buttonLogoff} onClick={handleLogout}>
+          Sair
+        </button>
       </aside>
-    );
+    )
   }
 
   return (
@@ -127,7 +129,7 @@ export function LoginWebApp() {
         <label>
           Client:
           <input
-            type="text"
+            type='text'
             value={client}
             onChange={(e) => setClient(e.target.value)}
           />
@@ -135,7 +137,7 @@ export function LoginWebApp() {
         <label>
           Client Services:
           <input
-            type="text"
+            type='text'
             value={clientServices}
             onChange={(e) => setClientServices(e.target.value)}
           />
@@ -143,7 +145,7 @@ export function LoginWebApp() {
         <label>
           Email:
           <input
-            type="email"
+            type='email'
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
@@ -151,15 +153,15 @@ export function LoginWebApp() {
         <label>
           Password:
           <input
-            type="password"
+            type='password'
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
         </label>
-        <Button type="submit" loading={loading}>
+        <Button type='submit' loading={loading}>
           Entrar
         </Button>
       </form>
     </aside>
-  );
+  )
 }

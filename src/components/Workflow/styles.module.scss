@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
 
 .AsideContainer {
   position: absolute;
@@ -14,14 +14,14 @@
   max-height: 50rem;
 }
 
-.modalClass{
+.modalClass {
   display: flex;
   justify-content: flex;
   align-items: center;
   z-index: 2;
 }
 
-#modal{
+#modal {
   display: flex;
 }
 
@@ -29,52 +29,13 @@
   background-color: green;
 }
 
-
-.containerTableTwo{
+.containerTableTwo {
   overflow-y: auto;
   max-height: 500px;
 }
 
-.buttonAdd{
-  background-color: #4CAF50;
-  border-radius: 8px;
-  border: none;
-  color: white;
-  padding: 10px 32px;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  font-size: 16px;
-  margin: 15px 2px;
-  cursor: pointer;
-  transition-duration: 0.4s;
-  &:hover {
-    background-color: #45a049;
-  }
-
-}
-
-.buttonAtualizar{
-  background-color: #4CAF50;
-  border-radius: 8px;
-  border: none;
-  color: white;
-  padding: 10px 32px;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  font-size: 16px;
-  margin: 15px 2px;
-  cursor: pointer;
-  transition-duration: 0.4s;
-  &:hover {
-    background-color: #45a049;
-  }
-
-}
-
-.buttonSave{
-  background-color: #4CAF50;
+.buttonAdd {
+  background-color: #4caf50;
   border-radius: 8px;
   border: none;
   color: white;
@@ -91,7 +52,43 @@
   }
 }
 
-.buttonCancelar{
+.buttonAtualizar {
+  background-color: #4caf50;
+  border-radius: 8px;
+  border: none;
+  color: white;
+  padding: 10px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 15px 2px;
+  cursor: pointer;
+  transition-duration: 0.4s;
+  &:hover {
+    background-color: #45a049;
+  }
+}
+
+.buttonSave {
+  background-color: #4caf50;
+  border-radius: 8px;
+  border: none;
+  color: white;
+  padding: 10px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 15px 2px;
+  cursor: pointer;
+  transition-duration: 0.4s;
+  &:hover {
+    background-color: #45a049;
+  }
+}
+
+.buttonCancelar {
   background-color: #f44336; /* Green */
   border-radius: 8px;
   border: none;
@@ -109,7 +106,7 @@
   }
 }
 
-.buttonDeletar{
+.buttonDeletar {
   background-color: #f44336; /* Red */
   border-radius: 8px;
   border: none;
@@ -131,11 +128,11 @@
   background-color: #d46961; /* Altere para a cor desejada */
 }
 
-.deleteMode{
+.deleteMode {
   background-color: #6766aa;
 }
 
-.menuFiltro{
+.menuFiltro {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -162,12 +159,11 @@
   height: 25px;
 }
 
-.body_td{
+.body_td {
   cursor: pointer;
 }
 
 .inputEdit {
-
   border: none;
   background-color: #292929;
   color: #fff;
@@ -187,38 +183,35 @@
   border-radius: 10px;
 }
 
-.buttonContainer{
+.buttonContainer {
   margin-top: 20px;
 }
 
 .table {
   border-collapse: collapse;
   width: 100%;
-  
-  
 
   th {
-      background-color: var(--dark-900);
-      color: var(--white);
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      border: 1px solid var(--white);
-      padding: 5px;
-      white-space: nowrap;
+    background-color: var(--dark-900);
+    color: var(--white);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    border: 1px solid var(--white);
+    padding: 5px;
+    white-space: nowrap;
   }
 
   td {
-      border: 1px solid var(--dark-900);
-      padding-left: 15px;
-      padding-right: 15px;
-      padding-top: 3px;
-      padding-bottom: 5px;
-      text-align: center;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      justify-content: center;
-      white-space: nowrap;
-      width: 150%;
-  min-width: 200px;
-      
+    border: 1px solid var(--dark-900);
+    padding-left: 15px;
+    padding-right: 15px;
+    padding-top: 3px;
+    padding-bottom: 5px;
+    text-align: center;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    justify-content: center;
+    white-space: nowrap;
+    width: 150%;
+    min-width: 200px;
   }
 }
 
@@ -229,7 +222,7 @@
   padding: 150px;
 }
 
-.espaço{
+.espaço {
   margin: 30px;
 }
 
@@ -237,11 +230,10 @@
   background-color: #f2f2f2;
 
   titleTableCell {
-      text-align: center;
-      justify-content: center;
+    text-align: center;
+    justify-content: center;
   }
 }
-
 
 @media screen and (min-width: 320px) {
   .AsideContainer {
