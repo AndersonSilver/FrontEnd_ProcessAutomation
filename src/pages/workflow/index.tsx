@@ -1,29 +1,22 @@
-import React, { useContext } from "react";
-import { Header } from "../../components/Header";
-import { Section } from "../../components/Section";
-import { Workflow } from "../../components/Workflow";
-import style from "./style.module.scss";
-import { AuthContext } from "../../context/AuthContext";
-
+import { WorkflowComponent } from '@/src/components/Workflow'
+import { Header } from '../../components/Header'
+import { Section } from '../../components/Section'
+import style from './style.module.scss'
 
 export default function Dashboard() {
-  const { user } = useContext(AuthContext);
-
   return (
     <div className={style.dashboardContainer}>
-      
       <div>
         <Header />
       </div>
-      
+
       <div className={style.dashboardContainerCenter}>
         <div className={style.dashboardContainerCenterSection}>
           <Section />
         </div>
-        <Workflow />
-        <div className={style.dashboardContainerCenterAside}>
-        </div>
+        <WorkflowComponent />
+        <div className={style.dashboardContainerCenterAside}></div>
       </div>
     </div>
-  );
+  )
 }
