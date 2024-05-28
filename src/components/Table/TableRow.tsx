@@ -21,7 +21,6 @@ export default function TableRow({
     setSelectedRow(index)
     setDeleteRowIndex(index)
   }
-  console.log("filteredWorkflowList", filteredWorkflowList)
   return filteredWorkflowList.map((item: any, index: number) => (
     <tr
       key={`item-${item?.id}-${index}`}

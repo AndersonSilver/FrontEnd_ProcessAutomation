@@ -46,17 +46,13 @@ export function WorkflowComponent() {
 
   const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') {
-      console.log("APERTOU ENTER")
   
       const match = event.currentTarget.value.match(/(\w+)\s*=\s*'([^']*)'/)
-      console.log("MATCH", match)
       if (match) {
         const values = match[2].split(',').map((value) => value.trim())
         setFilter({ field: match[1], value: values })
-        console.log("filter", filter)
       } else {
         setFilter(null)
-        console.log("filter", filter)
       }
     }
   }
