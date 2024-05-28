@@ -13,7 +13,7 @@ interface Filter {
   value: string | string[]
 }
 
-export type WorkflowData = { isNew?: boolean } & Workflow
+export type WorkflowData = { isNew?: boolean } & Workflow & { [key: string]: any }
 
 export function WorkflowComponent() {
   const { user } = useAuthContext()
@@ -26,6 +26,7 @@ export function WorkflowComponent() {
   const [deleteMode, setDeleteMode] = useState(false)
   const [deleteRowIndex, setDeleteRowIndex] = useState<number | null>(null)
   const [editedItems, setEditedItems] = useState<any[]>([])
+  
 
   const columnOrder = useMemo(
     () => Object?.keys?.(workflowList?.[0] ?? {}),
@@ -45,11 +46,17 @@ export function WorkflowComponent() {
 
   const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') {
-      setFilter(null)
+      console.log("APERTOU ENTER")
+  
       const match = event.currentTarget.value.match(/(\w+)\s*=\s*'([^']*)'/)
+      console.log("MATCH", match)
       if (match) {
         const values = match[2].split(',').map((value) => value.trim())
         setFilter({ field: match[1], value: values })
+        console.log("filter", filter)
+      } else {
+        setFilter(null)
+        console.log("filter", filter)
       }
     }
   }
@@ -101,35 +108,33 @@ export function WorkflowComponent() {
   }
 
   const handleAtt = () => {
-    // window.location.reload()
+    window.location.reload()
   }
 
   useEffect(() => {
     fetchData()
   }, [fetchData])
 
-  // useEffect(() => {
-  //   let list = [...workflowList]
-  //   if (filter) {
-  //     list = list.filter((item) =>
-  //       Array.isArray(filter.value)
-  //         ? filter.value.some((fv) =>
-  //             String(item[filter.field])
-  //               .trim()
-  //               .toLowerCase()
-  //               .includes(fv.trim().toLowerCase())
-  //           )
-  //         : String(item[filter.field])
-  //             .trim()
-  //             .toLowerCase()
-  //             .includes(filter.value.trim().toLowerCase())
-  //     )
-  //     while (list.length < workflowList.length) {
-  //       list.push({})
-  //     }
-  //   }
-  //   setFilteredWorkflowList(list)
-  // }, [workflowList, filter])
+  useEffect(() => {
+    let list = [...workflowList]
+    if (filter) {
+      list = list.filter((item) =>
+        Array.isArray(filter.value)
+          ? filter.value.some((fv) =>
+              String(item[filter.field])
+                .trim()
+                .toLowerCase()
+                .includes(fv.trim().toLowerCase())
+            )
+          : String(item[filter.field])
+              .trim()
+              .toLowerCase()
+              .includes(filter.value.trim().toLowerCase())
+      )
+    }
+    console.log("list", list)
+    setFilteredWorkflowList(list)
+  }, [workflowList, filter])
 
   return (
     <aside className={style.AsideContainer}>
@@ -140,13 +145,14 @@ export function WorkflowComponent() {
             className={style.filterText}
             type='text'
             onKeyDown={handleKeyDown}
-            placeholder=''
+            placeholder='Campo de pesquisa'
+            autoFocus
           />
         </div>
         <div className={style.containerTableTwo}>
           <Table columnOrder={columnOrder}>
             <TableRow
-              filteredWorkflowList={workflowList}
+              filteredWorkflowList={filteredWorkflowList}
               setWorkflowList={setWorkflowList}
               columnOrder={columnOrder}
               setChanges={setChanges}

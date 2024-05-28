@@ -1,4 +1,4 @@
-import { useContext, FormEvent, useState } from 'react'
+import { useContext, FormEvent, useState, useEffect } from 'react'
 import { Bounce, toast } from 'react-toastify'
 import Head from 'next/head'
 import Image from 'next/image'
@@ -17,7 +17,6 @@ export default function Home() {
   const [loading, setLoading] = useState(false)
   const [client, setClient] = useState('')
   const [clientServices, setclientServices] = useState('')
-
   const [rememberPassword, setRememberPassword] = useState(false)
 
   async function handleLogin(event: FormEvent) {
