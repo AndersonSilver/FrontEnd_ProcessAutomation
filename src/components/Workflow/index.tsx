@@ -128,7 +128,6 @@ export function WorkflowComponent() {
               .includes(filter.value.trim().toLowerCase())
       )
     }
-    console.log("list", list)
     setFilteredWorkflowList(list)
   }, [workflowList, filter])
 
