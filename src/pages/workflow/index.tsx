@@ -1,6 +1,6 @@
+import { WorkflowComponent } from '@/src/components/Workflow'
 import { Header } from '../../components/Header'
 import { Section } from '../../components/Section'
-import { Workflow } from '../../components/Workflow'
 import style from './style.module.scss'
 
 export default function Dashboard() {
@@ -14,7 +14,7 @@ export default function Dashboard() {
         <div className={style.dashboardContainerCenterSection}>
           <Section />
         </div>
-        <Workflow />
+        <WorkflowComponent />
         <div className={style.dashboardContainerCenterAside}></div>
       </div>
     </div>

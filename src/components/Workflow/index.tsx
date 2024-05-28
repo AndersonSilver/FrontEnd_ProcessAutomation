@@ -1,7 +1,9 @@
 'use client'
 
 import { useAuthContext } from '@/src/hooks/auth'
-import { KeyboardEvent, useEffect, useMemo, useState } from 'react'
+import WorkflowService from '@/src/services/Workflow/WorkflowService'
+import { Workflow } from '@/src/services/Workflow/dto/WorkflowDto'
+import { KeyboardEvent, useCallback, useEffect, useMemo, useState } from 'react'
 import Table from '../Table/Table'
 import TableRow from '../Table/TableRow'
 import style from './styles.module.scss'
@@ -11,10 +13,12 @@ interface Filter {
   value: string | string[]
 }
 
-export function Workflow() {
-  const { user, Workflow } = useAuthContext()
+export type WorkflowData = { isNew?: boolean } & Workflow
 
-  const [workflowList, setWorkflowList] = useState<any[]>([])
+export function WorkflowComponent() {
+  const { user } = useAuthContext()
+
+  const [workflowList, setWorkflowList] = useState<WorkflowData[]>([])
   const [filter, setFilter] = useState<Filter | null>(null)
   const [filteredWorkflowList, setFilteredWorkflowList] = useState<any[]>([])
   const [changes, setChanges] = useState<any[]>([])
@@ -28,19 +32,16 @@ export function Workflow() {
     [workflowList]
   )
 
-  const fetchData = async () => {
-    if (user && Workflow) {
-      const result = await Workflow()
+  const fetchData = useCallback(async () => {
+    if (user) {
+      const { data } = await WorkflowService.getWorkflows(
+        user?.client as string,
+        user?.clientServices as string
+      )
 
-      setWorkflowList(result)
+      setWorkflowList(data as WorkflowData[])
     }
-  }
-
-  useEffect(() => {
-    return () => {
-      fetchData()
-    }
-  }, [])
+  }, [user])
 
   const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') {
@@ -53,36 +54,16 @@ export function Workflow() {
     }
   }
 
-  // useEffect(() => {
-  //   let list = [...workflowList]
-  //   if (filter) {
-  //     list = list.filter((item) =>
-  //       Array.isArray(filter.value)
-  //         ? filter.value.some((fv) =>
-  //             String(item[filter.field])
-  //               .trim()
-  //               .toLowerCase()
-  //               .includes(fv.trim().toLowerCase())
-  //           )
-  //         : String(item[filter.field])
-  //             .trim()
-  //             .toLowerCase()
-  //             .includes(filter.value.trim().toLowerCase())
-  //     )
-  //     while (list.length < workflowList.length) {
-  //       list.push({})
-  //     }
-  //   }
-  //   setFilteredWorkflowList(list)
-  // }, [workflowList, filter])
-
   const handleSave = () => {
     const newList = [...workflowList]
 
-    changes.forEach((change) => {
-      const item = newList.find((item) => item.isNew)
+    changes.forEach((change: any) => {
+      let item = newList.find((item) => item?.isNew)
+
       if (item) {
-        item[change.keyName] = change.value
+        const key = change?.keyName
+
+        // item?.[key] = change?.value
       }
     })
     setWorkflowList(newList)
@@ -108,11 +89,10 @@ export function Workflow() {
     if (workflowList.length > 0) {
       const firstItem = workflowList[0]
 
-      const newItem: { isNew: boolean; rowIndex: number; [key: string]: any } =
-        Object.keys(firstItem).reduce((obj: any, key) => {
-          obj[key] = '---'
-          return obj
-        }, {})
+      const newItem = Object.keys(firstItem).reduce((obj: any, key) => {
+        obj[key] = '---'
+        return obj
+      }, {})
 
       newItem.isNew = true
 
@@ -121,8 +101,35 @@ export function Workflow() {
   }
 
   const handleAtt = () => {
-    window.location.reload()
+    // window.location.reload()
   }
+
+  useEffect(() => {
+    fetchData()
+  }, [fetchData])
+
+  // useEffect(() => {
+  //   let list = [...workflowList]
+  //   if (filter) {
+  //     list = list.filter((item) =>
+  //       Array.isArray(filter.value)
+  //         ? filter.value.some((fv) =>
+  //             String(item[filter.field])
+  //               .trim()
+  //               .toLowerCase()
+  //               .includes(fv.trim().toLowerCase())
+  //           )
+  //         : String(item[filter.field])
+  //             .trim()
+  //             .toLowerCase()
+  //             .includes(filter.value.trim().toLowerCase())
+  //     )
+  //     while (list.length < workflowList.length) {
+  //       list.push({})
+  //     }
+  //   }
+  //   setFilteredWorkflowList(list)
+  // }, [workflowList, filter])
 
   return (
     <aside className={style.AsideContainer}>
@@ -139,7 +146,8 @@ export function Workflow() {
         <div className={style.containerTableTwo}>
           <Table columnOrder={columnOrder}>
             <TableRow
-              filteredWorkflowList={filteredWorkflowList}
+              filteredWorkflowList={workflowList}
+              setWorkflowList={setWorkflowList}
               columnOrder={columnOrder}
               setChanges={setChanges}
               changes={changes}

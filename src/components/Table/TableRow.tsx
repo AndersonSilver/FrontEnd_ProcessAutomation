@@ -5,6 +5,7 @@ interface TableRowProps {}
 
 export default function TableRow({
   filteredWorkflowList,
+  setWorkflowList,
   columnOrder,
   setChanges,
   changes,
@@ -35,6 +36,7 @@ export default function TableRow({
         <td key={`row-${Math.random()}-${position}`}>
           <TableItem
             item={item}
+            setWorkflowList={setWorkflowList}
             keyName={column}
             className={style.body_td}
             setChanges={setChanges}

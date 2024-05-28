@@ -1,5 +1,9 @@
-import { ChangeEvent, useState } from 'react'
+'use client'
+
+import { ChangeEvent, Dispatch, SetStateAction, useMemo, useState } from 'react'
 import ReactModal from 'react-modal'
+import { WorkflowData } from '../Workflow'
+import { styles } from './styles'
 
 interface TableItemProps {
   item: any
@@ -8,10 +12,11 @@ interface TableItemProps {
   setChanges: (changes: any[]) => void
   changes: any[]
   deleteMode: boolean
-  setDeleteRowIndex: (index: number | null) => void
+  setDeleteRowIndex?: (index: number | null) => void
   editedItems: any[]
   setEditedItems: React.Dispatch<React.SetStateAction<any[]>>
   notValue: unknown | undefined
+  setWorkflowList: Dispatch<SetStateAction<WorkflowData[]>>
 }
 
 export default function TableItem({
@@ -20,29 +25,22 @@ export default function TableItem({
   className,
   setChanges,
   changes,
+  deleteMode,
+  setDeleteRowIndex,
   editedItems,
   setEditedItems,
-  deleteMode,
   notValue,
+  setWorkflowList,
 }: TableItemProps) {
-  const [isEditing, setIsEditing] = useState(false)
-  const [value, setValue] = useState<any>('')
+  const [value, setValue] = useState<string>()
   const [modalIsOpen, setModalIsOpen] = useState(false)
-  const [modalInputValue, setModalInputValue] = useState('')
 
-  const [editedItem, setEditedItem] = useState<any>([])
-
-  // useEffect(() => {
-  //   if (item) {
-  //     setValue(item[keyName])
-  //   }
-  // }, [item, keyName])
+  const currentValue = useMemo(() => value ?? item?.[keyName], [value])
 
   const handleDoubleClick = () => {
-    // if (keyName !== 'id') {
-    //   setModalIsOpen(true)
-    //   setModalInputValue(value)
-    // }
+    if (keyName !== 'id') {
+      setModalIsOpen(true)
+    }
   }
 
   const handleModalChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -50,23 +48,22 @@ export default function TableItem({
   }
 
   const handleModalClose = () => {
-    // setModalIsOpen(false)
-    // if (modalInputValue) {
-    //   setValue(modalInputValue)
-    // }
+    setWorkflowList((prevState) => {
+      const newArray = prevState?.map((state) => {
+        if (state?.id === item?.id) return { ...state, [keyName]: value }
+        else return state
+      })
+
+      return newArray
+    })
+
+    setModalIsOpen(false)
   }
 
-  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-    // const updatedItem = { ...item, [keyName]: event.target.value }
-    // setValue(event.target.value)
-    // setEditedItem((prev) => {
-    //   const itemIndex = prev?.find((i) => i.id === updatedItem.id)
-    //   if (itemIndex) {
-    //     setEditedItem({ ...item, [keyName]: event.target.value })
-    //   } else {
-    //     return [...prev, updatedItem]
-    //   }
-    // })
+  const handleChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
+    event?.preventDefault()
+
+    setValue(event?.target?.value)
   }
 
   const handleBlur = (event: ChangeEvent<HTMLTextAreaElement>) => {
@@ -98,16 +95,18 @@ export default function TableItem({
 
     return (
       <span>
-        {value &&
-        (typeof value === 'object' ? JSON.stringify(value) : value.toString())
-          .length > 80
-          ? (typeof value === 'object'
-              ? JSON.stringify(value)
-              : value.toString()
+        {currentValue &&
+        (typeof currentValue === 'object'
+          ? JSON.stringify(currentValue)
+          : currentValue?.toString()
+        ).length > 80
+          ? (typeof currentValue === 'object'
+              ? JSON.stringify(currentValue)
+              : currentValue?.toString()
             ).substring(0, 80) + '...'
-          : typeof value === 'object'
-          ? JSON.stringify(value)
-          : value.toString()}
+          : typeof currentValue === 'object'
+          ? JSON.stringify(currentValue)
+          : currentValue?.toString()}
       </span>
     )
   }
@@ -140,22 +139,12 @@ export default function TableItem({
       >
         <textarea
           value={
-            typeof modalInputValue === 'object'
-              ? JSON.stringify(modalInputValue, null, 2)
-              : String(modalInputValue)
+            typeof currentValue === 'object'
+              ? JSON.stringify(currentValue, null, 2)
+              : String(currentValue)
           }
-          onChange={(e) => handleBlur(e)}
-          style={{
-            backgroundColor: '#1E1E1E',
-            color: '#D4D4D4',
-            fontFamily: 'Courier New, Monaco, monospace',
-            padding: '10px',
-            width: '500px',
-            height: '450px',
-            marginBottom: '20px',
-            border: 'none',
-            outline: 'none',
-          }}
+          onChange={handleChange}
+          style={styles.tableItem}
         />
       </ReactModal>
 

@@ -1,17 +1,17 @@
 'use client'
-import axios from 'axios'
+
+import { usePathname } from 'next/navigation'
 import { useRouter } from 'next/router'
 import { createContext, ReactNode, useEffect, useState } from 'react'
+import ProcessAutomationApi from '../config/api'
+import SessionService from '../services/Session/SessionService'
 import { displayError, displaySuccess } from '../utils/functions/messageToast'
 
-export const AUTHORIZATION_KEY = 'Authorization' as const
 export const SESSION_KEY = 'SESSION_KEY' as const
 
 type AuthContextData = {
   signIn: (credentials: SignInPropsWebApp) => Promise<void>
   signOut: () => void
-  Workflow: () => Promise<any>
-  authorization: string
   user: LoggedInUserProps | null
 }
 
@@ -42,32 +42,16 @@ type AuthProviderProps = {
 export const AuthContext = createContext({} as AuthContextData)
 
 export function AuthProvider({ children }: AuthProviderProps) {
+  const location = usePathname()
   const router = useRouter()
-  const [authorization, setAuthorization] = useState<string>('')
+
   const [user, setUser] = useState<LoggedInUserProps | null>(null)
-
-  useEffect(() => {
-    const authorizationData = JSON.stringify(
-      localStorage.getItem(AUTHORIZATION_KEY)
-    )
-    const authorizationParsed = JSON.parse(authorizationData ?? '')
-
-    const userData = localStorage.getItem(SESSION_KEY)
-    const userParsed = userData ? JSON.parse(userData) : ''
-
-    if (!authorizationParsed && !userParsed && router.pathname !== '/') {
-      console.log('Invalid')
-      router.push('/')
-    } else {
-      setAuthorization(authorizationParsed)
-      setUser(userParsed)
-    }
-  }, [router.pathname, authorization, router])
 
   async function signIn(credentials: SignInPropsWebApp) {
     try {
-      const response = await axios.post(
-        `https://webapp-qa-api.hml-tech4h.com.br/${credentials.client}/${credentials.clientServices}/authentication/access-session/password`,
+      const response = await SessionService.getAuthentication(
+        credentials.client,
+        credentials.clientServices,
         {
           login: credentials.email,
           password: credentials.password,
@@ -78,12 +62,14 @@ export function AuthProvider({ children }: AuthProviderProps) {
         client: credentials.client,
         clientServices: credentials.clientServices,
         email: credentials.email,
-        ...response?.data,
+        ...response,
+      }
+
+      ProcessAutomationApi.defaults.headers.common = {
+        Authorization: `Bearer ${response?.access_token}`,
       }
 
       setUser(loggedInUserProps as LoggedInUserProps)
-
-      localStorage.setItem(AUTHORIZATION_KEY, response.data.acess_token)
 
       localStorage.setItem(SESSION_KEY, JSON.stringify(loggedInUserProps))
 
@@ -93,7 +79,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
         `/dashboard?clientId=${credentials.client}&clientServices=${credentials.clientServices}`
       )
     } catch (error: any) {
-      console.log(error)
       displayError('Erro ao fazer login!')
     }
   }
@@ -107,25 +92,30 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   }
 
-  async function Workflow() {
-    try {
-      const response = await axios.get(
-        `https://webapp-qa-api.hml-tech4h.com.br/${user?.client}/${user?.clientServices}/techforms/workflow`,
-        { headers: { Authorization: `Bearer ${user?.access_token}` } }
-      )
-      const result = response.data.data
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const userParsed = JSON.parse(
+        localStorage.getItem(SESSION_KEY) ?? '{}'
+      ) as LoggedInUserProps
 
-      return result
-    } catch (error: any) {
-      console.log(error)
-      displayError('Erro ao fazer ao trazer os workflows!')
+      if (!Object.keys(userParsed).length) router.push('/')
+      else {
+        setUser(userParsed)
+        ProcessAutomationApi.defaults.headers.common = {
+          ...ProcessAutomationApi.defaults.headers.common,
+          Authorization: `Bearer ${userParsed?.access_token}`,
+        }
+
+        if (location === '/')
+          router.push(
+            `/dashboard?clientId=${userParsed.client}&clientServices=${userParsed.clientServices}`
+          )
+      }
     }
-  }
+  }, [location])
 
   return (
-    <AuthContext.Provider
-      value={{ signIn, signOut, authorization, user, Workflow }}
-    >
+    <AuthContext.Provider value={{ signIn, signOut, user }}>
       {children}
     </AuthContext.Provider>
   )
