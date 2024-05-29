@@ -7,6 +7,11 @@ import { KeyboardEvent, useCallback, useEffect, useMemo, useState } from 'react'
 import Table from '../Table/Table'
 import TableRow from '../Table/TableRow'
 import style from './styles.module.scss'
+import { BiAddToQueue } from "react-icons/bi";
+import { FiRefreshCcw, FiSave  } from "react-icons/fi";
+import { IoAddCircleOutline } from "react-icons/io5";
+import { VscRemove } from "react-icons/vsc";
+import { IoMdAdd } from "react-icons/io";
 
 interface Filter {
   field: string
@@ -165,16 +170,16 @@ export function WorkflowComponent() {
         </div>
         <div className={style.buttonContainer}>
           <button className={style.buttonSave} onClick={handleSave}>
-            Salvar
+            <FiSave  />
           </button>
           <button className={style.buttonAtualizar} onClick={handleAtt}>
-            Atualizar
+            <FiRefreshCcw />
           </button>
           <button
             className={style.buttonDeletar}
             onClick={handleDeleteOrConfirm}
           >
-            {deleteMode ? 'Confirmar' : '-'}
+            {deleteMode ? 'Confirmar' : <VscRemove />}
           </button>
           {deleteMode && (
             <button className={style.buttonCancelar} onClick={handleCancel}>
@@ -182,7 +187,10 @@ export function WorkflowComponent() {
             </button>
           )}
           <button className={style.buttonAdd} onClick={handleAdd}>
-            +
+            <IoMdAdd />
+          </button>
+          <button className={style.buttonAdd}>
+            <BiAddToQueue />
           </button>
         </div>
       </div>
