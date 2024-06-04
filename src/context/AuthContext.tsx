@@ -1,8 +1,7 @@
 'use client'
 
-import { usePathname } from 'next/navigation'
-import { useRouter } from 'next/router'
-import { createContext, ReactNode, useEffect, useState } from 'react'
+import { usePathname, useRouter } from 'next/navigation'
+import { ReactNode, createContext, useEffect, useState } from 'react'
 import ProcessAutomationApi from '../config/api'
 import SessionService from '../services/Session/SessionService'
 import { displayError, displaySuccess } from '../utils/functions/messageToast'
@@ -15,12 +14,6 @@ type AuthContextData = {
   user: LoggedInUserProps | null
 }
 
-type WorkflowPropsWebApp = {
-  client: string
-  clientServices: string
-  token: string
-}
-
 type SignInPropsWebApp = {
   client: string
   clientServices: string
@@ -28,7 +21,7 @@ type SignInPropsWebApp = {
   password: string
 }
 
-type LoggedInUserProps = {
+export type LoggedInUserProps = {
   client: string
   clientServices: string
   email: string
@@ -66,6 +59,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       }
 
       ProcessAutomationApi.defaults.headers.common = {
+        ...ProcessAutomationApi.defaults.headers.common,
         Authorization: `Bearer ${response?.access_token}`,
       }
 
@@ -75,9 +69,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
       displaySuccess('Login efetuado com sucesso!')
 
-      router.push(
-        `/dashboard?clientId=${credentials.client}&clientServices=${credentials.clientServices}`
-      )
+      router.push('/dashboard')
     } catch (error: any) {
       displayError('Erro ao fazer login!')
     }
@@ -100,16 +92,16 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
       if (!Object.keys(userParsed).length) router.push('/')
       else {
-        setUser(userParsed)
+        localStorage.setItem(SESSION_KEY, JSON.stringify(userParsed))
+
         ProcessAutomationApi.defaults.headers.common = {
           ...ProcessAutomationApi.defaults.headers.common,
           Authorization: `Bearer ${userParsed?.access_token}`,
         }
 
-        if (location === '/')
-          router.push(
-            `/dashboard?clientId=${userParsed.client}&clientServices=${userParsed.clientServices}`
-          )
+        setUser(userParsed)
+
+        if (location === '/') router.push('/dashboard')
       }
     }
   }, [location])

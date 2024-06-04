@@ -3,16 +3,12 @@ import { ListWorkflowData } from './dto/WorkflowDto'
 
 class WorkflowService {
   private static endpoints = {
-    getWorkflows: (client: string, clientService: string) =>
-      `/${client}/${clientService}/techforms/workflow`,
+    getWorkflows: () => '/techforms/workflow',
   }
 
-  public static async getWorkflows(
-    client: string,
-    clientService: string
-  ): Promise<ListWorkflowData> {
+  public static async getWorkflows(): Promise<ListWorkflowData> {
     const { data } = await ProcessAutomationApi.get<ListWorkflowData>(
-      this.endpoints.getWorkflows(client, clientService)
+      this.endpoints.getWorkflows()
     )
 
     return data
