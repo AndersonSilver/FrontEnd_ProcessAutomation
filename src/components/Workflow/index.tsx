@@ -31,6 +31,29 @@ export function WorkflowComponent() {
   const [deleteMode, setDeleteMode] = useState(false)
   const [deleteRowIndex, setDeleteRowIndex] = useState<number | null>(null)
   const [editedItems, setEditedItems] = useState<any[]>([])
+  const [cacheKeys, setCacheKeys] = useState<string[]>([]);
+
+  useEffect(() => {
+    const fetchCacheKeys = async () => {
+      if (typeof window !== 'undefined' && window.caches) {
+        const keys = await window.caches.keys();
+        setCacheKeys(keys);
+      }
+    };
+  
+    fetchCacheKeys();
+  }, []);
+  
+  useEffect(() => {
+    const clearCache = async () => {
+      if (typeof window !== 'undefined' && window.caches && cacheKeys.length > 0) {
+        await Promise.all(cacheKeys.map((key) => window.caches.delete(key)));
+        window.location.reload();
+      }
+    };
+  
+    clearCache();
+  }, [cacheKeys]);
   
 
   const columnOrder = useMemo(

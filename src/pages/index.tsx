@@ -18,6 +18,28 @@ export default function Home() {
   const [client, setClient] = useState('')
   const [clientServices, setclientServices] = useState('')
   const [rememberPassword, setRememberPassword] = useState(false)
+  const [cacheKeys, setCacheKeys] = useState<string[]>([]);
+
+  useEffect(() => {
+    const clearCache = async () => {
+      if (typeof window !== 'undefined' && window.caches) {
+        const keys = await window.caches.keys();
+        if (keys.length > 0) {
+          await Promise.all(keys.map((key) => window.caches.delete(key)));
+
+        }
+        const remainingKeys = await window.caches.keys();
+        if (remainingKeys.length === 0) {
+          console.log("Cache está limpo");
+        } else {
+          console.log("Cache não está limpo");
+        }
+      }
+    };
+  
+    clearCache();
+  }, []);
+  
 
   async function handleLogin(event: FormEvent) {
     event.preventDefault()
