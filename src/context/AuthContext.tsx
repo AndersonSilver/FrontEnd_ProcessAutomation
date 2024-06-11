@@ -1,7 +1,7 @@
 'use client'
 
 import { usePathname, useRouter } from 'next/navigation'
-import { ReactNode, createContext, useEffect, useState } from 'react'
+import { ReactNode, createContext, useLayoutEffect, useState } from 'react'
 import ProcessAutomationApi from '../config/api'
 import SessionService from '../services/Session/SessionService'
 import { displayError, displaySuccess } from '../utils/functions/messageToast'
@@ -37,6 +37,24 @@ export const AuthContext = createContext({} as AuthContextData)
 export function AuthProvider({ children }: AuthProviderProps) {
   const location = usePathname()
   const router = useRouter()
+
+  const [cacheClient, setCacheClient] = useState<string[] | null>(null)
+
+  const clearCacheClient = () => {
+    for (const key of cacheClient || []) {
+      if (key) caches?.delete(key)
+    }
+
+    setTimeout(() => {
+      window.location.reload()
+    }, 0)
+  }
+
+  const getCachesClient = async () => {
+    const cachesData = await caches?.keys()
+
+    if (cachesData) setCacheClient(cachesData)
+  }
 
   const [user, setUser] = useState<LoggedInUserProps | null>(null)
 
@@ -86,7 +104,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   }
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (typeof window !== 'undefined') {
       const userParsed = JSON.parse(
         localStorage.getItem(SESSION_KEY) ?? '{}'
@@ -107,6 +125,14 @@ export function AuthProvider({ children }: AuthProviderProps) {
       }
     }
   }, [location])
+
+  useLayoutEffect(() => {
+    getCachesClient()
+  }, [])
+
+  useLayoutEffect(() => {
+    if (cacheClient?.length) clearCacheClient()
+  }, [cacheClient])
 
   return (
     <AuthContext.Provider value={{ signIn, signOut, user }}>
