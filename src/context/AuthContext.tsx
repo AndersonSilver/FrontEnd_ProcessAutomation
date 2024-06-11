@@ -1,7 +1,7 @@
 'use client'
 
 import { usePathname, useRouter } from 'next/navigation'
-import { ReactNode, createContext, useLayoutEffect, useState } from 'react'
+import { ReactNode, createContext, useEffect, useState } from 'react'
 import ProcessAutomationApi from '../config/api'
 import SessionService from '../services/Session/SessionService'
 import { displayError, displaySuccess } from '../utils/functions/messageToast'
@@ -104,7 +104,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   }
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (typeof window !== 'undefined') {
       const userParsed = JSON.parse(
         localStorage.getItem(SESSION_KEY) ?? '{}'
@@ -126,11 +126,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   }, [location])
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     getCachesClient()
   }, [])
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (cacheClient?.length) clearCacheClient()
   }, [cacheClient])
 
