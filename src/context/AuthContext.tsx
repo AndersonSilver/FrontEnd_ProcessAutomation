@@ -77,6 +77,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   function signOut() {
     try {
+      ProcessAutomationApi.defaults.headers.common = {}
+      setUser(null)
       localStorage.clear()
       router.push('/')
     } catch (error: any) {
