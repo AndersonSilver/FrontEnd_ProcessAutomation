@@ -63,10 +63,7 @@ export function WorkflowComponent() {
 
   const fetchData = useCallback(async () => {
     if (user) {
-      const { data } = await WorkflowService.getWorkflows(
-        user?.client as string,
-        user?.clientServices as string
-      )
+      const { data } = await WorkflowService.getWorkflows()
 
       setWorkflowList(data as WorkflowData[])
     }

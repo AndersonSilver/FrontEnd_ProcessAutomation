@@ -1,9 +1,9 @@
-import { useRouter } from 'next/router'
-import style from './styles.module.scss'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
+import style from './styles.module.scss'
 
 export function Section() {
-  const router = useRouter()
+  const pathname = usePathname()
 
   const webAppEsteiras = [
     { href: '/workflow', label: 'WorkFlow' },
@@ -36,7 +36,7 @@ export function Section() {
             <Link href={button.href} key={button.label}>
               <button
                 className={`${style.button} ${
-                  router.pathname === button.href ? style.buttonActive : ''
+                  pathname === button.href ? style.buttonActive : ''
                 }`}
               >
                 {button.label}
@@ -54,7 +54,7 @@ export function Section() {
             <Link href={button.href} key={button.label}>
               <button
                 className={`${style.button} ${
-                  router.pathname === button.href ? style.buttonActive : ''
+                  pathname === button.href ? style.buttonActive : ''
                 }`}
               >
                 {button.label}
