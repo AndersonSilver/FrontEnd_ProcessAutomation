@@ -34,13 +34,6 @@ export function WorkflowComponent() {
   const [editedItems, setEditedItems] = useState<any[]>([])
   const [cacheKeys, setCacheKeys] = useState<string[]>([]);
 
-  // editedItem é onde fica salvo os dados editador para disparar na API
-  
-  useEffect(() => {
-    if (editedItems) {
-      console.log('editedItem', editedItems);
-    }
-  }, [editedItems]);
 
   useEffect(() => {
     const fetchCacheKeys = async () => {
@@ -102,10 +95,8 @@ export function WorkflowComponent() {
           }
         }
   
-        // Verifique se item.filters é um objeto, se não for, tente convertê-lo para um objeto
         if (item.filters && typeof item.filters === 'string') {
           try {
-            // Converta a string JSON para objeto
             item.filters = JSON.parse(item.filters);
           } catch (error) {
             console.error('Erro ao converter item.filters para objeto:', error);
