@@ -1,3 +1,10 @@
+echo 'Validando o eslint'
+# yarn lint:fix
+
+echo 'Formatando os arquivos'
 yarn format
 
+echo 'Adicionando os arquivos padronizados'
 git add .
+
+echo 'Finalizou'
