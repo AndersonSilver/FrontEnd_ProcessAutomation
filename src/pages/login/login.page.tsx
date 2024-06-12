@@ -1,16 +1,13 @@
-import { useContext, FormEvent, useState } from 'react'
-import { Bounce, toast } from 'react-toastify'
-import Head from 'next/head'
-import Image from 'next/image'
-import logoImg from '../../public/tech.png'
-import logoTechOne from '../../public/techOne.png'
-import styles from '../../styles/home.module.scss'
-import { Input } from '../components/ui/input'
-import { Button } from '../components/ui/Button'
-import { AuthContext } from '../context/AuthContext'
+import { Button } from '@/components/ui/Button'
+import { Input } from '@/components/ui/input'
+import { FormEvent, useState } from 'react'
+import { toast } from 'react-toastify'
 
-export default function Home() {
-  const { signIn } = useContext(AuthContext)
+import { useAuthContext } from '@/hooks/auth'
+import styles from '@/styles/home.module.scss'
+
+export function LoginPage() {
+  const { signIn } = useAuthContext()
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -77,7 +74,7 @@ export default function Home() {
 
     setLoading(true)
 
-    let data = {
+    const data = {
       client,
       clientServices,
       email,
@@ -90,9 +87,6 @@ export default function Home() {
 
   return (
     <>
-      <Head>
-        <title>Tech Forms - Faça seu login</title>
-      </Head>
       <div className={styles.containerCenter}>
         <div className={styles.container}>
           <div className={styles.containerTop}>
@@ -103,22 +97,20 @@ export default function Home() {
                 <h4>Faça login na ferramenta.</h4>
               </div>
               <div className={styles.containerLogoOne}>
-                <Image
+                <img
                   className={styles.logoTechOne}
-                  src={logoTechOne}
+                  src='/assets/techOne.png'
                   alt='Logo Tech One'
-                  priority
                 />
               </div>
             </div>
           </div>
           <div className={styles.containerPictury}>
             <div className={styles.containerLogo}>
-              <Image
+              <img
                 className={styles.logoTech}
-                src={logoImg}
+                src='/assets/tech.png'
                 alt='Logo Tech'
-                priority
               />
             </div>
           </div>

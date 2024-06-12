@@ -1,20 +1,18 @@
-'use client'
-
 import { ChangeEvent, Dispatch, SetStateAction, useMemo, useState } from 'react'
 import ReactModal from 'react-modal'
 import { WorkflowData } from '../Workflow'
 import { styles } from './styles'
 
 interface TableItemProps {
-  item: any
+  item: unknown
   keyName: string
   className: string
-  setChanges: (changes: any[]) => void
-  changes: any[]
+  setChanges: (changes: unknown[]) => void
+  changes: unknown[]
   deleteMode: boolean
   setDeleteRowIndex?: (index: number | null) => void
-  editedItems: any[]
-  setEditedItems: React.Dispatch<React.SetStateAction<any[]>>
+  editedItems: unknown[]
+  setEditedItems: React.Dispatch<React.SetStateAction<unknown[]>>
   notValue: unknown | undefined
   setWorkflowList: Dispatch<SetStateAction<WorkflowData[]>>
 }
@@ -23,12 +21,6 @@ export default function TableItem({
   item,
   keyName,
   className,
-  setChanges,
-  changes,
-  deleteMode,
-  setDeleteRowIndex,
-  editedItems,
-  setEditedItems,
   notValue,
   setWorkflowList,
 }: TableItemProps) {
@@ -105,8 +97,8 @@ export default function TableItem({
               : currentValue?.toString()
             ).substring(0, 80) + '...'
           : typeof currentValue === 'object'
-          ? JSON.stringify(currentValue)
-          : currentValue?.toString()}
+            ? JSON.stringify(currentValue)
+            : currentValue?.toString()}
       </span>
     )
   }

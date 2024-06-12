@@ -1,18 +1,18 @@
-import { useContext } from 'react'
+import { useAuthContext } from '@/hooks/auth'
+import { Link } from 'react-router-dom'
+
+import { FiLogOut } from 'react-icons/fi'
 import style from './styles.module.scss'
-import Link from 'next/link'
-import { FiLogOut, FiArrowLeft } from 'react-icons/fi'
-import { AuthContext } from '../../context/AuthContext'
 
 export function Header() {
-  const { user, signOut } = useContext(AuthContext)
+  const { user, signOut } = useAuthContext()
 
   return (
     <header className={style.headerContainer}>
       <div className={style.headerContent}>
         <div className={style.divName}>
-          <Link href='/dashboard'>
-            <img src='/tech.png' width={190} height={60} />
+          <Link to='/dashboard'>
+            <img src='/assets/tech.png' width={190} height={60} />
           </Link>
           <div className={style.infoCompany}>
             <h5>Desenvolvimento WebApp - {user?.client}</h5>

@@ -1,4 +1,4 @@
-import ProcessAutomationApi from '@/src/config/api'
+import ProcessAutomationApi from '@/config/api'
 import { Session } from './dto/SessionDto'
 
 class SessionService {
@@ -10,13 +10,13 @@ class SessionService {
   public static async getAuthentication(
     client: string,
     clientService: string,
-    payload: Record<string, string>
+    payload: Record<string, string>,
   ): Promise<Session> {
     const { data } = await ProcessAutomationApi.post<Session>(
       this.endpoints.authentication(client, clientService),
       {
         ...payload,
-      }
+      },
     )
 
     return data

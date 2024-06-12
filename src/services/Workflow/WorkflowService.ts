@@ -1,4 +1,4 @@
-import ProcessAutomationApi from '@/src/config/api'
+import ProcessAutomationApi from '@/config/api'
 import { ListWorkflowData } from './dto/WorkflowDto'
 
 class WorkflowService {
@@ -8,7 +8,7 @@ class WorkflowService {
 
   public static async getWorkflows(): Promise<ListWorkflowData> {
     const { data } = await ProcessAutomationApi.get<ListWorkflowData>(
-      this.endpoints.getWorkflows()
+      this.endpoints.getWorkflows(),
     )
 
     return data

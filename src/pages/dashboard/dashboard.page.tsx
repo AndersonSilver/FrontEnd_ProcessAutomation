@@ -1,13 +1,9 @@
-import React, { useContext } from 'react'
-import { Header } from '../../components/Header'
-import { Section } from '../../components/Section'
-import { Aside } from '../../components/Aside'
+import { Aside } from '@/components/Aside'
+import { Header } from '@/components/Header'
+import { Section } from '@/components/Section'
 import style from './style.module.scss'
-import { AuthContext } from '../../context/AuthContext'
 
-export default function Dashboard() {
-  const { user } = useContext(AuthContext)
-
+export function DashboardPage() {
   return (
     <div className={style.dashboardContainer}>
       <div>

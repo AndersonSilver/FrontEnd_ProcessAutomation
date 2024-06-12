@@ -30,7 +30,7 @@ export const Interceptors = () => {
       },
       (error) => {
         return Promise.reject(error)
-      }
+      },
     )
 
     interceptorRef.current = ProcessAutomationApi.interceptors.response.use(
@@ -47,7 +47,7 @@ export const Interceptors = () => {
         }
 
         return Promise.reject(error)
-      }
+      },
     )
 
     return () => {

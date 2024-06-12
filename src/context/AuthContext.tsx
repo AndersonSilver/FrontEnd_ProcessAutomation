@@ -1,16 +1,20 @@
-'use client'
-
-import { usePathname, useRouter } from 'next/navigation'
-import { ReactNode, createContext, useEffect, useState } from 'react'
-import ProcessAutomationApi from '../config/api'
-import SessionService from '../services/Session/SessionService'
-import { displayError, displaySuccess } from '../utils/functions/messageToast'
-
-export const SESSION_KEY = 'SESSION_KEY' as const
+import ProcessAutomationApi from '@/config/api'
+import { SESSION_KEY } from '@/constants/session'
+import SessionService from '@/services/Session/SessionService'
+import { displayError, displaySuccess } from '@/utils/functions/messageToast'
+import {
+  ReactNode,
+  createContext,
+  useCallback,
+  useEffect,
+  useState,
+} from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
 
 type AuthContextData = {
   signIn: (credentials: SignInPropsWebApp) => Promise<void>
   signOut: () => void
+  signInWebApp: (data: unknown) => void
   user: LoggedInUserProps | null
 }
 
@@ -35,12 +39,12 @@ type AuthProviderProps = {
 export const AuthContext = createContext({} as AuthContextData)
 
 export function AuthProvider({ children }: AuthProviderProps) {
-  const location = usePathname()
-  const router = useRouter()
+  const navigate = useNavigate()
+  const { pathname } = useLocation()
 
   const [cacheClient, setCacheClient] = useState<string[] | null>(null)
 
-  const clearCacheClient = () => {
+  const clearCacheClient = useCallback(() => {
     for (const key of cacheClient || []) {
       if (key) caches?.delete(key)
     }
@@ -48,7 +52,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     setTimeout(() => {
       window.location.reload()
     }, 0)
-  }
+  }, [cacheClient])
 
   const getCachesClient = async () => {
     const cachesData = await caches?.keys()
@@ -66,7 +70,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         {
           login: credentials.email,
           password: credentials.password,
-        }
+        },
       )
 
       const loggedInUserProps = {
@@ -82,13 +86,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
       }
 
       setUser(loggedInUserProps as LoggedInUserProps)
-
       localStorage.setItem(SESSION_KEY, JSON.stringify(loggedInUserProps))
-
       displaySuccess('Login efetuado com sucesso!')
-
-      router.push('/dashboard')
-    } catch (error: any) {
+      navigate('/dashboard')
+    } catch (error: unknown) {
       displayError('Erro ao fazer login!')
     }
   }
@@ -98,33 +99,31 @@ export function AuthProvider({ children }: AuthProviderProps) {
       ProcessAutomationApi.defaults.headers.common = {}
       setUser(null)
       localStorage.clear()
-      router.push('/')
-    } catch (error: any) {
+      navigate('/')
+    } catch (error: unknown) {
       displayError('Erro ao deslogar!')
     }
   }
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const userParsed = JSON.parse(
-        localStorage.getItem(SESSION_KEY) ?? '{}'
-      ) as LoggedInUserProps
+    const userParsed = JSON.parse(
+      localStorage.getItem(SESSION_KEY) ?? '{}',
+    ) as LoggedInUserProps
 
-      if (!Object.keys(userParsed).length) router.push('/')
-      else {
-        localStorage.setItem(SESSION_KEY, JSON.stringify(userParsed))
+    if (!Object.keys(userParsed).length) navigate('/')
+    else {
+      localStorage.setItem(SESSION_KEY, JSON.stringify(userParsed))
 
-        ProcessAutomationApi.defaults.headers.common = {
-          ...ProcessAutomationApi.defaults.headers.common,
-          Authorization: `Bearer ${userParsed?.access_token}`,
-        }
-
-        setUser(userParsed)
-
-        if (location === '/') router.push('/dashboard')
+      ProcessAutomationApi.defaults.headers.common = {
+        ...ProcessAutomationApi.defaults.headers.common,
+        Authorization: `Bearer ${userParsed?.access_token}`,
       }
+
+      setUser(userParsed)
+
+      if (pathname === '/') navigate('/dashboard')
     }
-  }, [location])
+  }, [pathname, navigate])
 
   useEffect(() => {
     getCachesClient()
@@ -132,10 +131,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   useEffect(() => {
     if (cacheClient?.length) clearCacheClient()
-  }, [cacheClient])
+  }, [cacheClient, clearCacheClient])
 
   return (
-    <AuthContext.Provider value={{ signIn, signOut, user }}>
+    <AuthContext.Provider
+      value={{ signIn, signOut, user, signInWebApp: () => {} }}
+    >
       {children}
     </AuthContext.Provider>
   )

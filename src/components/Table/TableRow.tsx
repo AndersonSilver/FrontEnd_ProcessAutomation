@@ -16,13 +16,13 @@ export default function TableRow({
   editedItems,
   setEditedItems,
   selectedRow,
-}: any) {
+}: unknown) {
   const handleRowClick = (index: number) => {
     setSelectedRow(index)
     setDeleteRowIndex(index)
   }
 
-  return filteredWorkflowList.map((item: any, index: number) => (
+  return filteredWorkflowList?.map((item: unknown, index: number) => (
     <tr
       key={`item-${item?.id}-${index}`}
       className={`${index === selectedRow ? style.selectedRow : ''} ${

@@ -1,9 +1,8 @@
-'use client'
-
-import { useAuthContext } from '@/src/hooks/auth'
-import WorkflowService from '@/src/services/Workflow/WorkflowService'
-import { Workflow } from '@/src/services/Workflow/dto/WorkflowDto'
-import { KeyboardEvent, useCallback, useEffect, useMemo, useState } from 'react'
+import { useAuthContext } from '@/hooks/auth'
+import WorkflowService from '@/services/Workflow/WorkflowService'
+import { Workflow } from '@/services/Workflow/dto/WorkflowDto'
+import { useQuery } from '@tanstack/react-query'
+import { KeyboardEvent, useMemo, useState } from 'react'
 import Table from '../Table/Table'
 import TableRow from '../Table/TableRow'
 import style from './styles.module.scss'
@@ -18,27 +17,30 @@ export type WorkflowData = { isNew?: boolean } & Workflow
 export function WorkflowComponent() {
   const { user } = useAuthContext()
 
-  const [workflowList, setWorkflowList] = useState<WorkflowData[]>([])
   const [filter, setFilter] = useState<Filter | null>(null)
-  const [filteredWorkflowList, setFilteredWorkflowList] = useState<any[]>([])
-  const [changes, setChanges] = useState<any[]>([])
+  const [filteredWorkflowList, setFilteredWorkflowList] = useState<unknown[]>(
+    [],
+  )
+  const [changes, setChanges] = useState<unknown[]>([])
   const [selectedRow, setSelectedRow] = useState<number | null>(null)
   const [deleteMode, setDeleteMode] = useState(false)
   const [deleteRowIndex, setDeleteRowIndex] = useState<number | null>(null)
-  const [editedItems, setEditedItems] = useState<any[]>([])
+  const [editedItems, setEditedItems] = useState<unknown[]>([])
+
+  const { data: workflowList } = useQuery({
+    queryKey: ['workflows'],
+    queryFn: async () => {
+      const { data } = await WorkflowService.getWorkflows()
+
+      return data
+    },
+    enabled: !!user,
+  })
 
   const columnOrder = useMemo(
     () => Object?.keys?.(workflowList?.[0] ?? {}),
-    [workflowList]
+    [workflowList],
   )
-
-  const fetchData = useCallback(async () => {
-    if (user) {
-      const { data } = await WorkflowService.getWorkflows()
-
-      setWorkflowList(data as WorkflowData[])
-    }
-  }, [user])
 
   const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') {
@@ -54,8 +56,8 @@ export function WorkflowComponent() {
   const handleSave = () => {
     const newList = [...workflowList]
 
-    changes.forEach((change: any) => {
-      let item = newList.find((item) => item?.isNew)
+    changes.forEach((change: unknown) => {
+      const item = newList.find((item) => item?.isNew)
 
       if (item) {
         const key = change?.keyName
@@ -86,7 +88,7 @@ export function WorkflowComponent() {
     if (workflowList.length > 0) {
       const firstItem = workflowList[0]
 
-      const newItem = Object.keys(firstItem).reduce((obj: any, key) => {
+      const newItem = Object.keys(firstItem).reduce((obj: unknown, key) => {
         obj[key] = '---'
         return obj
       }, {})
@@ -100,10 +102,6 @@ export function WorkflowComponent() {
   const handleAtt = () => {
     // window.location.reload()
   }
-
-  useEffect(() => {
-    fetchData()
-  }, [fetchData])
 
   // useEffect(() => {
   //   let list = [...workflowList]
@@ -144,7 +142,7 @@ export function WorkflowComponent() {
           <Table columnOrder={columnOrder}>
             <TableRow
               filteredWorkflowList={workflowList}
-              setWorkflowList={setWorkflowList}
+              setWorkflowList={() => {}}
               columnOrder={columnOrder}
               setChanges={setChanges}
               changes={changes}

@@ -1,12 +1,12 @@
+import { Button } from '@/components/ui/Button'
+import { useAuthContext } from '@/hooks/auth'
+import { FormEvent, useEffect, useState } from 'react'
+import { toast } from 'react-toastify'
+
 import style from './styles.module.scss'
-import { useEffect, FormEvent, useState } from 'react'
-import { useContext } from 'react'
-import { AuthContext } from '../../context/AuthContext'
-import { toast, Zoom } from 'react-toastify'
-import { Button } from '../../components/ui/Button'
 
 export function LoginWebApp() {
-  const { signInWebApp } = useContext(AuthContext)
+  const { signInWebApp } = useAuthContext()
 
   const [client, setClient] = useState('')
   const [clientServices, setClientServices] = useState('')
@@ -79,7 +79,7 @@ export function LoginWebApp() {
 
     setLoading(true)
 
-    let data = {
+    const data = {
       client,
       clientServices,
       email,

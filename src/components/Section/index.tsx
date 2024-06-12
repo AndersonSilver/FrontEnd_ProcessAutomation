@@ -1,9 +1,8 @@
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { Link, useLocation } from 'react-router-dom'
 import style from './styles.module.scss'
 
 export function Section() {
-  const pathname = usePathname()
+  const { pathname } = useLocation()
 
   const webAppEsteiras = [
     { href: '/workflow', label: 'WorkFlow' },
@@ -33,7 +32,7 @@ export function Section() {
             <h2>Esteiras</h2>
           </div>
           {webAppEsteiras.map((button) => (
-            <Link href={button.href} key={button.label}>
+            <Link to={button.href} key={button.label}>
               <button
                 className={`${style.button} ${
                   pathname === button.href ? style.buttonActive : ''
@@ -51,7 +50,7 @@ export function Section() {
             <h2>Client</h2>
           </div>
           {webAppClient.map((button) => (
-            <Link href={button.href} key={button.label}>
+            <Link to={button.href} key={button.label}>
               <button
                 className={`${style.button} ${
                   pathname === button.href ? style.buttonActive : ''

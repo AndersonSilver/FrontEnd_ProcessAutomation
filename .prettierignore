@@ -1,0 +1,9 @@
+*.cjs
+*.md
+*.config.js
+
+vite*
+package*
+tsconfig*
+
+.prettierrc
