@@ -153,7 +153,7 @@ export function WorkflowComponent() {
       const firstItem = workflowList[0]
 
       const newItem = Object.keys(firstItem).reduce((obj: any, key) => {
-        obj[key] = 'null'
+        obj[key] = undefined
         return obj
       }, {})
 
