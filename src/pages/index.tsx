@@ -21,24 +21,26 @@ export default function Home() {
   const [cacheKeys, setCacheKeys] = useState<string[]>([]);
 
   useEffect(() => {
-    const clearCache = async () => {
+    const fetchCacheKeys = async () => {
       if (typeof window !== 'undefined' && window.caches) {
         const keys = await window.caches.keys();
-        if (keys.length > 0) {
-          await Promise.all(keys.map((key) => window.caches.delete(key)));
-
-        }
-        const remainingKeys = await window.caches.keys();
-        if (remainingKeys.length === 0) {
-          console.log("Cache está limpo");
-        } else {
-          console.log("Cache não está limpo");
-        }
+        setCacheKeys(keys);
+      }
+    };
+  
+    fetchCacheKeys();
+  }, []);
+  
+  useEffect(() => {
+    const clearCache = async () => {
+      if (typeof window !== 'undefined' && window.caches && cacheKeys.length > 0) {
+        await Promise.all(cacheKeys.map((key) => window.caches.delete(key)));
+        window.location.reload();
       }
     };
   
     clearCache();
-  }, []);
+  }, [cacheKeys]);
   
 
   async function handleLogin(event: FormEvent) {

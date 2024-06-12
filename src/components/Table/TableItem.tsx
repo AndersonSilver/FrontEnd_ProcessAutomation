@@ -4,6 +4,7 @@ import { ChangeEvent, Dispatch, SetStateAction, useMemo, useState } from 'react'
 import ReactModal from 'react-modal'
 import { WorkflowData } from '../Workflow'
 import { styles } from './styles'
+import { useEffect } from 'react';
 
 interface TableItemProps {
   item: any
@@ -23,10 +24,6 @@ export default function TableItem({
   item,
   keyName,
   className,
-  setChanges,
-  changes,
-  deleteMode,
-  setDeleteRowIndex,
   editedItems,
   setEditedItems,
   notValue,
@@ -34,8 +31,24 @@ export default function TableItem({
 }: TableItemProps) {
   const [value, setValue] = useState<string>()
   const [modalIsOpen, setModalIsOpen] = useState(false)
-
   const currentValue = useMemo(() => value ?? item?.[keyName], [value])
+
+
+
+  const handleEdit = (newItem: any) => {
+
+    const existingItemIndex = editedItems.findIndex((item) => item.id === newItem.id);
+
+    if (existingItemIndex !== -1) {
+
+      setEditedItems((prevItems) =>
+        prevItems.map((item, index) => (index === existingItemIndex ? newItem : item))
+      );
+    } else {
+
+      setEditedItems((prevItems) => [...prevItems, newItem]);
+    }
+  };
 
   const handleDoubleClick = () => {
     if (keyName !== 'id') {
@@ -43,51 +56,29 @@ export default function TableItem({
     }
   }
 
-  const handleModalChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-    // setModalInputValue(event.target.value)
-  }
 
   const handleModalClose = () => {
     setWorkflowList((prevState) => {
       const newArray = prevState?.map((state) => {
-        if (state?.id === item?.id) return { ...state, [keyName]: value }
-        else return state
-      })
-
-      return newArray
-    })
-
-    setModalIsOpen(false)
-  }
+        if (state?.id === item?.id) {
+          const updatedItem = { ...state, [keyName]: value };
+          handleEdit(updatedItem);
+          return updatedItem;
+        } else {
+          return state;
+        }
+      });
+  
+      return newArray;
+    });
+  
+    setModalIsOpen(false);
+  };
 
   const handleChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
     event?.preventDefault()
 
     setValue(event?.target?.value)
-  }
-
-  const handleBlur = (event: ChangeEvent<HTMLTextAreaElement>) => {
-    // console.log('handleBlur')
-    // setValue(event.target.value)
-    // // event.preventDefault();
-    // // setIsEditing(false);
-    // if (item) {
-    //   const newChanges = [...changes, { keyName, value }]
-    //   // setChanges(newChanges);
-    //   console.log('newChanges', newChanges)
-    //   const itemIndex = editedItems.findIndex((i) => i.id === updatedItem.id)
-    //   // if (itemIndex !== -1) {
-    //   //   setEditedItem((prevItems: any[]) =>
-    //   //     prevItems?.map((item, index) =>
-    //   //       index === itemIndex ? updatedItem : item
-    //   //     )
-    //   //   );
-    //   //   console.log('Item Atualizado', updatedItem);
-    //   // } else {
-    //   //   // setEditedItem((prevItems: any[]) => [...prevItems, updatedItem]);
-    //   //   console.log('Item nao Atualizado', updatedItem);
-    //   // }
-    // }
   }
 
   const renderItemValue = () => {

@@ -9,9 +9,10 @@ import TableRow from '../Table/TableRow'
 import style from './styles.module.scss'
 import { BiAddToQueue } from "react-icons/bi";
 import { FiRefreshCcw, FiSave  } from "react-icons/fi";
-import { IoAddCircleOutline } from "react-icons/io5";
 import { VscRemove } from "react-icons/vsc";
 import { IoMdAdd } from "react-icons/io";
+import { displayError, displaySuccess } from '../../utils/functions/messageToast'
+
 
 interface Filter {
   field: string
@@ -32,6 +33,14 @@ export function WorkflowComponent() {
   const [deleteRowIndex, setDeleteRowIndex] = useState<number | null>(null)
   const [editedItems, setEditedItems] = useState<any[]>([])
   const [cacheKeys, setCacheKeys] = useState<string[]>([]);
+
+  // editedItem é onde fica salvo os dados editador para disparar na API
+  
+  useEffect(() => {
+    if (editedItems) {
+      console.log('editedItem', editedItems);
+    }
+  }, [editedItems]);
 
   useEffect(() => {
     const fetchCacheKeys = async () => {
@@ -82,21 +91,47 @@ export function WorkflowComponent() {
     }
   }
 
-  const handleSave = () => {
-    const newList = [...workflowList]
-
-    changes.forEach((change: any) => {
-      let item = newList.find((item) => item?.isNew)
-
-      if (item) {
-        const key = change?.keyName
-
-        // item?.[key] = change?.value
-      }
-    })
-    setWorkflowList(newList)
-    setChanges([])
-  }
+  const handleSave = async () => {
+    try {
+      const promises = editedItems.map(item => {
+        delete item.sla;
+        delete item.customer_view_form_id;  
+        for (const key in item) {
+          if (item[key] === null) {
+            delete item[key];
+          }
+        }
+  
+        // Verifique se item.filters é um objeto, se não for, tente convertê-lo para um objeto
+        if (item.filters && typeof item.filters === 'string') {
+          try {
+            // Converta a string JSON para objeto
+            item.filters = JSON.parse(item.filters);
+          } catch (error) {
+            console.error('Erro ao converter item.filters para objeto:', error);
+          }
+        }
+  
+        if (item.isNew) {
+          return WorkflowService.postWorkflows(item);
+        } else {
+          return WorkflowService.putWorkflows(item, item.id);
+        }
+      });
+  
+      console.log("promises", promises)
+  
+      await Promise.all(promises);
+  
+      fetchData();
+  
+      setEditedItems([]);
+      displaySuccess('workflow salvo com sucesso!')
+    } catch (error) {
+      displayError('Erro ao salvar o workflow!')
+      console.error("Erro ao salvar os itens editados:", error);
+    }
+  };
 
   const handleDeleteOrConfirm = () => {
     if (deleteMode) {
@@ -118,7 +153,7 @@ export function WorkflowComponent() {
       const firstItem = workflowList[0]
 
       const newItem = Object.keys(firstItem).reduce((obj: any, key) => {
-        obj[key] = '---'
+        obj[key] = 'null'
         return obj
       }, {})
 
@@ -207,6 +242,7 @@ export function WorkflowComponent() {
             </button>
           )}
           <button className={style.buttonAdd} onClick={handleAdd}>
+
             <IoMdAdd />
           </button>
           <button className={style.buttonAdd}>

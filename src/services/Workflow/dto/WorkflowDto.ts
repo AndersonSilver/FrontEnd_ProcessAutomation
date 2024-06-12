@@ -105,3 +105,17 @@ export interface ListWorkflowData {
   page: number
   record_count: number
 }
+
+export interface PutWorkflowData {
+  data: Workflow[]
+  last_page: number
+  page: number
+  record_count: number
+}
+
+export interface PostWorkflowData {
+  data: Workflow[]
+  last_page: number
+  page: number
+  record_count: number
+}
