@@ -1,10 +1,13 @@
-echo 'Validando o eslint'
+#!/bin/sh
+FILES=$(git diff --cached --name-only --diff-filter=ACMR | sed 's| |\\ |g')
+[ -z "$FILES" ] && exit 0
+
+# Prettify all selected files
+echo "$FILES" | xargs ./node_modules/.bin/prettier --ignore-unknown --write
+
 yarn lint:fix
 
-echo 'Formatando os arquivos'
-yarn format
+# Add back the modified/prettified files to staging
+echo "$FILES" | xargs git add
 
-echo 'Adicionando os arquivos padronizados'
-git add .
-
-echo 'Finalizou'
+exit 0
