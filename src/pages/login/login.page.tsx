@@ -3,7 +3,7 @@ import { Input } from '@/components/ui/input'
 import { FormEvent, useState } from 'react'
 import { toast } from 'react-toastify'
 
-import { useAuthContext } from '@/hooks/auth'
+import { useAuthContext } from '@/hooks/useAuth'
 import styles from '@/styles/home.module.scss'
 
 export function LoginPage() {

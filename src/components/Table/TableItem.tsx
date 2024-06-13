@@ -1,11 +1,12 @@
-import { ChangeEvent, Dispatch, SetStateAction, useMemo, useState } from 'react'
+import { useQueryClientManual } from '@/hooks/useQueryClientManual'
+import { Workflow } from '@/services/Workflow/dto/WorkflowDto'
+import { ChangeEvent, useMemo, useState } from 'react'
 import ReactModal from 'react-modal'
-import { WorkflowData } from '../Workflow'
 import { styles } from './styles'
 
 interface TableItemProps {
-  item: unknown
-  keyName: string
+  item: Workflow
+  keyName: keyof Workflow
   className: string
   setChanges: (changes: unknown[]) => void
   changes: unknown[]
@@ -14,7 +15,6 @@ interface TableItemProps {
   editedItems: unknown[]
   setEditedItems: React.Dispatch<React.SetStateAction<unknown[]>>
   notValue: unknown | undefined
-  setWorkflowList: Dispatch<SetStateAction<WorkflowData[]>>
 }
 
 export default function TableItem({
@@ -22,12 +22,16 @@ export default function TableItem({
   keyName,
   className,
   notValue,
-  setWorkflowList,
 }: TableItemProps) {
+  const { getQuery, updateQuery } = useQueryClientManual()
+
   const [value, setValue] = useState<string>()
   const [modalIsOpen, setModalIsOpen] = useState(false)
 
-  const currentValue = useMemo(() => value ?? item?.[keyName], [value])
+  const currentValue = useMemo(
+    () => value ?? item?.[keyName as keyof Workflow],
+    [keyName, item, value],
+  )
 
   const handleDoubleClick = () => {
     if (keyName !== 'id') {
@@ -35,19 +39,15 @@ export default function TableItem({
     }
   }
 
-  const handleModalChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-    // setModalInputValue(event.target.value)
-  }
-
   const handleModalClose = () => {
-    setWorkflowList((prevState) => {
-      const newArray = prevState?.map((state) => {
-        if (state?.id === item?.id) return { ...state, [keyName]: value }
-        else return state
-      })
+    const currentList = getQuery(['workflows']) as Workflow[]
 
-      return newArray
+    const updateItem = currentList?.map((state: Workflow) => {
+      if (state?.id === item?.id) return { ...state, [keyName]: value }
+      else return state
     })
+
+    updateQuery(['workflows'], updateItem)
 
     setModalIsOpen(false)
   }
@@ -58,30 +58,6 @@ export default function TableItem({
     setValue(event?.target?.value)
   }
 
-  const handleBlur = (event: ChangeEvent<HTMLTextAreaElement>) => {
-    // console.log('handleBlur')
-    // setValue(event.target.value)
-    // // event.preventDefault();
-    // // setIsEditing(false);
-    // if (item) {
-    //   const newChanges = [...changes, { keyName, value }]
-    //   // setChanges(newChanges);
-    //   console.log('newChanges', newChanges)
-    //   const itemIndex = editedItems.findIndex((i) => i.id === updatedItem.id)
-    //   // if (itemIndex !== -1) {
-    //   //   setEditedItem((prevItems: any[]) =>
-    //   //     prevItems?.map((item, index) =>
-    //   //       index === itemIndex ? updatedItem : item
-    //   //     )
-    //   //   );
-    //   //   console.log('Item Atualizado', updatedItem);
-    //   // } else {
-    //   //   // setEditedItem((prevItems: any[]) => [...prevItems, updatedItem]);
-    //   //   console.log('Item nao Atualizado', updatedItem);
-    //   // }
-    // }
-  }
-
   const renderItemValue = () => {
     if (!notValue) return '---'
 
@@ -90,15 +66,15 @@ export default function TableItem({
         {currentValue &&
         (typeof currentValue === 'object'
           ? JSON.stringify(currentValue)
-          : currentValue?.toString()
+          : (currentValue as string).toString()
         ).length > 80
           ? (typeof currentValue === 'object'
               ? JSON.stringify(currentValue)
-              : currentValue?.toString()
+              : (currentValue as string).toString()
             ).substring(0, 80) + '...'
           : typeof currentValue === 'object'
             ? JSON.stringify(currentValue)
-            : currentValue?.toString()}
+            : (currentValue as string).toString()}
       </span>
     )
   }

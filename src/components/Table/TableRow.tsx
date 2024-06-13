@@ -1,11 +1,28 @@
+import { Workflow } from '@/services/Workflow/dto/WorkflowDto'
+import { WorkflowData } from '../Workflow'
 import style from '../Workflow/styles.module.scss'
 import TableItem from './TableItem'
 
-interface TableRowProps {}
+export type OptionsFlags<T> = {
+  [key in keyof T]: keyof unknown
+}
+
+interface TableRowProps {
+  columnOrder: string[]
+  setChanges: (changes: unknown[]) => void
+  changes: unknown[]
+  deleteMode: boolean
+  editedItems: unknown[]
+  setEditedItems: React.Dispatch<React.SetStateAction<unknown[]>>
+  selectedRow: number | null
+  setSelectedRow: React.Dispatch<React.SetStateAction<number | null>>
+  deleteRowIndex: number | null
+  setDeleteRowIndex: React.Dispatch<React.SetStateAction<number | null>>
+  filteredWorkflowList?: Workflow[]
+}
 
 export default function TableRow({
   filteredWorkflowList,
-  setWorkflowList,
   columnOrder,
   setChanges,
   changes,
@@ -16,13 +33,13 @@ export default function TableRow({
   editedItems,
   setEditedItems,
   selectedRow,
-}: unknown) {
+}: TableRowProps) {
   const handleRowClick = (index: number) => {
     setSelectedRow(index)
     setDeleteRowIndex(index)
   }
 
-  return filteredWorkflowList?.map((item: unknown, index: number) => (
+  return filteredWorkflowList?.map((item: WorkflowData, index: number) => (
     <tr
       key={`item-${item?.id}-${index}`}
       className={`${index === selectedRow ? style.selectedRow : ''} ${
@@ -32,12 +49,11 @@ export default function TableRow({
     >
       <td>{item.id ? index + 1 : ''}</td>
 
-      {columnOrder?.map((column: any, position: number) => (
+      {columnOrder?.map((column, position: number) => (
         <td key={`row-${Math.random()}-${position}`}>
           <TableItem
             item={item}
-            setWorkflowList={setWorkflowList}
-            keyName={column}
+            keyName={column as keyof Workflow}
             className={style.body_td}
             setChanges={setChanges}
             changes={changes}
@@ -45,7 +61,7 @@ export default function TableRow({
             setDeleteRowIndex={setDeleteRowIndex}
             editedItems={editedItems}
             setEditedItems={setEditedItems}
-            notValue={item[column]}
+            notValue={item[column as keyof Workflow]}
           />
         </td>
       ))}

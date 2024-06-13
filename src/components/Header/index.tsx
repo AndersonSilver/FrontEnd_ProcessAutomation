@@ -1,4 +1,4 @@
-import { useAuthContext } from '@/hooks/auth'
+import { useAuthContext } from '@/hooks/useAuth'
 import { Link } from 'react-router-dom'
 
 import { FiLogOut } from 'react-icons/fi'

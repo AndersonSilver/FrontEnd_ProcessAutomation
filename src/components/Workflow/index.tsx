@@ -1,4 +1,6 @@
-import { useAuthContext } from '@/hooks/auth'
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { useAuthContext } from '@/hooks/useAuth'
 import WorkflowService from '@/services/Workflow/WorkflowService'
 import { Workflow } from '@/services/Workflow/dto/WorkflowDto'
 import { useQuery } from '@tanstack/react-query'
@@ -54,18 +56,18 @@ export function WorkflowComponent() {
   }
 
   const handleSave = () => {
-    const newList = [...workflowList]
+    const newList: WorkflowData[] = [...(workflowList ?? [])]
 
-    changes.forEach((change: unknown) => {
-      const item = newList.find((item) => item?.isNew)
+    // changes.forEach((change: unknown) => {
+    //   const item = newList?.find((item) => item?.isNew)
 
-      if (item) {
-        const key = change?.keyName
+    //   if (item) {
+    //     const key = (change as any)?.keyName as keyof WorkflowData
+    //     const value = (change as any)?.value
 
-        // item?.[key] = change?.value
-      }
-    })
-    setWorkflowList(newList)
+    //     (item as any)[key] = value
+    //   }
+    // })
     setChanges([])
   }
 
@@ -85,46 +87,21 @@ export function WorkflowComponent() {
   }
 
   const handleAdd = () => {
-    if (workflowList.length > 0) {
+    if (workflowList && workflowList?.length > 0) {
       const firstItem = workflowList[0]
 
-      const newItem = Object.keys(firstItem).reduce((obj: unknown, key) => {
+      const newItem = Object.keys(firstItem).reduce((obj: any, key) => {
         obj[key] = '---'
         return obj
       }, {})
 
       newItem.isNew = true
-
-      setWorkflowList([...workflowList, newItem])
     }
   }
 
   const handleAtt = () => {
     // window.location.reload()
   }
-
-  // useEffect(() => {
-  //   let list = [...workflowList]
-  //   if (filter) {
-  //     list = list.filter((item) =>
-  //       Array.isArray(filter.value)
-  //         ? filter.value.some((fv) =>
-  //             String(item[filter.field])
-  //               .trim()
-  //               .toLowerCase()
-  //               .includes(fv.trim().toLowerCase())
-  //           )
-  //         : String(item[filter.field])
-  //             .trim()
-  //             .toLowerCase()
-  //             .includes(filter.value.trim().toLowerCase())
-  //     )
-  //     while (list.length < workflowList.length) {
-  //       list.push({})
-  //     }
-  //   }
-  //   setFilteredWorkflowList(list)
-  // }, [workflowList, filter])
 
   return (
     <aside className={style.AsideContainer}>
@@ -142,7 +119,6 @@ export function WorkflowComponent() {
           <Table columnOrder={columnOrder}>
             <TableRow
               filteredWorkflowList={workflowList}
-              setWorkflowList={() => {}}
               columnOrder={columnOrder}
               setChanges={setChanges}
               changes={changes}

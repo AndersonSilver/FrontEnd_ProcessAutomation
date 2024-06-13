@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/Button'
-import { useAuthContext } from '@/hooks/auth'
+import { useAuthContext } from '@/hooks/useAuth'
 import { FormEvent, useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
 
