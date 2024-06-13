@@ -56,7 +56,7 @@ export const Interceptors = () => {
         ProcessAutomationApi.interceptors.response.eject(interceptorRef.current)
       }
     }
-  }, [interceptorRef.current])
+  }, [interceptorRef])
 
   return <></>
 }
