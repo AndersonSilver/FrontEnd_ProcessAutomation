@@ -79,6 +79,7 @@ export interface Workflow {
   get_workflow_protocol_batch_file_function_id: null
   id: string
   index: number
+  item: null
   is_preview_opening: boolean
   only_owner_can_edit_protocol: boolean
   optional_config: OptionalConfig
@@ -104,4 +105,26 @@ export interface ListWorkflowData {
   last_page: number
   page: number
   record_count: number
+}
+
+export interface PutWorkflowData {
+  data: Workflow[]
+  last_page: number
+  page: number
+  record_count: number
+}
+
+export interface PostWorkflowData {
+  data: Workflow[]
+  last_page: number
+  page: number
+  record_count: number
+}
+export interface WorkflowRequestBody {
+  name: string
+  description: string
+}
+export interface WorkflowItem {
+  id: string
+  [key: string]: unknown
 }

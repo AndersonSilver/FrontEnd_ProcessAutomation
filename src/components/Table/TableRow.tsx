@@ -19,10 +19,12 @@ interface TableRowProps {
   deleteRowIndex: number | null
   setDeleteRowIndex: React.Dispatch<React.SetStateAction<number | null>>
   filteredWorkflowList?: Workflow[]
+  setWorkflowList: React.Dispatch<React.SetStateAction<WorkflowData[]>>
 }
 
 export default function TableRow({
   filteredWorkflowList,
+  setWorkflowList,
   columnOrder,
   setChanges,
   changes,
@@ -62,6 +64,7 @@ export default function TableRow({
             editedItems={editedItems}
             setEditedItems={setEditedItems}
             notValue={item[column as keyof Workflow]}
+            setWorkflowList={setWorkflowList}
           />
         </td>
       ))}

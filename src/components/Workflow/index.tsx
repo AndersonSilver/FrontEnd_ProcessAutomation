@@ -3,41 +3,75 @@
 import { useAuthContext } from '@/hooks/useAuth'
 import WorkflowService from '@/services/Workflow/WorkflowService'
 import { Workflow } from '@/services/Workflow/dto/WorkflowDto'
-import { useQuery } from '@tanstack/react-query'
 import { KeyboardEvent, useMemo, useState } from 'react'
 import Table from '../Table/Table'
 import TableRow from '../Table/TableRow'
 import style from './styles.module.scss'
+import { BiAddToQueue } from 'react-icons/bi'
+import { FiRefreshCcw, FiSave } from 'react-icons/fi'
+import { VscRemove } from 'react-icons/vsc'
+import { IoMdAdd } from 'react-icons/io'
+import {
+  displayError,
+  displaySuccess,
+} from '../../utils/functions/messageToast'
+import { useEffect, useCallback } from 'react'
 
 interface Filter {
   field: string
   value: string | string[]
 }
 
-export type WorkflowData = { isNew?: boolean } & Workflow
+export type WorkflowData = { isNew?: boolean } & Workflow & {
+    [key: string]: any
+  }
 
 export function WorkflowComponent() {
   const { user } = useAuthContext()
 
+  const [workflowList, setWorkflowList] = useState<WorkflowData[]>([])
   const [filter, setFilter] = useState<Filter | null>(null)
-  const [filteredWorkflowList, setFilteredWorkflowList] = useState<unknown[]>(
-    [],
-  )
-  const [changes, setChanges] = useState<unknown[]>([])
+  const [filteredWorkflowList, setFilteredWorkflowList] = useState<any[]>([])
+  const [changes, setChanges] = useState<any[]>([])
   const [selectedRow, setSelectedRow] = useState<number | null>(null)
   const [deleteMode, setDeleteMode] = useState(false)
   const [deleteRowIndex, setDeleteRowIndex] = useState<number | null>(null)
-  const [editedItems, setEditedItems] = useState<unknown[]>([])
+  const [editedItems, setEditedItems] = useState<any[]>([])
+  const [cacheKeys, setCacheKeys] = useState<string[]>([])
 
-  const { data: workflowList } = useQuery({
-    queryKey: ['workflows'],
-    queryFn: async () => {
+  useEffect(() => {
+    const fetchCacheKeys = async () => {
+      if (typeof window !== 'undefined' && window.caches) {
+        const keys = await window.caches.keys()
+        setCacheKeys(keys)
+      }
+    }
+
+    fetchCacheKeys()
+  }, [])
+
+  useEffect(() => {
+    const clearCache = async () => {
+      if (
+        typeof window !== 'undefined' &&
+        window.caches &&
+        cacheKeys.length > 0
+      ) {
+        await Promise.all(cacheKeys.map((key) => window.caches.delete(key)))
+        window.location.reload()
+      }
+    }
+
+    clearCache()
+  }, [cacheKeys])
+
+  const fetchData = useCallback(async () => {
+    if (user) {
       const { data } = await WorkflowService.getWorkflows()
 
-      return data
-    },
-    enabled: !!user,
-  })
+      setWorkflowList(data as WorkflowData[])
+    }
+  }, [user])
 
   const columnOrder = useMemo(
     () => Object?.keys?.(workflowList?.[0] ?? {}),
@@ -46,29 +80,54 @@ export function WorkflowComponent() {
 
   const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') {
-      setFilter(null)
       const match = event.currentTarget.value.match(/(\w+)\s*=\s*'([^']*)'/)
       if (match) {
         const values = match[2].split(',').map((value) => value.trim())
         setFilter({ field: match[1], value: values })
+      } else {
+        setFilter(null)
       }
     }
   }
 
-  const handleSave = () => {
-    const newList: WorkflowData[] = [...(workflowList ?? [])]
+  const handleSave = async () => {
+    try {
+      const promises = editedItems.map((item) => {
+        delete item.sla
+        delete item.customer_view_form_id
+        for (const key in item) {
+          if (item[key] === null) {
+            delete item[key]
+          }
+        }
 
-    // changes.forEach((change: unknown) => {
-    //   const item = newList?.find((item) => item?.isNew)
+        if (item.filters && typeof item.filters === 'string') {
+          try {
+            item.filters = JSON.parse(item.filters)
+          } catch (error) {
+            console.error('Erro ao converter item.filters para objeto:', error)
+          }
+        }
 
-    //   if (item) {
-    //     const key = (change as any)?.keyName as keyof WorkflowData
-    //     const value = (change as any)?.value
+        if (item.isNew) {
+          return WorkflowService.postWorkflows(item)
+        } else {
+          return WorkflowService.putWorkflows(item, item.id)
+        }
+      })
 
-    //     (item as any)[key] = value
-    //   }
-    // })
-    setChanges([])
+      console.log('promises', promises)
+
+      await Promise.all(promises)
+
+      fetchData()
+
+      setEditedItems([])
+      displaySuccess('workflow salvo com sucesso!')
+    } catch (error) {
+      displayError('Erro ao salvar o workflow!')
+      console.error('Erro ao salvar os itens editados:', error)
+    }
   }
 
   const handleDeleteOrConfirm = () => {
@@ -87,21 +146,48 @@ export function WorkflowComponent() {
   }
 
   const handleAdd = () => {
-    if (workflowList && workflowList?.length > 0) {
+    if (workflowList.length > 0) {
       const firstItem = workflowList[0]
 
       const newItem = Object.keys(firstItem).reduce((obj: any, key) => {
-        obj[key] = '---'
+        obj[key] = undefined
         return obj
       }, {})
 
       newItem.isNew = true
+
+      setWorkflowList([...workflowList, newItem])
     }
   }
 
   const handleAtt = () => {
-    // window.location.reload()
+    window.location.reload()
   }
+
+  useEffect(() => {
+    fetchData()
+  }, [fetchData])
+
+  useEffect(() => {
+    let list = [...workflowList]
+    if (filter) {
+      list = list.filter((item) =>
+        Array.isArray(filter.value)
+          ? filter.value.some((fv) =>
+              String(item[filter.field])
+                .trim()
+                .toLowerCase()
+                .includes(fv.trim().toLowerCase()),
+            )
+          : String(item[filter.field])
+              .trim()
+              .toLowerCase()
+              .includes(filter.value.trim().toLowerCase()),
+      )
+      console.log('Filtrou a lista', list)
+    }
+    setFilteredWorkflowList(list)
+  }, [workflowList, filter])
 
   return (
     <aside className={style.AsideContainer}>
@@ -118,7 +204,8 @@ export function WorkflowComponent() {
         <div className={style.containerTableTwo}>
           <Table columnOrder={columnOrder}>
             <TableRow
-              filteredWorkflowList={workflowList}
+              filteredWorkflowList={filteredWorkflowList}
+              setWorkflowList={setWorkflowList}
               columnOrder={columnOrder}
               setChanges={setChanges}
               changes={changes}
@@ -135,16 +222,16 @@ export function WorkflowComponent() {
         </div>
         <div className={style.buttonContainer}>
           <button className={style.buttonSave} onClick={handleSave}>
-            Salvar
+            <FiSave />
           </button>
           <button className={style.buttonAtualizar} onClick={handleAtt}>
-            Atualizar
+            <FiRefreshCcw />
           </button>
           <button
             className={style.buttonDeletar}
             onClick={handleDeleteOrConfirm}
           >
-            {deleteMode ? 'Confirmar' : '-'}
+            {deleteMode ? 'Confirmar' : <VscRemove />}
           </button>
           {deleteMode && (
             <button className={style.buttonCancelar} onClick={handleCancel}>
@@ -152,7 +239,10 @@ export function WorkflowComponent() {
             </button>
           )}
           <button className={style.buttonAdd} onClick={handleAdd}>
-            +
+            <IoMdAdd />
+          </button>
+          <button className={style.buttonAdd}>
+            <BiAddToQueue />
           </button>
         </div>
       </div>
