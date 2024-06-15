@@ -3,7 +3,8 @@ import {
   ListWorkflowData,
   PutWorkflowData,
   PostWorkflowData,
-  WorkflowRequestBody, // Adicione a importação para o tipo do corpo da solicitação
+  WorkflowRequestBody,
+  DeleteWorkflowData,
 } from './dto/WorkflowDto'
 
 class WorkflowService {
@@ -11,6 +12,7 @@ class WorkflowService {
     getWorkflows: () => '/techforms/workflow',
     postWorkflows: () => '/techforms/workflow',
     putWorkflows: (id: string) => `/techforms/workflow/${id}`,
+    deleteWorkflows: (id: string) => `/techforms/workflow/${id}`,
   }
 
   public static async getWorkflows(): Promise<ListWorkflowData> {
@@ -38,6 +40,13 @@ class WorkflowService {
       this.endpoints.postWorkflows(),
       body,
     )
+    return data
+  }
+
+  public static async deleteWorkflows(id: string): Promise<PutWorkflowData> {
+    const url = this.endpoints.deleteWorkflows(id)
+    console.log('URL:', url)
+    const { data } = await ProcessAutomationApi.delete<DeleteWorkflowData>(url)
     return data
   }
 }

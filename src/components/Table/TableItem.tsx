@@ -12,10 +12,10 @@ interface TableItemProps {
   setChanges: (changes: Workflow[]) => void
   changes: Workflow[]
   deleteMode: boolean
-  setDeleteRowIndex?: (index: number | null) => void
+  setDeleteRowIndex?: (id: string | null) => void
   editedItems: Workflow[]
   setEditedItems: React.Dispatch<React.SetStateAction<Workflow[]>>
-  notValue: Workflow | string | number | boolean
+  notValue: Workflow | string | number | boolean | null | undefined | object
   setWorkflowList: Dispatch<SetStateAction<WorkflowData[]>>
 }
 
@@ -28,7 +28,6 @@ export default function TableItem({
   setEditedItems,
   setWorkflowList,
 }: TableItemProps) {
-  // const { getQuery, updateQuery } = useQueryClientManual()
   const [value, setValue] = useState<string>()
   const [modalIsOpen, setModalIsOpen] = useState(false)
   const currentValue = useMemo(

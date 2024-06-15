@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { useAuthContext } from '@/hooks/useAuth'
 import WorkflowService from '@/services/Workflow/WorkflowService'
-import { Workflow } from '@/services/Workflow/dto/WorkflowDto'
+import { Workflow, Filter } from '@/services/Workflow/dto/WorkflowDto'
 import { KeyboardEvent, useMemo, useState } from 'react'
 import Table from '../Table/Table'
 import TableRow from '../Table/TableRow'
@@ -17,11 +17,6 @@ import {
 } from '../../utils/functions/messageToast'
 import { useEffect, useCallback } from 'react'
 
-interface Filter {
-  field: string
-  value: string | string[]
-}
-
 export type WorkflowData = { isNew?: boolean } & Workflow & {
     [key: string]: any
   }
@@ -33,9 +28,9 @@ export function WorkflowComponent() {
   const [filter, setFilter] = useState<Filter | null>(null)
   const [filteredWorkflowList, setFilteredWorkflowList] = useState<any[]>([])
   const [changes, setChanges] = useState<any[]>([])
-  const [selectedRow, setSelectedRow] = useState<number | null>(null)
+  const [selectedRow, setSelectedRow] = useState<number | null | string>(null)
   const [deleteMode, setDeleteMode] = useState(false)
-  const [deleteRowIndex, setDeleteRowIndex] = useState<number | null>(null)
+  const [deleteRowIndex, setDeleteRowIndex] = useState<string | null>(null)
   const [editedItems, setEditedItems] = useState<any[]>([])
   const [cacheKeys, setCacheKeys] = useState<string[]>([])
 
@@ -130,9 +125,19 @@ export function WorkflowComponent() {
     }
   }
 
-  const handleDeleteOrConfirm = () => {
+  const handleDeleteOrConfirm = async () => {
     if (deleteMode) {
-      setDeleteRowIndex(selectedRow)
+      setDeleteRowIndex(selectedRow !== null ? selectedRow.toString() : null)
+      if (selectedRow !== null) {
+        try {
+          await WorkflowService.deleteWorkflows(selectedRow.toString())
+          displaySuccess('workflow deletado com sucesso!')
+          await fetchData()
+        } catch (error) {
+          displayError('Erro ao deletar o workflow!')
+          console.error('Erro ao deletar os itens editados:', error)
+        }
+      }
     } else {
       setDeleteRowIndex(null)
     }
@@ -184,7 +189,6 @@ export function WorkflowComponent() {
               .toLowerCase()
               .includes(filter.value.trim().toLowerCase()),
       )
-      console.log('Filtrou a lista', list)
     }
     setFilteredWorkflowList(list)
   }, [workflowList, filter])
@@ -215,7 +219,7 @@ export function WorkflowComponent() {
               setDeleteRowIndex={setDeleteRowIndex}
               editedItems={editedItems}
               setEditedItems={setEditedItems}
-              selectedRow={selectedRow}
+              selectedRow={selectedRow ? selectedRow.toString() : null}
             />
           </Table>
           <div className={style.espaço} />

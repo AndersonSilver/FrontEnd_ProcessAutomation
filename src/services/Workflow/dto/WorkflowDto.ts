@@ -55,6 +55,11 @@ interface ClientService {
   service_key: string
 }
 
+export interface Filter {
+  field: string
+  value: string | string[]
+}
+
 export interface Workflow {
   acceptance_term: null
   alternative_title: string
@@ -120,6 +125,14 @@ export interface PostWorkflowData {
   page: number
   record_count: number
 }
+
+export interface DeleteWorkflowData {
+  data: Workflow[]
+  last_page: number
+  page: number
+  record_count: number
+}
+
 export interface WorkflowRequestBody {
   name: string
   description: string
