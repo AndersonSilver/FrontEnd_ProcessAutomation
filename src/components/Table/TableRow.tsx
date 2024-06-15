@@ -4,16 +4,16 @@ import style from '../Workflow/styles.module.scss'
 import TableItem from './TableItem'
 
 export type OptionsFlags<T> = {
-  [key in keyof T]: keyof unknown
+  [key in keyof T]: keyof Workflow
 }
 
 interface TableRowProps {
   columnOrder: string[]
-  setChanges: (changes: unknown[]) => void
-  changes: unknown[]
+  setChanges: (changes: Workflow[]) => void
+  changes: Workflow[]
   deleteMode: boolean
-  editedItems: unknown[]
-  setEditedItems: React.Dispatch<React.SetStateAction<unknown[]>>
+  editedItems: Workflow[]
+  setEditedItems: React.Dispatch<React.SetStateAction<Workflow[]>>
   selectedRow: number | null
   setSelectedRow: React.Dispatch<React.SetStateAction<number | null>>
   deleteRowIndex: number | null

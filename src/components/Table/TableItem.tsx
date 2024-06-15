@@ -9,13 +9,13 @@ interface TableItemProps {
   item: Workflow
   keyName: keyof Workflow
   className: string
-  setChanges: (changes: unknown[]) => void
-  changes: unknown[]
+  setChanges: (changes: Workflow[]) => void
+  changes: Workflow[]
   deleteMode: boolean
   setDeleteRowIndex?: (index: number | null) => void
   editedItems: Workflow[]
   setEditedItems: React.Dispatch<React.SetStateAction<Workflow[]>>
-  notValue: unknown | undefined
+  notValue: Workflow | string | number | boolean
   setWorkflowList: Dispatch<SetStateAction<WorkflowData[]>>
 }
 
@@ -54,6 +54,7 @@ export default function TableItem({
 
   const handleDoubleClick = () => {
     if (keyName !== 'id') {
+      setValue(item[keyName as keyof Workflow] as string)
       setModalIsOpen(true)
     }
   }
@@ -75,12 +76,7 @@ export default function TableItem({
       return newArray
     })
 
-    if (item && keyName && item[keyName as keyof Workflow] !== undefined) {
-      setValue(item[keyName as keyof Workflow] as string)
-    } else {
-      setValue('') // ou algum valor padrão
-    }
-
+    setValue('') // Reset o valor aqui
     setModalIsOpen(false)
   }
 
@@ -125,13 +121,13 @@ export default function TableItem({
           content: {
             color: '#fff',
             backgroundColor: '#1E1E1E',
-            width: '450px',
+            width: '550px',
             height: '500px',
             marginLeft: 'auto',
             marginRight: 'auto',
             marginTop: '100px',
             textAlign: 'center',
-            lineHeight: '200px',
+            lineHeight: '20px',
             overflow: 'hidden',
             borderRadius: '5px',
           },
