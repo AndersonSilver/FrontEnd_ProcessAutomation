@@ -17,7 +17,7 @@ class WorkflowService {
 
   public static async getWorkflows(): Promise<ListWorkflowData> {
     const { data } = await ProcessAutomationApi.get<ListWorkflowData>(
-      this.endpoints.getWorkflows(),
+      WorkflowService.endpoints.getWorkflows(),
     )
 
     return data
@@ -27,7 +27,7 @@ class WorkflowService {
     body: WorkflowRequestBody,
     id: string,
   ): Promise<PutWorkflowData> {
-    const url = this.endpoints.putWorkflows(id)
+    const url = WorkflowService.endpoints.putWorkflows(id)
     console.log('URL:', url)
     const { data } = await ProcessAutomationApi.put<PutWorkflowData>(url, body)
     return data
@@ -37,14 +37,14 @@ class WorkflowService {
     body: WorkflowRequestBody,
   ): Promise<PostWorkflowData> {
     const { data } = await ProcessAutomationApi.post<PostWorkflowData>(
-      this.endpoints.postWorkflows(),
+      WorkflowService.endpoints.postWorkflows(),
       body,
     )
     return data
   }
 
   public static async deleteWorkflows(id: string): Promise<PutWorkflowData> {
-    const url = this.endpoints.deleteWorkflows(id)
+    const url = WorkflowService.endpoints.deleteWorkflows(id)
     console.log('URL:', url)
     const { data } = await ProcessAutomationApi.delete<DeleteWorkflowData>(url)
     return data

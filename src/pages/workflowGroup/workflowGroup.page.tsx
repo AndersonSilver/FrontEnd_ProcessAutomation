@@ -4,7 +4,7 @@ import { WorkflowComponent } from '@/components/Workflow'
 
 import style from './style.module.scss'
 
-export function WorkflowPage() {
+export function WorkflowGroupPage() {
   return (
     <div className={style.dashboardContainer}>
       <div>
@@ -15,7 +15,7 @@ export function WorkflowPage() {
         <div className={style.dashboardContainerCenterSection}>
           <Section />
         </div>
-        <WorkflowComponent caller='workflow' />
+        <WorkflowComponent caller='workflowGroup' />
         <div className={style.dashboardContainerCenterAside}></div>
       </div>
     </div>

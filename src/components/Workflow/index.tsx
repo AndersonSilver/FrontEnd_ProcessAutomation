@@ -2,6 +2,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { useAuthContext } from '@/hooks/useAuth'
 import WorkflowService from '@/services/Workflow/WorkflowService'
+import WorkflowGroupService from '@/services/WorkflowGroup/WorkflowGroupService'
 import { Workflow, Filter } from '@/services/Workflow/dto/WorkflowDto'
 import { KeyboardEvent, useMemo, useState } from 'react'
 import Table from '../Table/Table'
@@ -11,19 +12,23 @@ import { BiAddToQueue } from 'react-icons/bi'
 import { FiRefreshCcw, FiSave } from 'react-icons/fi'
 import { VscRemove } from 'react-icons/vsc'
 import { IoMdAdd } from 'react-icons/io'
+import { v4 as uuidv4 } from 'uuid'
 import {
   displayError,
   displaySuccess,
 } from '../../utils/functions/messageToast'
 import { useEffect, useCallback } from 'react'
 
-export type WorkflowData = { isNew?: boolean } & Workflow & {
+type WorkflowProtocolProps = {
+  caller: 'workflow' | 'workflowGroup'
+}
+
+export type WorkflowData = { isNew?: boolean; id?: string } & Workflow & {
     [key: string]: any
   }
 
-export function WorkflowComponent() {
+export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
   const { user } = useAuthContext()
-
   const [workflowList, setWorkflowList] = useState<WorkflowData[]>([])
   const [filter, setFilter] = useState<Filter | null>(null)
   const [filteredWorkflowList, setFilteredWorkflowList] = useState<any[]>([])
@@ -60,13 +65,27 @@ export function WorkflowComponent() {
     clearCache()
   }, [cacheKeys])
 
-  const fetchData = useCallback(async () => {
-    if (user) {
-      const { data } = await WorkflowService.getWorkflows()
+  const serviceMap = {
+    workflow: {
+      service: WorkflowService.getWorkflows,
+      setter: setWorkflowList,
+    },
+    workflowGroup: {
+      service: WorkflowGroupService.getWorkflowsGroup,
+      setter: setWorkflowList,
+    },
+  }
 
-      setWorkflowList(data as WorkflowData[])
-    }
-  }, [user])
+  const fetchData = useCallback(async ({ caller }: WorkflowProtocolProps) => {
+    const { service, setter } = serviceMap[caller]
+    const { data } = await service()
+    setter(data)
+    setWorkflowList(data as WorkflowData[])
+  }, [])
+
+  useEffect(() => {
+    fetchData({ caller: caller })
+  }, [user, caller, fetchData])
 
   const columnOrder = useMemo(
     () => Object?.keys?.(workflowList?.[0] ?? {}),
@@ -104,10 +123,27 @@ export function WorkflowComponent() {
           }
         }
 
-        if (item.isNew) {
-          return WorkflowService.postWorkflows(item)
-        } else {
-          return WorkflowService.putWorkflows(item, item.id)
+        if (caller === 'workflow') {
+          let resultworkflow
+          if (item.isNew) {
+            resultworkflow = WorkflowService.postWorkflows(item)
+          } else {
+            resultworkflow = WorkflowService.putWorkflows(item, item.id)
+          }
+          displaySuccess('workflow salvo com sucesso!')
+          return resultworkflow
+        } else if (caller === 'workflowGroup') {
+          let resultworkflowGroup
+          if (item.isNew) {
+            resultworkflowGroup = WorkflowGroupService.postWorkflowsGroup(item)
+          } else {
+            resultworkflowGroup = WorkflowGroupService.putWorkflowsGroup(
+              item,
+              item.id,
+            )
+          }
+          displaySuccess('workflow Group salvo com sucesso!')
+          return resultworkflowGroup
         }
       })
 
@@ -115,12 +151,11 @@ export function WorkflowComponent() {
 
       await Promise.all(promises)
 
-      fetchData()
+      fetchData({ caller: caller })
 
       setEditedItems([])
-      displaySuccess('workflow salvo com sucesso!')
     } catch (error) {
-      displayError('Erro ao salvar o workflow!')
+      displayError('Erro ao salvar!')
       console.error('Erro ao salvar os itens editados:', error)
     }
   }
@@ -130,11 +165,19 @@ export function WorkflowComponent() {
       setDeleteRowIndex(selectedRow !== null ? selectedRow.toString() : null)
       if (selectedRow !== null) {
         try {
-          await WorkflowService.deleteWorkflows(selectedRow.toString())
-          displaySuccess('workflow deletado com sucesso!')
-          await fetchData()
+          if (caller === 'workflow') {
+            await WorkflowService.deleteWorkflows(selectedRow.toString())
+            displaySuccess('workflow deletado com sucesso!')
+            await fetchData({ caller: caller })
+          } else if (caller === 'workflowGroup') {
+            await WorkflowGroupService.deleteWorkflowsGroup(
+              selectedRow.toString(),
+            )
+            displaySuccess('workflow Group deletado com sucesso!')
+            await fetchData({ caller: caller })
+          }
         } catch (error) {
-          displayError('Erro ao deletar o workflow!')
+          displayError('Erro ao deletar!')
           console.error('Erro ao deletar os itens editados:', error)
         }
       }
@@ -165,12 +208,24 @@ export function WorkflowComponent() {
     }
   }
 
+  const handleDuplicate = () => {
+    if (selectedRow === null) {
+      return
+    }
+
+    const selectedItem = workflowList.find((item) => item.id === selectedRow)
+    if (selectedItem) {
+      const newItem = { ...selectedItem, id: uuidv4(), isNew: true }
+      setWorkflowList([...workflowList, newItem])
+    }
+  }
+
   const handleAtt = () => {
     window.location.reload()
   }
 
   useEffect(() => {
-    fetchData()
+    fetchData({ caller: caller })
   }, [fetchData])
 
   useEffect(() => {
@@ -245,7 +300,7 @@ export function WorkflowComponent() {
           <button className={style.buttonAdd} onClick={handleAdd}>
             <IoMdAdd />
           </button>
-          <button className={style.buttonAdd}>
+          <button className={style.buttonAdd} onClick={handleDuplicate}>
             <BiAddToQueue />
           </button>
         </div>

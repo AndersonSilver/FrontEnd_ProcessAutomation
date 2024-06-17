@@ -5,8 +5,8 @@ export function Section() {
   const { pathname } = useLocation()
 
   const webAppEsteiras = [
-    { href: '/workflow', label: 'WorkFlow' },
-    { href: '', label: 'Workflow Group' },
+    { href: '/Workflow', label: 'WorkFlow' },
+    { href: '/WorkflowGroup', label: 'Workflow Group' },
     { href: '', label: 'Workflow Group Itens' },
     { href: '', label: 'Workflow Product' },
     { href: '', label: 'Workflow Step' },
@@ -22,6 +22,7 @@ export function Section() {
     { href: '', label: 'Client File' },
     { href: '', label: 'Client Function' },
     { href: '', label: 'Client Services' },
+    { href: '', label: 'Tech Data' },
   ]
 
   return (
