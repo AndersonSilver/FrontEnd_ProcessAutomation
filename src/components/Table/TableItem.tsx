@@ -1,20 +1,22 @@
-import { useQueryClientManual } from '@/hooks/useQueryClientManual'
+// import { useQueryClientManual } from '@/hooks/useQueryClientManual'
 import { Workflow } from '@/services/Workflow/dto/WorkflowDto'
-import { ChangeEvent, useMemo, useState } from 'react'
+import { ChangeEvent, Dispatch, SetStateAction, useMemo, useState } from 'react'
 import ReactModal from 'react-modal'
 import { styles } from './styles'
+import { WorkflowData } from '../Workflow'
 
 interface TableItemProps {
   item: Workflow
   keyName: keyof Workflow
   className: string
-  setChanges: (changes: unknown[]) => void
-  changes: unknown[]
+  setChanges: (changes: Workflow[]) => void
+  changes: Workflow[]
   deleteMode: boolean
-  setDeleteRowIndex?: (index: number | null) => void
-  editedItems: unknown[]
-  setEditedItems: React.Dispatch<React.SetStateAction<unknown[]>>
-  notValue: unknown | undefined
+  setDeleteRowIndex?: (id: string | null) => void
+  editedItems: Workflow[]
+  setEditedItems: React.Dispatch<React.SetStateAction<Workflow[]>>
+  notValue: Workflow | string | number | boolean | null | undefined | object
+  setWorkflowList: Dispatch<SetStateAction<WorkflowData[]>>
 }
 
 export default function TableItem({
@@ -22,33 +24,58 @@ export default function TableItem({
   keyName,
   className,
   notValue,
+  editedItems,
+  setEditedItems,
+  setWorkflowList,
 }: TableItemProps) {
-  const { getQuery, updateQuery } = useQueryClientManual()
-
   const [value, setValue] = useState<string>()
   const [modalIsOpen, setModalIsOpen] = useState(false)
-
   const currentValue = useMemo(
     () => value ?? item?.[keyName as keyof Workflow],
     [keyName, item, value],
   )
 
+  const handleEdit = (newItem: Workflow) => {
+    const existingItemIndex = editedItems.findIndex(
+      (item: Workflow) => item.id === newItem.id,
+    )
+
+    if (existingItemIndex !== -1) {
+      setEditedItems((prevItems) =>
+        prevItems.map((item, index) =>
+          index === existingItemIndex ? newItem : item,
+        ),
+      )
+    } else {
+      setEditedItems((prevItems) => [...prevItems, newItem])
+    }
+  }
+
   const handleDoubleClick = () => {
     if (keyName !== 'id') {
+      setValue(item[keyName as keyof Workflow] as string)
       setModalIsOpen(true)
     }
   }
 
   const handleModalClose = () => {
-    const currentList = getQuery(['workflows']) as Workflow[]
+    setWorkflowList((prevState: WorkflowData[]) => {
+      const newArray = prevState?.map((state: Workflow) => {
+        if (state?.id === item?.id) {
+          const updatedItem = { ...state, [keyName]: value }
+          if (JSON.stringify(state) !== JSON.stringify(updatedItem)) {
+            handleEdit(updatedItem)
+          }
+          return updatedItem
+        } else {
+          return state
+        }
+      })
 
-    const updateItem = currentList?.map((state: Workflow) => {
-      if (state?.id === item?.id) return { ...state, [keyName]: value }
-      else return state
+      return newArray
     })
 
-    updateQuery(['workflows'], updateItem)
-
+    setValue('') // Reset o valor aqui
     setModalIsOpen(false)
   }
 
@@ -99,9 +126,9 @@ export default function TableItem({
             marginRight: 'auto',
             marginTop: '100px',
             textAlign: 'center',
-            lineHeight: '200px',
+            lineHeight: '20px',
             overflow: 'hidden',
-            borderRadius: '20px',
+            borderRadius: '5px',
           },
         }}
       >

@@ -141,3 +141,31 @@ export interface WorkflowItem {
   id: string
   [key: string]: unknown
 }
+
+export interface ListWorkflowGroupData {
+  data: Workflow[]
+  last_page: number
+  page: number
+  record_count: number
+}
+
+export interface PutWorkflowGroupData {
+  data: Workflow[]
+  last_page: number
+  page: number
+  record_count: number
+}
+
+export interface PostWorkflowGroupData {
+  data: Workflow[]
+  last_page: number
+  page: number
+  record_count: number
+}
+
+export interface DeleteWorkflowGroupData {
+  data: Workflow[]
+  last_page: number
+  page: number
+  record_count: number
+}

@@ -4,25 +4,27 @@ import style from '../Workflow/styles.module.scss'
 import TableItem from './TableItem'
 
 export type OptionsFlags<T> = {
-  [key in keyof T]: keyof unknown
+  [key in keyof T]: keyof Workflow
 }
 
 interface TableRowProps {
   columnOrder: string[]
-  setChanges: (changes: unknown[]) => void
-  changes: unknown[]
+  setChanges: (changes: Workflow[]) => void
+  changes: Workflow[]
   deleteMode: boolean
-  editedItems: unknown[]
-  setEditedItems: React.Dispatch<React.SetStateAction<unknown[]>>
-  selectedRow: number | null
-  setSelectedRow: React.Dispatch<React.SetStateAction<number | null>>
-  deleteRowIndex: number | null
-  setDeleteRowIndex: React.Dispatch<React.SetStateAction<number | null>>
+  editedItems: Workflow[]
+  setEditedItems: React.Dispatch<React.SetStateAction<Workflow[]>>
+  selectedRow: string | null
+  setSelectedRow: React.Dispatch<React.SetStateAction<string | number | null>>
+  deleteRowIndex: string | null
+  setDeleteRowIndex: React.Dispatch<React.SetStateAction<string | null>>
   filteredWorkflowList?: Workflow[]
+  setWorkflowList: React.Dispatch<React.SetStateAction<WorkflowData[]>>
 }
 
 export default function TableRow({
   filteredWorkflowList,
+  setWorkflowList,
   columnOrder,
   setChanges,
   changes,
@@ -34,18 +36,18 @@ export default function TableRow({
   setEditedItems,
   selectedRow,
 }: TableRowProps) {
-  const handleRowClick = (index: number) => {
-    setSelectedRow(index)
-    setDeleteRowIndex(index)
+  const handleRowClick = (id: string) => {
+    setSelectedRow(id)
+    setDeleteRowIndex(id)
   }
 
   return filteredWorkflowList?.map((item: WorkflowData, index: number) => (
     <tr
       key={`item-${item?.id}-${index}`}
-      className={`${index === selectedRow ? style.selectedRow : ''} ${
-        index === deleteRowIndex ? style.deleteMode : ''
+      className={`${item.id === selectedRow ? style.selectedRow : ''} ${
+        item.id === deleteRowIndex ? style.deleteMode : ''
       } ${item.isNew ? style.newId : ''}`}
-      onClick={() => handleRowClick(index)}
+      onClick={() => handleRowClick(item.id)}
     >
       <td>{item.id ? index + 1 : ''}</td>
 
@@ -62,6 +64,7 @@ export default function TableRow({
             editedItems={editedItems}
             setEditedItems={setEditedItems}
             notValue={item[column as keyof Workflow]}
+            setWorkflowList={setWorkflowList}
           />
         </td>
       ))}
