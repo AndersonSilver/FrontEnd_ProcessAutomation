@@ -1,8 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { useAuthContext } from '@/hooks/useAuth'
+// import { useAuthContext } from '@/hooks/useAuth'
 import WorkflowService from '@/services/Workflow/WorkflowService'
 import WorkflowGroupService from '@/services/WorkflowGroup/WorkflowGroupService'
+import WorkflowGroupItemService from '@/services/WorkflowGroupItem/WorkflowGroupItemService'
+import WorkflowProductService from '@/services/WorkflowProduct/WorkflowProductService'
+import WorkflowStepService from '@/services/WorkflowStep/WorkflowStepService'
+import WorkflowStepFormService from '@/services/WorkflowStepForm/WorkflowStepFormService'
 import { Workflow, Filter } from '@/services/Workflow/dto/WorkflowDto'
 import { KeyboardEvent, useMemo, useState } from 'react'
 import Table from '../Table/Table'
@@ -20,7 +24,13 @@ import {
 import { useEffect, useCallback } from 'react'
 
 type WorkflowProtocolProps = {
-  caller: 'workflow' | 'workflowGroup'
+  caller:
+    | 'workflow'
+    | 'workflowGroup'
+    | 'workflowGroupItems'
+    | 'workflowProduct'
+    | 'workflowStep'
+    | 'workflowStepForm'
 }
 
 export type WorkflowData = { isNew?: boolean; id?: string } & Workflow & {
@@ -28,7 +38,7 @@ export type WorkflowData = { isNew?: boolean; id?: string } & Workflow & {
   }
 
 export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
-  const { user } = useAuthContext()
+  // const { user } = useAuthContext()
   const [workflowList, setWorkflowList] = useState<WorkflowData[]>([])
   const [filter, setFilter] = useState<Filter | null>(null)
   const [filteredWorkflowList, setFilteredWorkflowList] = useState<any[]>([])
@@ -38,6 +48,12 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
   const [deleteRowIndex, setDeleteRowIndex] = useState<string | null>(null)
   const [editedItems, setEditedItems] = useState<any[]>([])
   const [cacheKeys, setCacheKeys] = useState<string[]>([])
+  const [workflowGroups, setWorkflowGroups] = useState<WorkflowData[]>([])
+  const [workflow, setWorkflow] = useState<WorkflowData[]>([])
+  const [workflowStep, setWorkflowStep] = useState<WorkflowData[]>([])
+  const [workflowId, setWorkflowId] = useState<string>('')
+  const [workflowStepId, setWorkflowStepId] = useState<string>('')
+  const [workflowGroupId, setworkflowGroupId] = useState<string>('')
 
   useEffect(() => {
     const fetchCacheKeys = async () => {
@@ -74,18 +90,63 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
       service: WorkflowGroupService.getWorkflowsGroup,
       setter: setWorkflowList,
     },
+    workflowGroupItems: {
+      service: WorkflowGroupItemService.getWorkflowsGroupItem,
+      setter: setWorkflowList,
+    },
+    workflowProduct: {
+      service: WorkflowProductService.getWorkflowsProduct,
+      setter: setWorkflowList,
+    },
+    workflowStep: {
+      service: WorkflowStepService.getWorkflowStep,
+      setter: setWorkflowList,
+    },
+    workflowStepForm: {
+      service: WorkflowStepFormService.getWorkflowStepForm,
+      setter: setWorkflowList,
+    },
   }
 
-  const fetchData = useCallback(async ({ caller }: WorkflowProtocolProps) => {
-    const { service, setter } = serviceMap[caller]
-    const { data } = await service()
-    setter(data)
-    setWorkflowList(data as WorkflowData[])
-  }, [])
+  const fetchData = useCallback(
+    async ({ caller }: WorkflowProtocolProps) => {
+      const { service, setter } = serviceMap[caller]
+      let data
+
+      if (caller === 'workflowGroupItems') {
+        if (!workflowGroupId) {
+          return
+        }
+        const response = await service(workflowGroupId, '')
+        data = response.data
+      } else if (caller === 'workflowStep') {
+        if (!workflowId) {
+          return
+        }
+        const response = await service(workflowId, '')
+        data = response.data
+        setWorkflowId('')
+      } else if (caller === 'workflowStepForm') {
+        if (!workflowStepId || !workflowId) {
+          return
+        }
+        const response = await service(workflowId, workflowStepId)
+        data = response.data
+        // setWorkflowStepId('')
+        // setWorkflowId('')
+      } else {
+        const response = await service('', '')
+        data = response.data
+      }
+      setter(data)
+      setWorkflowList(data as WorkflowData[])
+    },
+    [workflowGroupId, workflowId, workflowStepId],
+  )
 
   useEffect(() => {
     fetchData({ caller: caller })
-  }, [user, caller, fetchData])
+  }, [workflowGroupId, caller, fetchData, workflowId])
 
   const columnOrder = useMemo(
     () => Object?.keys?.(workflowList?.[0] ?? {}),
@@ -144,11 +205,79 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
           }
           displaySuccess('workflow Group salvo com sucesso!')
           return resultworkflowGroup
+        } else if (caller === 'workflowGroupItems') {
+          let resultworkflowGroupItem
+          if (item.isNew) {
+            resultworkflowGroupItem =
+              WorkflowGroupItemService.postWorkflowsGroupItem(
+                item,
+                workflowGroupId,
+              )
+          } else {
+            resultworkflowGroupItem =
+              WorkflowGroupItemService.putWorkflowsGroupItem(
+                item,
+                workflowGroupId,
+                item.id,
+              )
+          }
+          displaySuccess('workflow Group Item salvo com sucesso!')
+          return resultworkflowGroupItem
+        } else if (caller === 'workflowProduct') {
+          let resultworkflowProduct
+          if (item.isNew) {
+            resultworkflowProduct =
+              WorkflowProductService.postWorkflowsProduct(item)
+          } else {
+            resultworkflowProduct = WorkflowProductService.putWorkflowsProduct(
+              item,
+              item.id,
+            )
+          }
+          displaySuccess('workflow Product salvo com sucesso!')
+          return resultworkflowProduct
+        } else if (caller === 'workflowStep') {
+          let resultworkflowStep
+          if (item.isNew) {
+            resultworkflowStep = WorkflowStepService.postWorkflowStep(
+              item,
+              workflowId,
+            )
+          } else {
+            resultworkflowStep = WorkflowStepService.putWorkflowStep(
+              item,
+              workflowId,
+              item.id,
+            )
+          }
+          displaySuccess('workflow Step salvo com sucesso!')
+          return resultworkflowStep
+        } else if (caller === 'workflowStepForm') {
+          if (!workflowId || !workflowStepId) {
+            console.error('workflowId ou workflowStepId não estão definidos')
+            return
+          }
+          let resultworkflowStepForm
+          if (item.isNew) {
+            resultworkflowStepForm =
+              WorkflowStepFormService.postWorkflowStepForm(
+                item,
+                workflowId,
+                workflowStepId,
+              )
+          } else {
+            resultworkflowStepForm =
+              WorkflowStepFormService.putWorkflowStepForm(
+                item,
+                workflowId,
+                workflowStepId,
+                item.id,
+              )
+          }
+          displaySuccess('workflow Step Form salvo com sucesso!')
+          return resultworkflowStepForm
         }
       })
-
-      console.log('promises', promises)
-
       await Promise.all(promises)
 
       fetchData({ caller: caller })
@@ -174,6 +303,34 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
               selectedRow.toString(),
             )
             displaySuccess('workflow Group deletado com sucesso!')
+            await fetchData({ caller: caller })
+          } else if (caller === 'workflowGroupItems') {
+            await WorkflowGroupItemService.deleteWorkflowsGroupItem(
+              workflowGroupId,
+              selectedRow.toString(),
+            )
+            displaySuccess('workflow Group Item deletado com sucesso!')
+            await fetchData({ caller: caller })
+          } else if (caller === 'workflowProduct') {
+            await WorkflowProductService.deleteWorkflowsProduct(
+              selectedRow.toString(),
+            )
+            displaySuccess('workflow Product deletado com sucesso!')
+            await fetchData({ caller: caller })
+          } else if (caller === 'workflowStep') {
+            await WorkflowStepService.deleteWorkflowStep(
+              workflowId,
+              selectedRow.toString(),
+            )
+            displaySuccess('workflow Step deletado com sucesso!')
+            await fetchData({ caller: caller })
+          } else if (caller === 'workflowStepForm') {
+            await WorkflowStepFormService.deleteWorkflowStepForm(
+              workflowId,
+              workflowStepId,
+              selectedRow.toString(),
+            )
+            displaySuccess('workflow Step Form deletado com sucesso!')
             await fetchData({ caller: caller })
           }
         } catch (error) {
@@ -225,10 +382,6 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
   }
 
   useEffect(() => {
-    fetchData({ caller: caller })
-  }, [fetchData])
-
-  useEffect(() => {
     let list = [...workflowList]
     if (filter) {
       list = list.filter((item) =>
@@ -248,11 +401,67 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
     setFilteredWorkflowList(list)
   }, [workflowList, filter])
 
+  useEffect(() => {
+    console.log('workflowId:', workflowId)
+    console.log('workflowStepId:', workflowStepId)
+    if (caller === 'workflowGroupItems') {
+      const fetchWorkflowGroups = async () => {
+        const response = await WorkflowGroupService.getWorkflowsGroup()
+        setWorkflowGroups(response.data)
+      }
+
+      fetchWorkflowGroups()
+    } else if (caller === 'workflowStep') {
+      const fetchWorkflow = async () => {
+        const response = await WorkflowService.getWorkflows()
+        setWorkflow(response.data)
+      }
+
+      fetchWorkflow()
+    } else if (caller === 'workflowStepForm') {
+      const fetchWorkflow = async () => {
+        const response = await WorkflowService.getWorkflows()
+        setWorkflow(response.data)
+      }
+
+      const fetchWorkflowStep = async () => {
+        if (!workflowId) {
+          return
+        }
+        const response = await WorkflowStepService.getWorkflowStep(workflowId)
+        setWorkflowStep(response.data)
+      }
+
+      fetchWorkflow()
+      fetchWorkflowStep()
+    }
+  }, [workflowGroupId, caller, workflowId, workflowStepId])
+
+  useEffect(() => {
+    if (workflowStepId) {
+      fetchData({ caller: 'workflowStepForm' })
+    }
+  }, [workflowStepId])
+
   return (
     <aside className={style.AsideContainer}>
       <div className={style.containerTable}>
         <div className={style.menuFiltro}>
-          <span className={style.filterLabel}>WORKFLOW</span>
+          <span className={style.filterLabel}>
+            {caller === 'workflowGroupItems'
+              ? 'Workflow Group Items'
+              : caller === 'workflowGroup'
+                ? 'Workflow Group'
+                : caller === 'workflow'
+                  ? 'Workflow'
+                  : caller === 'workflowProduct'
+                    ? 'Workflow Product'
+                    : caller === 'workflowStep'
+                      ? 'Workflow Step'
+                      : caller === 'workflowStepForm'
+                        ? 'Workflow Step Form'
+                        : ''}
+          </span>
           <input
             className={style.filterText}
             type='text'
@@ -260,6 +469,89 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
             placeholder=''
           />
         </div>
+        {caller === 'workflowGroupItems' && (
+          <>
+            <span className={style.filterLabelRota}>
+              Selecione um grupo para fazer a busca dos items
+            </span>
+            <select
+              className={style.AsideSelectGroupId}
+              onChange={(e) => setworkflowGroupId(e.target.value)}
+            >
+              <option value='' className={style.selectOption}>
+                Selecione um grupo para fazer a busca dos items
+              </option>
+              {workflowGroups.map((workflowGroup) => (
+                <option
+                  key={workflowGroup.id}
+                  value={workflowGroup.id}
+                  className={style.selectOption}
+                >
+                  {`${workflowGroup.id} - ${workflowGroup.title}`}
+                </option>
+              ))}
+            </select>
+          </>
+        )}
+        {caller === 'workflowStep' && (
+          <>
+            <span className={style.filterLabelRota}>
+              Selecione um workflow para fazer a busca dos items
+            </span>
+            <select
+              className={style.AsideSelectGroupId}
+              onChange={(e) => setWorkflowId(e.target.value)}
+            >
+              <option value=''>Selecione um workflow para fazer a busca</option>
+              {workflow.map((workflow) => (
+                <option key={workflow.id} value={workflow.id}>
+                  {`${workflow.id} - ${workflow.title}`}
+                </option>
+              ))}
+            </select>
+          </>
+        )}
+        {caller === 'workflowStepForm' && (
+          <>
+            <div className={style.AsideSelectMainworkflowStepForm}>
+              <div className={style.AsideSelectworkflowStepForm}>
+                <span className={style.filterLabelRota}>WORKFLOW</span>
+
+                <select
+                  className={style.AsideSelectGroupId}
+                  onChange={(e) => setWorkflowId(e.target.value)}
+                >
+                  <option value=''>
+                    Selecione um workflow para fazer a busca
+                  </option>
+                  {workflow.map((workflow) => (
+                    <option key={workflow.id} value={workflow.id}>
+                      {`${workflow.id} - ${workflow.title}`}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className={style.AsideSelectworkflowStepForm}>
+                <span className={style.filterLabelRota}>WORKFLOW STEP</span>
+
+                <select
+                  className={style.AsideSelectGroupId}
+                  onChange={(e) => setWorkflowStepId(e.target.value)}
+                >
+                  <option value=''>
+                    Selecione um workflow Step para fazer a busca
+                  </option>
+                  {workflowStep.map((workflowStep) => (
+                    <option key={workflowStep.id} value={workflowStep.id}>
+                      {`${workflowStep.id} - ${workflowStep.title}`}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          </>
+        )}
         <div className={style.containerTableTwo}>
           <Table columnOrder={columnOrder}>
             <TableRow
