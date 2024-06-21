@@ -5,6 +5,8 @@ import { WorkflowGroupItemPage } from '@/pages/workflowGroupItem/workflowGroupIt
 import { WorkflowProductPage } from '@/pages/workflowProduct/workflowProduct.page'
 import { WorkflowStepPage } from '@/pages/workflowStep/workflowStep.page'
 import { WorkflowStepFormPage } from '@/pages/workflowStepForm/workflowStepForm.page'
+import { WorkflowFormPage } from '@/pages/workflowForm/workflowForm.page'
+import { WorkflowFormGroupPage } from '@/pages/workflowFormGroup/workflowFormGroup.page'
 
 export const PRIVATE_ROUTES = [
   {
@@ -34,5 +36,13 @@ export const PRIVATE_ROUTES = [
   {
     path: '/workflowStepForm',
     element: <WorkflowStepFormPage />,
+  },
+  {
+    path: '/workflowForm',
+    element: <WorkflowFormPage />,
+  },
+  {
+    path: '/workflowFormGroup',
+    element: <WorkflowFormGroupPage />,
   },
 ]

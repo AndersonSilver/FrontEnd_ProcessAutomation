@@ -11,18 +11,18 @@ export function Section() {
     { href: '/WorkflowProduct', label: 'Workflow Product' },
     { href: '/WorkflowStep', label: 'Workflow Step' },
     { href: '/WorkflowStepForm', label: 'Workflow Step Form' },
-    // { href: '', label: 'Workflow Form' },
-    // { href: '', label: 'Workflow Form Group' },
+    { href: '/WorkflowForm', label: 'Workflow Form' },
+    { href: '/WorkflowFormGroup', label: 'Workflow Form Group' },
     // { href: '', label: 'Workflow File' },
-    // { href: '', label: 'Workflow Form Field' },
     // { href: '', label: 'Workflow History' },
   ]
   const webAppClient = [
-    { href: '', label: 'Client Product Request' },
-    { href: '', label: 'Client File' },
-    { href: '', label: 'Client Function' },
-    { href: '', label: 'Client Services' },
-    { href: '', label: 'Tech Data' },
+    { href: '', label: 'Listagem CPR' },
+    { href: '', label: 'Editar Function CPR' },
+    // { href: '', label: 'Client File' },
+    // { href: '', label: 'Client Function' },
+    // { href: '', label: 'Client Services' },
+    // { href: '', label: 'Tech Data' },
   ]
 
   return (

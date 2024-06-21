@@ -5,7 +5,7 @@ const tableItem: CSSProperties = {
   color: '#D4D4D4',
   fontFamily: 'Courier New, Monaco, monospace',
   padding: '10px',
-  width: '500px',
+  width: '700px',
   height: '450px',
   marginBottom: '20px',
   border: 'none',
