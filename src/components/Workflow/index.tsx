@@ -66,7 +66,7 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
   const [workflowId, setWorkflowId] = useState<string>('')
   const [workflowStepId, setWorkflowStepId] = useState<string>('')
   const [workflowGroupId, setworkflowGroupId] = useState<string>('')
-  const [workflowFormData, setWorkflowFormData] = useState<WorkflowData[]>([])
+  // const [workflowFormData, setWorkflowFormData] = useState<WorkflowData[]>([])
   const [workflowForm, setWorkflowForm] = useState<WorkflowData[]>([])
   const [workflowFormId, setWorkflowFormId] = useState<string>('')
   const [client, setClient] = useState<WorkflowData[]>([])
@@ -189,7 +189,7 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
       if (caller === 'workflowStep') {
         setWorkflowId('')
       } else if (caller === 'workflowForm') {
-        setWorkflowFormData(data)
+        // setWorkflowFormData(data)
       }
 
       if (data.length > 0) {
