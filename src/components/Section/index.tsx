@@ -17,7 +17,7 @@ export function Section() {
     // { href: '', label: 'Workflow History' },
   ]
   const webAppClient = [
-    { href: '', label: 'Listagem CPR' },
+    { href: '/ClientProductRequest', label: 'Listagem CPR' },
     { href: '', label: 'Editar Function CPR' },
     // { href: '', label: 'Client File' },
     // { href: '', label: 'Client Function' },

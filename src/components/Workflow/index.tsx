@@ -9,6 +9,8 @@ import WorkflowStepService from '@/services/WorkflowStep/WorkflowStepService'
 import WorkflowStepFormService from '@/services/WorkflowStepForm/WorkflowStepFormService'
 import WorkflowFormService from '@/services/WorkflowForm/WorkflowFormService'
 import WorkflowFormGroupService from '@/services/WorkflowFormGroup/WorkflowFormGroupService'
+import ClientProductRequestService from '@/services/ClientProductRequest/ClientProductRequestService'
+import ClientService from '@/services/Client/ClientService'
 import { Workflow, Filter } from '@/services/Workflow/dto/WorkflowDto'
 import { KeyboardEvent, useMemo, useState } from 'react'
 import Table from '../Table/Table'
@@ -24,8 +26,8 @@ import {
   displaySuccess,
 } from '../../utils/functions/messageToast'
 import { useEffect, useCallback } from 'react'
-import Select from 'react-select'
 import CreatableSelect from 'react-select/creatable'
+import { useAuthContext } from '@/hooks/useAuth'
 
 type WorkflowProtocolProps = {
   caller:
@@ -37,6 +39,7 @@ type WorkflowProtocolProps = {
     | 'workflowStepForm'
     | 'workflowForm'
     | 'workflowFormGroup'
+    | 'clientProductRequest'
 }
 
 export type WorkflowData = {
@@ -66,6 +69,9 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
   const [workflowFormData, setWorkflowFormData] = useState<WorkflowData[]>([])
   const [workflowForm, setWorkflowForm] = useState<WorkflowData[]>([])
   const [workflowFormId, setWorkflowFormId] = useState<string>('')
+  const [client, setClient] = useState<WorkflowData[]>([])
+
+  const { user } = useAuthContext()
 
   useEffect(() => {
     const fetchCacheKeys = async () => {
@@ -92,6 +98,15 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
 
     clearCache()
   }, [cacheKeys])
+
+  useEffect(() => {
+    const fetchClient = async () => {
+      const response = await ClientService.getClient()
+      setClient(response.data)
+    }
+
+    fetchClient()
+  }, [])
 
   const serviceMap = {
     workflow: {
@@ -126,68 +141,63 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
       service: WorkflowFormGroupService.getWorkflowFormGroup,
       setter: setWorkflowList,
     },
+    clientProductRequest: {
+      service: ClientProductRequestService.getClientProductRequest,
+      setter: setWorkflowList,
+    },
   }
 
   const fetchData = useCallback(
     async ({ caller }: WorkflowProtocolProps) => {
       const { service, setter } = serviceMap[caller]
-      let data
+      let data: WorkflowData[] = []
+      let shouldFetch = true
+      let params: [string, string] = ['', '']
 
       switch (caller) {
-        case 'workflowGroupItems': {
-          if (!workflowGroupId) {
-            return
-          }
-          const responseGroupItems = await service(workflowGroupId, '')
-          data = responseGroupItems.data
+        case 'workflowGroupItems':
+          shouldFetch = !!workflowGroupId
+          params = [workflowGroupId, '']
           break
-        }
-        case 'workflowStep': {
-          if (!workflowId) {
-            return
-          }
-          const responseWorkflowStep = await service(workflowId, '')
-          data = responseWorkflowStep.data
-          setWorkflowId('')
+        case 'workflowStep':
+          shouldFetch = !!workflowId
+          params = [workflowId, '']
           break
-        }
-        case 'workflowStepForm': {
-          if (!workflowStepId || !workflowId) {
-            return
-          }
-          const responseWorkflowStepForm = await serviceMap[
-            'workflowStepForm'
-          ].service(workflowId, workflowStepId)
-          data = responseWorkflowStepForm.data
+        case 'workflowStepForm':
+          shouldFetch = !!workflowStepId && !!workflowId
+          params = [workflowId, workflowStepId]
           break
-        }
-        case 'workflowForm': {
-          const responseWorkflowForm =
-            await serviceMap['workflowForm'].service()
-          data = responseWorkflowForm.data
-          setWorkflowFormData(data)
+        case 'workflowFormGroup':
+          shouldFetch = !!workflowId && !!workflowFormId
+          params = [workflowId, workflowFormId]
           break
-        }
-        case 'workflowFormGroup': {
-          if (!workflowId || !workflowFormId) {
-            return
-          }
-          const responseWorkflowFormGroup = await service(
-            workflowId,
-            workflowFormId,
-          )
-          data = responseWorkflowFormGroup.data
+        case 'clientProductRequest':
+          shouldFetch = client && client.length > 0 && !!client[0].id
+          params = [client[0]?.id.toString(), '']
           break
-        }
-        default: {
-          const responseDefault = await service('', '')
-          data = responseDefault.data
-        }
+        case 'workflowForm':
+          break
+        default:
+          break
       }
-      setter(data)
-      setWorkflowList(data as WorkflowData[])
+
+      if (!shouldFetch) return
+
+      const response = await service(...params)
+      data = response.data || []
+
+      if (caller === 'workflowStep') {
+        setWorkflowId('')
+      } else if (caller === 'workflowForm') {
+        setWorkflowFormData(data)
+      }
+
+      if (data.length > 0) {
+        setter(data)
+        setWorkflowList(data)
+      }
     },
-    [workflowGroupId, workflowId, workflowStepId, workflowFormId],
+    [workflowGroupId, workflowId, workflowStepId, workflowFormId, client],
   )
 
   useEffect(() => {
@@ -245,14 +255,16 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
         }
 
         // Adicione este bloco de código
-        item.workflow_form_fields = item.workflow_form_fields.map(
-          (field: { length: number | null }) => {
-            if (field.length === null) {
-              field.length = 0
-            }
-            return field
-          },
-        )
+        if (caller === 'workflowForm') {
+          item.workflow_form_fields = item.workflow_form_fields.map(
+            (field: { length: number | null }) => {
+              if (field.length === null) {
+                field.length = 0
+              }
+              return field
+            },
+          )
+        }
 
         if (caller === 'workflow') {
           let resultworkflow
@@ -358,6 +370,44 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
           }
           displaySuccess('workflow Form salvo com sucesso!')
           return resultworkflowForm
+        } else if (caller === 'clientProductRequest') {
+          const clientName = user?.client || ''
+
+          const clientIds: Record<string, string> = {
+            tradicao: '61a21c71-44b3-4169-8bb1-d94c34aab8cc',
+            porto: 'eb864cba-03fc-4969-bc51-d388f3b465f0',
+            allianz: 'e59fd743-9c7b-4a82-9140-cc034caa55ab',
+            tech: '3e2cc5c6-d2da-4974-8812-fa9162b88098',
+            serviceit: 'd6c163b9-631e-402e-adcf-0f3f8f114c74',
+            bradesco: 'e9b99e04-8881-4fb5-9bbc-e90462237d0c',
+            portorh: '2e7fb57f-ce07-4fa3-8570-b8e90e4190b9',
+            unifisa: '5af88692-85bd-41e4-b868-7ac0790014be',
+            allan: '24900439-5195-42e7-ba12-b4424a104501',
+            'feature-test': 'bae5a966-9fb6-4ae5-9d6e-03a690f0426c',
+            mapfre: '8034dc19-f93c-4be6-9629-a16ac59b3861',
+            canopus: '8fc11063-2db3-4746-9795-0b1865a7b759',
+            gustey: 'e9cd217c-7fe0-4fbc-9607-f5fadd573f10',
+            test: '37a60585-c2db-4ae4-8f7f-85f85f6f3193',
+          }
+
+          const client_id = clientIds[clientName] || ''
+          let resultClientProductRequest
+          if (item.isNew) {
+            resultClientProductRequest =
+              ClientProductRequestService.postClientProductRequest(
+                item,
+                client_id,
+              )
+          } else {
+            resultClientProductRequest =
+              ClientProductRequestService.putClientProductRequest(
+                item,
+                client_id,
+                item.id,
+              )
+          }
+          displaySuccess('Client Product Request salvo com sucesso!')
+          return resultClientProductRequest
         }
       })
       await Promise.all(promises)
@@ -417,6 +467,32 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
           } else if (caller === 'workflowForm') {
             await WorkflowFormService.deleteWorkflowForm(selectedRow.toString())
             displaySuccess('workflow Form deletado com sucesso!')
+            await fetchData({ caller: caller })
+          } else if (caller === 'clientProductRequest') {
+            const clientName = user?.client || ''
+
+            const clientIds: Record<string, string> = {
+              tradicao: '61a21c71-44b3-4169-8bb1-d94c34aab8cc',
+              porto: 'eb864cba-03fc-4969-bc51-d388f3b465f0',
+              allianz: 'e59fd743-9c7b-4a82-9140-cc034caa55ab',
+              tech: '3e2cc5c6-d2da-4974-8812-fa9162b88098',
+              serviceit: 'd6c163b9-631e-402e-adcf-0f3f8f114c74',
+              bradesco: 'e9b99e04-8881-4fb5-9bbc-e90462237d0c',
+              portorh: '2e7fb57f-ce07-4fa3-8570-b8e90e4190b9',
+              unifisa: '5af88692-85bd-41e4-b868-7ac0790014be',
+              allan: '24900439-5195-42e7-ba12-b4424a104501',
+              mapfre: '8034dc19-f93c-4be6-9629-a16ac59b3861',
+              canopus: '8fc11063-2db3-4746-9795-0b1865a7b759',
+              gustey: 'e9cd217c-7fe0-4fbc-9607-f5fadd573f10',
+              test: '37a60585-c2db-4ae4-8f7f-85f85f6f3193',
+            }
+
+            const client_id = clientIds[clientName] || ''
+            await ClientProductRequestService.deleteClientProductRequest(
+              client_id,
+              selectedRow.toString(),
+            )
+            displaySuccess('Client Product Request deletado com sucesso!')
             await fetchData({ caller: caller })
           }
         } catch (error) {
@@ -587,7 +663,9 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
                           ? 'Workflow Form'
                           : caller === 'workflowFormGroup'
                             ? 'Workflow Form Group'
-                            : ''}
+                            : caller === 'clientProductRequest'
+                              ? 'Client Product Request'
+                              : ''}
           </span>
           <input
             className={style.filterText}
