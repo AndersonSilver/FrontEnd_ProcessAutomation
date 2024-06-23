@@ -120,7 +120,7 @@ export default function TableItem({
           content: {
             color: '#fff',
             backgroundColor: '#1E1E1E',
-            width: '550px',
+            width: '700px',
             height: '500px',
             marginLeft: 'auto',
             marginRight: 'auto',
@@ -128,7 +128,7 @@ export default function TableItem({
             textAlign: 'center',
             lineHeight: '20px',
             overflow: 'hidden',
-            borderRadius: '5px',
+            borderRadius: '15px',
           },
         }}
       >

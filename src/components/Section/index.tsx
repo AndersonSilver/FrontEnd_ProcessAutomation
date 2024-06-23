@@ -7,22 +7,22 @@ export function Section() {
   const webAppEsteiras = [
     { href: '/Workflow', label: 'WorkFlow' },
     { href: '/WorkflowGroup', label: 'Workflow Group' },
-    { href: '', label: 'Workflow Group Itens' },
-    { href: '', label: 'Workflow Product' },
-    { href: '', label: 'Workflow Step' },
-    { href: '', label: 'Workflow Step Form' },
-    { href: '', label: 'Workflow Form' },
-    { href: '', label: 'Workflow Form Group' },
-    { href: '', label: 'Workflow File' },
-    { href: '', label: 'Workflow Form Field' },
-    { href: '', label: 'Workflow History' },
+    { href: '/WorkflowGroupItem', label: 'Workflow Group Itens' },
+    { href: '/WorkflowProduct', label: 'Workflow Product' },
+    { href: '/WorkflowStep', label: 'Workflow Step' },
+    { href: '/WorkflowStepForm', label: 'Workflow Step Form' },
+    { href: '/WorkflowForm', label: 'Workflow Form' },
+    { href: '/WorkflowFormGroup', label: 'Workflow Form Group' },
+    // { href: '', label: 'Workflow File' },
+    // { href: '', label: 'Workflow History' },
   ]
   const webAppClient = [
-    { href: '', label: 'Client Product Request' },
-    { href: '', label: 'Client File' },
-    { href: '', label: 'Client Function' },
-    { href: '', label: 'Client Services' },
-    { href: '', label: 'Tech Data' },
+    { href: '/ClientProductRequest', label: 'Listagem CPR' },
+    { href: '', label: 'Editar Function CPR' },
+    // { href: '', label: 'Client File' },
+    // { href: '', label: 'Client Function' },
+    // { href: '', label: 'Client Services' },
+    // { href: '', label: 'Tech Data' },
   ]
 
   return (
