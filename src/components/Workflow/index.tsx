@@ -71,8 +71,6 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
   const [workflowFormId, setWorkflowFormId] = useState<string>('')
   const [client, setClient] = useState<WorkflowData[]>([])
 
-  const { user } = useAuthContext()
-
   useEffect(() => {
     const fetchCacheKeys = async () => {
       if (typeof window !== 'undefined' && window.caches) {
@@ -256,7 +254,7 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
 
         // Adicione este bloco de código
         if (caller === 'workflowForm') {
-          item.workflow_form_fields = item.workflow_form_fields.map(
+          item.workflow_form_fields = item.workflow_form_fields?.map(
             (field: { length: number | null }) => {
               if (field.length === null) {
                 field.length = 0
@@ -360,49 +358,63 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
           return resultworkflowStepForm
         } else if (caller === 'workflowForm') {
           let resultworkflowForm
-          if (item.isNew) {
-            resultworkflowForm = WorkflowFormService.postWorkflowForm(item)
-          } else {
-            resultworkflowForm = WorkflowFormService.putWorkflowForm(
-              item,
-              item.id,
-            )
+
+          if (typeof item.multiple_responses === 'string') {
+            item.multiple_responses =
+              item.multiple_responses.toLowerCase() === 'true'
           }
-          displaySuccess('workflow Form salvo com sucesso!')
+
+          const requiredFields = [
+            'sub_title',
+            'title',
+            'description',
+            'index',
+            'workflow_form_key',
+            'multiple_responses',
+          ]
+
+          let allFieldsValid = true
+          requiredFields.forEach((field) => {
+            if (field === 'multiple_responses') {
+              if (item[field] === undefined) {
+                displayError(`${field} é obrigatório`)
+                allFieldsValid = false
+              }
+            } else if (!item[field]) {
+              displayError(`${field} é obrigatório`)
+              allFieldsValid = false
+            }
+          })
+
+          if (allFieldsValid) {
+            if (item.isNew) {
+              resultworkflowForm = WorkflowFormService.postWorkflowForm(item)
+            } else {
+              resultworkflowForm = WorkflowFormService.putWorkflowForm(
+                item,
+                item.id,
+              )
+            }
+
+            if (resultworkflowForm === null) {
+              displaySuccess('workflow Form salvo com sucesso!')
+            }
+          }
+
           return resultworkflowForm
         } else if (caller === 'clientProductRequest') {
-          const clientName = user?.client || ''
-
-          const clientIds: Record<string, string> = {
-            tradicao: '61a21c71-44b3-4169-8bb1-d94c34aab8cc',
-            porto: 'eb864cba-03fc-4969-bc51-d388f3b465f0',
-            allianz: 'e59fd743-9c7b-4a82-9140-cc034caa55ab',
-            tech: '3e2cc5c6-d2da-4974-8812-fa9162b88098',
-            serviceit: 'd6c163b9-631e-402e-adcf-0f3f8f114c74',
-            bradesco: 'e9b99e04-8881-4fb5-9bbc-e90462237d0c',
-            portorh: '2e7fb57f-ce07-4fa3-8570-b8e90e4190b9',
-            unifisa: '5af88692-85bd-41e4-b868-7ac0790014be',
-            allan: '24900439-5195-42e7-ba12-b4424a104501',
-            'feature-test': 'bae5a966-9fb6-4ae5-9d6e-03a690f0426c',
-            mapfre: '8034dc19-f93c-4be6-9629-a16ac59b3861',
-            canopus: '8fc11063-2db3-4746-9795-0b1865a7b759',
-            gustey: 'e9cd217c-7fe0-4fbc-9607-f5fadd573f10',
-            test: '37a60585-c2db-4ae4-8f7f-85f85f6f3193',
-          }
-
-          const client_id = clientIds[clientName] || ''
           let resultClientProductRequest
           if (item.isNew) {
             resultClientProductRequest =
               ClientProductRequestService.postClientProductRequest(
                 item,
-                client_id,
+                client[0]?.id,
               )
           } else {
             resultClientProductRequest =
               ClientProductRequestService.putClientProductRequest(
                 item,
-                client_id,
+                client[0]?.id,
                 item.id,
               )
           }
@@ -416,7 +428,6 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
 
       setEditedItems([])
     } catch (error) {
-      displayError('Erro ao salvar!')
       console.error('Erro ao salvar os itens editados:', error)
     }
   }
@@ -469,27 +480,8 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
             displaySuccess('workflow Form deletado com sucesso!')
             await fetchData({ caller: caller })
           } else if (caller === 'clientProductRequest') {
-            const clientName = user?.client || ''
-
-            const clientIds: Record<string, string> = {
-              tradicao: '61a21c71-44b3-4169-8bb1-d94c34aab8cc',
-              porto: 'eb864cba-03fc-4969-bc51-d388f3b465f0',
-              allianz: 'e59fd743-9c7b-4a82-9140-cc034caa55ab',
-              tech: '3e2cc5c6-d2da-4974-8812-fa9162b88098',
-              serviceit: 'd6c163b9-631e-402e-adcf-0f3f8f114c74',
-              bradesco: 'e9b99e04-8881-4fb5-9bbc-e90462237d0c',
-              portorh: '2e7fb57f-ce07-4fa3-8570-b8e90e4190b9',
-              unifisa: '5af88692-85bd-41e4-b868-7ac0790014be',
-              allan: '24900439-5195-42e7-ba12-b4424a104501',
-              mapfre: '8034dc19-f93c-4be6-9629-a16ac59b3861',
-              canopus: '8fc11063-2db3-4746-9795-0b1865a7b759',
-              gustey: 'e9cd217c-7fe0-4fbc-9607-f5fadd573f10',
-              test: '37a60585-c2db-4ae4-8f7f-85f85f6f3193',
-            }
-
-            const client_id = clientIds[clientName] || ''
             await ClientProductRequestService.deleteClientProductRequest(
-              client_id,
+              client[0]?.id,
               selectedRow.toString(),
             )
             displaySuccess('Client Product Request deletado com sucesso!')
