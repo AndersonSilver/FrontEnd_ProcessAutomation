@@ -27,7 +27,6 @@ import {
 } from '../../utils/functions/messageToast'
 import { useEffect, useCallback } from 'react'
 import CreatableSelect from 'react-select/creatable'
-import { useAuthContext } from '@/hooks/useAuth'
 
 type WorkflowProtocolProps = {
   caller:
