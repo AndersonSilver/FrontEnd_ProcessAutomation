@@ -266,10 +266,23 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
 
         if (caller === 'workflow') {
           let resultworkflow
-          if (item.isNew) {
-            resultworkflow = WorkflowService.postWorkflows(item)
-          } else {
-            resultworkflow = WorkflowService.putWorkflows(item, item.id)
+
+          const requiredFields = ['title', 'description']
+
+          let allFieldsValid = true
+          requiredFields.forEach((field) => {
+            if (!item[field]) {
+              displayError(`${field} é obrigatório`)
+              allFieldsValid = false
+            }
+          })
+
+          if (allFieldsValid) {
+            if (item.isNew) {
+              resultworkflow = WorkflowService.postWorkflows(item)
+            } else {
+              resultworkflow = WorkflowService.putWorkflows(item, item.id)
+            }
           }
           if (!resultworkflow) {
             shouldFetchData = false
@@ -279,13 +292,26 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
           return resultworkflow
         } else if (caller === 'workflowGroup') {
           let resultworkflowGroup
-          if (item.isNew) {
-            resultworkflowGroup = WorkflowGroupService.postWorkflowsGroup(item)
-          } else {
-            resultworkflowGroup = WorkflowGroupService.putWorkflowsGroup(
-              item,
-              item.id,
-            )
+          const requiredFields = ['title', 'filters', 'workflow_group_key']
+
+          let allFieldsValid = true
+          requiredFields.forEach((field) => {
+            if (!item[field]) {
+              displayError(`${field} é obrigatório`)
+              allFieldsValid = false
+            }
+          })
+
+          if (allFieldsValid) {
+            if (item.isNew) {
+              resultworkflowGroup =
+                WorkflowGroupService.postWorkflowsGroup(item)
+            } else {
+              resultworkflowGroup = WorkflowGroupService.putWorkflowsGroup(
+                item,
+                item.id,
+              )
+            }
           }
           if (!resultworkflowGroup) {
             shouldFetchData = false
@@ -295,19 +321,31 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
           return resultworkflowGroup
         } else if (caller === 'workflowGroupItems') {
           let resultworkflowGroupItem
-          if (item.isNew) {
-            resultworkflowGroupItem =
-              WorkflowGroupItemService.postWorkflowsGroupItem(
-                item,
-                workflowGroupId,
-              )
-          } else {
-            resultworkflowGroupItem =
-              WorkflowGroupItemService.putWorkflowsGroupItem(
-                item,
-                workflowGroupId,
-                item.id,
-              )
+          const requiredFields = ['workflow_id', 'workflow_group_id']
+
+          let allFieldsValid = true
+          requiredFields.forEach((field) => {
+            if (!item[field]) {
+              displayError(`${field} é obrigatório`)
+              allFieldsValid = false
+            }
+          })
+
+          if (allFieldsValid) {
+            if (item.isNew) {
+              resultworkflowGroupItem =
+                WorkflowGroupItemService.postWorkflowsGroupItem(
+                  item,
+                  workflowGroupId,
+                )
+            } else {
+              resultworkflowGroupItem =
+                WorkflowGroupItemService.putWorkflowsGroupItem(
+                  item,
+                  workflowGroupId,
+                  item.id,
+                )
+            }
           }
           if (!resultworkflowGroupItem) {
             shouldFetchData = false
@@ -317,14 +355,30 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
           return resultworkflowGroupItem
         } else if (caller === 'workflowProduct') {
           let resultworkflowProduct
-          if (item.isNew) {
-            resultworkflowProduct =
-              WorkflowProductService.postWorkflowsProduct(item)
-          } else {
-            resultworkflowProduct = WorkflowProductService.putWorkflowsProduct(
-              item,
-              item.id,
-            )
+          const requiredFields = [
+            'title',
+            'description',
+            'index',
+            'service_key',
+            'client_service_id',
+          ]
+
+          let allFieldsValid = true
+          requiredFields.forEach((field) => {
+            if (!item[field]) {
+              displayError(`${field} é obrigatório`)
+              allFieldsValid = false
+            }
+          })
+
+          if (allFieldsValid) {
+            if (item.isNew) {
+              resultworkflowProduct =
+                WorkflowProductService.postWorkflowsProduct(item)
+            } else {
+              resultworkflowProduct =
+                WorkflowProductService.putWorkflowsProduct(item, item.id)
+            }
           }
           if (!resultworkflowProduct) {
             shouldFetchData = false
@@ -334,17 +388,34 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
           return resultworkflowProduct
         } else if (caller === 'workflowStep') {
           let resultworkflowStep
-          if (item.isNew) {
-            resultworkflowStep = WorkflowStepService.postWorkflowStep(
-              item,
-              workflowId,
-            )
-          } else {
-            resultworkflowStep = WorkflowStepService.putWorkflowStep(
-              item,
-              workflowId,
-              item.id,
-            )
+          const requiredFields = [
+            'title',
+            'description',
+            'workflow_step_key',
+            'index',
+          ]
+
+          let allFieldsValid = true
+          requiredFields.forEach((field) => {
+            if (!item[field]) {
+              displayError(`${field} é obrigatório`)
+              allFieldsValid = false
+            }
+          })
+
+          if (allFieldsValid) {
+            if (item.isNew) {
+              resultworkflowStep = WorkflowStepService.postWorkflowStep(
+                item,
+                workflowId,
+              )
+            } else {
+              resultworkflowStep = WorkflowStepService.putWorkflowStep(
+                item,
+                workflowId,
+                item.id,
+              )
+            }
           }
           if (!resultworkflowStep) {
             shouldFetchData = false
@@ -358,23 +429,34 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
             return
           }
           let resultworkflowStepForm
-          if (item.isNew) {
-            resultworkflowStepForm =
-              WorkflowStepFormService.postWorkflowStepForm(
-                item,
-                workflowId,
-                workflowStepId,
-              )
-          } else {
-            resultworkflowStepForm =
-              WorkflowStepFormService.putWorkflowStepForm(
-                item,
-                workflowId,
-                workflowStepId,
-                item.id,
-              )
-          }
+          const requiredFields = ['index']
 
+          let allFieldsValid = true
+          requiredFields.forEach((field) => {
+            if (!item[field]) {
+              displayError(`${field} é obrigatório`)
+              allFieldsValid = false
+            }
+          })
+
+          if (allFieldsValid) {
+            if (item.isNew) {
+              resultworkflowStepForm =
+                WorkflowStepFormService.postWorkflowStepForm(
+                  item,
+                  workflowId,
+                  workflowStepId,
+                )
+            } else {
+              resultworkflowStepForm =
+                WorkflowStepFormService.putWorkflowStepForm(
+                  item,
+                  workflowId,
+                  workflowStepId,
+                  item.id,
+                )
+            }
+          }
           if (!resultworkflowStepForm) {
             shouldFetchData = false
           } else {
@@ -420,10 +502,6 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
                 item.id,
               )
             }
-
-            if (resultworkflowForm === null) {
-              displaySuccess('workflow Form salvo com sucesso!')
-            }
           }
           if (!resultworkflowForm) {
             shouldFetchData = false
@@ -433,19 +511,32 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
           return resultworkflowForm
         } else if (caller === 'clientProductRequest') {
           let resultClientProductRequest
-          if (item.isNew) {
-            resultClientProductRequest =
-              ClientProductRequestService.postClientProductRequest(
-                item,
-                client[0]?.id,
-              )
-          } else {
-            resultClientProductRequest =
-              ClientProductRequestService.putClientProductRequest(
-                item,
-                client[0]?.id,
-                item.id,
-              )
+
+          const requiredFields = ['title', 'product_key', 'request_function']
+
+          let allFieldsValid = true
+          requiredFields.forEach((field) => {
+            if (!item[field]) {
+              displayError(`${field} é obrigatório`)
+              allFieldsValid = false
+            }
+          })
+
+          if (allFieldsValid) {
+            if (item.isNew) {
+              resultClientProductRequest =
+                ClientProductRequestService.postClientProductRequest(
+                  item,
+                  client[0]?.id,
+                )
+            } else {
+              resultClientProductRequest =
+                ClientProductRequestService.putClientProductRequest(
+                  item,
+                  client[0]?.id,
+                  item.id,
+                )
+            }
           }
           if (!resultClientProductRequest) {
             shouldFetchData = false

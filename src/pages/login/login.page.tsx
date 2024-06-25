@@ -117,7 +117,6 @@ export function LoginPage() {
           <div className={styles.login}>
             <form onSubmit={handleLogin}>
               <h4>Client</h4>
-              <br />
               <Input
                 placeholder='Cliente'
                 type='text'
@@ -126,7 +125,6 @@ export function LoginPage() {
               />
 
               <h4>Client Service</h4>
-              <br />
               <Input
                 placeholder='Serviço do Cliente'
                 type='text'
@@ -135,7 +133,6 @@ export function LoginPage() {
               />
 
               <h4>Email</h4>
-              <br />
               <Input
                 placeholder='E-mail'
                 type='email'
@@ -144,14 +141,12 @@ export function LoginPage() {
               />
 
               <h4>Senha</h4>
-              <br />
               <Input
                 placeholder='Senha'
                 type='password'
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
-              <br />
 
               <label>
                 <input
@@ -161,7 +156,6 @@ export function LoginPage() {
                 />
                 Lembrar senha
               </label>
-              <br />
 
               <Button type='submit' loading={loading}>
                 Entrar
