@@ -5,12 +5,10 @@
   z-index: 1;
   background-color: var(--blue-tech5);
   border-style: solid 3px var(--blue-tech);
-  opacity: 0.7;
-  border-radius: 5px;
-  margin-top: 5rem;
-  margin-left: 17rem;
-  margin-right: 7rem;
-  padding: 50px;
+  // border-radius: 10px;
+  margin-top: 3rem;
+  margin-left: 13rem;
+  padding: 30px;
   max-height: auto;
 }
 
@@ -287,90 +285,114 @@
 
 @media screen and (min-width: 320px) {
   .AsideContainer {
-    width: 300%;
+    width: 327%;
   }
 }
 
 @media screen and (min-width: 400px) {
   .AsideContainer {
-    width: 320%;
+    width: 339%;
   }
 }
 
 @media screen and (min-width: 420px) {
   .AsideContainer {
-    width: 300%;
+    width: 310%;
   }
 }
 
 @media screen and (min-width: 520px) {
   .AsideContainer {
-    width: 280%;
+    width: 290%;
   }
 }
 
 @media screen and (min-width: 620px) {
   .AsideContainer {
-    width: 200%;
+    width: 210%;
   }
 }
 
 @media screen and (min-width: 720px) {
   .AsideContainer {
-    width: 175%;
+    width: 181%;
   }
 }
 
 @media screen and (min-width: 820px) {
   .AsideContainer {
-    width: 160%;
+    width: 168%;
   }
 }
 
 @media screen and (min-width: 920px) {
   .AsideContainer {
-    width: 138%;
+    width: 146%;
   }
 }
 
 @media screen and (min-width: 1020px) {
   .AsideContainer {
-    width: 138%;
+    width: 143%;
   }
 }
 
 @media screen and (min-width: 1120px) {
   .AsideContainer {
-    width: 118%;
+    width: 121%;
   }
 }
 
 @media screen and (min-width: 1220px) {
   .AsideContainer {
-    width: 100%;
+    width: 108%;
   }
 }
 
+// @media screen and (min-width: 1320px) {
+//   .AsideContainer {
+//     width: 100%;
+//   }
+// }
+
+// @media screen and (min-width: 1420px) {
+//   .AsideContainer {
+//     width: 97%;
+//   }
+// }
+
+// @media screen and (min-width: 1520px) {
+//   .AsideContainer {
+//     width: 92%;
+//   }
+// }
+
+// @media screen and (min-width: 1620px) {
+//   .AsideContainer {
+//     width: 83%;
+//   }
+// }
+
 @media screen and (min-width: 1320px) {
   .AsideContainer {
-    width: 95%;
+    width: 82%;
   }
 }
 
 @media screen and (min-width: 1420px) {
   .AsideContainer {
-    width: 91%;
+    width: 82%;
   }
 }
 
 @media screen and (min-width: 1520px) {
   .AsideContainer {
-    width: 90%;
+    width: 84%;
   }
 }
 
 @media screen and (min-width: 1620px) {
   .AsideContainer {
-    width: 80%;
+    width: 87%;
   }
 }
