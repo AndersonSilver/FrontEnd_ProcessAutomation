@@ -220,6 +220,7 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
 
   const handleSave = async () => {
     try {
+      let shouldFetchData = true
       const promises = editedItems.map((item) => {
         delete item.sla
         delete item.customer_view_form_id
@@ -270,7 +271,11 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
           } else {
             resultworkflow = WorkflowService.putWorkflows(item, item.id)
           }
-          displaySuccess('workflow salvo com sucesso!')
+          if (!resultworkflow) {
+            shouldFetchData = false
+          } else {
+            displaySuccess('workflow salvo com sucesso!')
+          }
           return resultworkflow
         } else if (caller === 'workflowGroup') {
           let resultworkflowGroup
@@ -282,7 +287,11 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
               item.id,
             )
           }
-          displaySuccess('workflow Group salvo com sucesso!')
+          if (!resultworkflowGroup) {
+            shouldFetchData = false
+          } else {
+            displaySuccess('workflow Group Form salvo com sucesso!')
+          }
           return resultworkflowGroup
         } else if (caller === 'workflowGroupItems') {
           let resultworkflowGroupItem
@@ -300,7 +309,11 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
                 item.id,
               )
           }
-          displaySuccess('workflow Group Item salvo com sucesso!')
+          if (!resultworkflowGroupItem) {
+            shouldFetchData = false
+          } else {
+            displaySuccess('workflow Group Items Form salvo com sucesso!')
+          }
           return resultworkflowGroupItem
         } else if (caller === 'workflowProduct') {
           let resultworkflowProduct
@@ -313,7 +326,11 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
               item.id,
             )
           }
-          displaySuccess('workflow Product salvo com sucesso!')
+          if (!resultworkflowProduct) {
+            shouldFetchData = false
+          } else {
+            displaySuccess('workflow Product Form salvo com sucesso!')
+          }
           return resultworkflowProduct
         } else if (caller === 'workflowStep') {
           let resultworkflowStep
@@ -329,7 +346,11 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
               item.id,
             )
           }
-          displaySuccess('workflow Step salvo com sucesso!')
+          if (!resultworkflowStep) {
+            shouldFetchData = false
+          } else {
+            displaySuccess('workflow Step salvo com sucesso!')
+          }
           return resultworkflowStep
         } else if (caller === 'workflowStepForm') {
           if (!workflowId || !workflowStepId) {
@@ -353,7 +374,12 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
                 item.id,
               )
           }
-          displaySuccess('workflow Step Form salvo com sucesso!')
+
+          if (!resultworkflowStepForm) {
+            shouldFetchData = false
+          } else {
+            displaySuccess('workflow Step Form salvo com sucesso!')
+          }
           return resultworkflowStepForm
         } else if (caller === 'workflowForm') {
           let resultworkflowForm
@@ -399,7 +425,11 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
               displaySuccess('workflow Form salvo com sucesso!')
             }
           }
-
+          if (!resultworkflowForm) {
+            shouldFetchData = false
+          } else {
+            displaySuccess('workflow Form salvo com sucesso!')
+          }
           return resultworkflowForm
         } else if (caller === 'clientProductRequest') {
           let resultClientProductRequest
@@ -417,15 +447,20 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
                 item.id,
               )
           }
-          displaySuccess('Client Product Request salvo com sucesso!')
+          if (!resultClientProductRequest) {
+            shouldFetchData = false
+          } else {
+            displaySuccess('Client Product Request salvo com sucesso!')
+          }
           return resultClientProductRequest
         }
       })
       await Promise.all(promises)
 
-      fetchData({ caller: caller })
-
-      setEditedItems([])
+      if (shouldFetchData) {
+        fetchData({ caller: caller })
+        setEditedItems([])
+      }
     } catch (error) {
       console.error('Erro ao salvar os itens editados:', error)
     }
