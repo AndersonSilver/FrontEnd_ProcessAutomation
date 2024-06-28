@@ -17,11 +17,11 @@ export function Section() {
   ]
   const webAppClient = [
     { href: '/ClientProductRequest', label: 'Listagem CPR' },
-    { href: '', label: 'Editar Function CPR' },
-    { href: '', label: 'Client File' },
-    { href: '', label: 'Client Function' },
-    { href: '', label: 'Client Services' },
-    { href: '', label: 'Tech Data' },
+    { href: '/ClientProductRequestId', label: 'Editar Function CPR' },
+    { href: '/ClientFunction', label: 'Listagem CF' },
+    { href: '/ClientFunctionEdit', label: 'Editar CF' },
+    { href: '/ClientService', label: 'Client Services' },
+    { href: '/TechData', label: 'Tech Data' },
   ]
 
   return (

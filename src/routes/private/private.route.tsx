@@ -8,6 +8,11 @@ import { WorkflowStepFormPage } from '@/pages/workflowStepForm/workflowStepForm.
 import { WorkflowFormPage } from '@/pages/workflowForm/workflowForm.page'
 import { WorkflowFormGroupPage } from '@/pages/workflowFormGroup/workflowFormGroup.page'
 import { ClientProductRequestPage } from '@/pages/clientProductRequest/clientProductRequest.page'
+import { ClientProductRequestIdPage } from '@/pages/clientProductRequestId/clientProductRequestId.page'
+import { ClientFunctionPage } from '@/pages/clientFunction/clientFunction.page'
+import { ClientFunctionEditPage } from '@/pages/clientFunctionEdit/clientFunctionEdit.page'
+import { ClientServicePage } from '@/pages/clientService/clientService.page'
+import { TechDataPage } from '@/pages/techData/techData.page'
 
 export const PRIVATE_ROUTES = [
   {
@@ -49,5 +54,25 @@ export const PRIVATE_ROUTES = [
   {
     path: '/clientProductRequest',
     element: <ClientProductRequestPage />,
+  },
+  {
+    path: '/clientProductRequestId',
+    element: <ClientProductRequestIdPage />,
+  },
+  {
+    path: '/clientFunction',
+    element: <ClientFunctionPage />,
+  },
+  {
+    path: '/clientFunctionEdit',
+    element: <ClientFunctionEditPage />,
+  },
+  {
+    path: '/clientService',
+    element: <ClientServicePage />,
+  },
+  {
+    path: '/techData',
+    element: <TechDataPage />,
   },
 ]
