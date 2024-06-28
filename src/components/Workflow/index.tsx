@@ -11,6 +11,10 @@ import WorkflowFormService from '@/services/WorkflowForm/WorkflowFormService'
 import WorkflowFormGroupService from '@/services/WorkflowFormGroup/WorkflowFormGroupService'
 import ClientProductRequestService from '@/services/ClientProductRequest/ClientProductRequestService'
 import ClientService from '@/services/Client/ClientService'
+import ClientFunctionService from '@/services/ClientFunction/ClientFunctionService'
+import ClientFunctionEditService from '@/services/ClientFunctionEdit/ClientFunctionEditService'
+import ClientServiceTable from '@/services/ClientService/ClientService'
+import TechData from '@/services/TechData/TechData'
 import { Workflow, Filter } from '@/services/Workflow/dto/WorkflowDto'
 import { KeyboardEvent, useMemo, useState } from 'react'
 import Table from '../Table/Table'
@@ -39,6 +43,11 @@ type WorkflowProtocolProps = {
     | 'workflowForm'
     | 'workflowFormGroup'
     | 'clientProductRequest'
+    | 'clientProductRequestId'
+    | 'clientFunction'
+    | 'clientFunctionEdit'
+    | 'clientService'
+    | 'techData'
 }
 
 export type WorkflowData = {
@@ -65,9 +74,18 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
   const [workflowId, setWorkflowId] = useState<string>('')
   const [workflowStepId, setWorkflowStepId] = useState<string>('')
   const [workflowGroupId, setworkflowGroupId] = useState<string>('')
-  // const [workflowFormData, setWorkflowFormData] = useState<WorkflowData[]>([])
   const [workflowForm, setWorkflowForm] = useState<WorkflowData[]>([])
   const [workflowFormId, setWorkflowFormId] = useState<string>('')
+  const [clientProductRequestEdit, setClientProductRequestEdit] = useState<
+    WorkflowData[]
+  >([])
+  const [clientFunctionEdit, setClientFunctionEdit] = useState<WorkflowData[]>(
+    [],
+  )
+  const [clientFunctionEditId, setClientFunctionEditId] = useState<string>('')
+  const [clientProductRequestEditId, setClientProductRequestEditId] =
+    useState<string>('')
+
   const [client, setClient] = useState<WorkflowData[]>([])
 
   useEffect(() => {
@@ -142,12 +160,33 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
       service: ClientProductRequestService.getClientProductRequest,
       setter: setWorkflowList,
     },
+    clientProductRequestId: {
+      service: ClientProductRequestService.getClientProductRequestId,
+      setter: setWorkflowList,
+    },
+    clientFunction: {
+      service: ClientFunctionService.getClientFunction,
+      setter: setWorkflowList,
+    },
+    clientFunctionEdit: {
+      service: ClientFunctionEditService.getClientFunctionEdit,
+      setter: setWorkflowList,
+    },
+    clientService: {
+      service: ClientServiceTable.getClientService,
+      setter: setWorkflowList,
+    },
+    techData: {
+      service: TechData.getTechData,
+      setter: setWorkflow,
+    },
   }
 
   const fetchData = useCallback(
     async ({ caller }: WorkflowProtocolProps) => {
       const { service, setter } = serviceMap[caller]
       let data: WorkflowData[] = []
+      let clientProductRequestEditIdData: any[] = []
       let shouldFetch = true
       let params: [string, string] = ['', '']
 
@@ -172,6 +211,24 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
           shouldFetch = client && client.length > 0 && !!client[0].id
           params = [client[0]?.id.toString(), '']
           break
+        case 'clientProductRequestId':
+          shouldFetch = !!clientProductRequestEditId
+          params = [client[0]?.id.toString(), clientProductRequestEditId]
+          break
+        case 'clientFunction':
+          shouldFetch = !!client && client.length > 0 && !!client[0].id
+          params = [client[0]?.id.toString(), '']
+          break
+        case 'clientFunctionEdit':
+          shouldFetch = !!clientFunctionEditId
+          params = [client[0]?.id.toString(), clientFunctionEditId]
+          break
+        case 'clientService':
+          shouldFetch = !!client && client.length > 0 && !!client[0].id
+          params = [client[0]?.id.toString(), '']
+          break
+        case 'techData':
+          break
         case 'workflowForm':
           break
         default:
@@ -181,20 +238,46 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
       if (!shouldFetch) return
 
       const response = await service(...params)
-      data = response.data || []
 
-      if (caller === 'workflowStep') {
-        setWorkflowId('')
-      } else if (caller === 'workflowForm') {
-        // setWorkflowFormData(data)
+      if (caller === 'clientProductRequestId') {
+        clientProductRequestEditIdData = Array.isArray(response)
+          ? response
+          : [response]
+        console.log(
+          'clientProductRequestEditIdData',
+          clientProductRequestEditIdData,
+        )
+        data = clientProductRequestEditIdData
+        console.log('data', data)
+      } else if (caller === 'clientFunctionEdit') {
+        clientProductRequestEditIdData = Array.isArray(response)
+          ? response
+          : [response]
+        console.log(
+          'clientProductRequestEditIdData',
+          clientProductRequestEditIdData,
+        )
+        data = clientProductRequestEditIdData
+        console.log('data', data)
+      } else {
+        data = response.data || []
+        console.log('data', data)
       }
-
       if (data.length > 0) {
         setter(data)
         setWorkflowList(data)
+        console.log('data', data)
       }
     },
-    [workflowGroupId, workflowId, workflowStepId, workflowFormId, client],
+    [
+      workflowGroupId,
+      workflowId,
+      workflowStepId,
+      workflowFormId,
+      client,
+      clientProductRequestEditId,
+      clientFunctionEditId,
+    ],
   )
 
   useEffect(() => {
@@ -544,6 +627,165 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
             displaySuccess('Client Product Request salvo com sucesso!')
           }
           return resultClientProductRequest
+        } else if (caller === 'clientProductRequestId') {
+          let resultClientProductRequestEdit
+
+          const requiredFields = ['title', 'product_key', 'request_function']
+
+          let allFieldsValid = true
+          requiredFields.forEach((field) => {
+            if (!item[field]) {
+              displayError(`${field} é obrigatório`)
+              allFieldsValid = false
+            }
+          })
+
+          if (allFieldsValid) {
+            if (item.isNew) {
+              resultClientProductRequestEdit =
+                ClientProductRequestService.postClientProductRequest(
+                  item,
+                  client[0]?.id,
+                )
+            } else {
+              resultClientProductRequestEdit =
+                ClientProductRequestService.putClientProductRequest(
+                  item,
+                  client[0]?.id,
+                  item.id,
+                )
+            }
+          }
+          if (!resultClientProductRequestEdit) {
+            shouldFetchData = false
+          } else {
+            displaySuccess('Client Product Request salvo com sucesso!')
+          }
+          return resultClientProductRequestEdit
+        } else if (caller === 'clientFunction') {
+          let resultClientFunction
+
+          const requiredFields = ['title', 'description', 'function', 'type']
+
+          let allFieldsValid = true
+          requiredFields.forEach((field) => {
+            if (!item[field]) {
+              displayError(`${field} é obrigatório`)
+              allFieldsValid = false
+            }
+          })
+
+          if (allFieldsValid) {
+            if (item.isNew) {
+              resultClientFunction = ClientFunctionService.postClientFunction(
+                item,
+                client[0]?.id,
+              )
+            } else {
+              resultClientFunction = ClientFunctionService.putClientFunction(
+                item,
+                client[0]?.id,
+                item.id,
+              )
+            }
+          }
+          if (!resultClientFunction) {
+            shouldFetchData = false
+          } else {
+            displaySuccess('Client Function salvo com sucesso!')
+          }
+          return resultClientFunction
+        } else if (caller === 'clientFunctionEdit') {
+          let resultClientFunctionEdit
+
+          const requiredFields = ['title', 'description', 'function', 'type']
+
+          let allFieldsValid = true
+          requiredFields.forEach((field) => {
+            if (!item[field]) {
+              displayError(`${field} é obrigatório`)
+              allFieldsValid = false
+            }
+          })
+
+          if (allFieldsValid) {
+            if (item.isNew) {
+              resultClientFunctionEdit =
+                ClientFunctionService.postClientFunction(item, client[0]?.id)
+            } else {
+              resultClientFunctionEdit =
+                ClientFunctionService.putClientFunction(
+                  item,
+                  client[0]?.id,
+                  item.id,
+                )
+            }
+          }
+          if (!resultClientFunctionEdit) {
+            shouldFetchData = false
+          } else {
+            displaySuccess('Client Function salvo com sucesso!')
+          }
+          return resultClientFunctionEdit
+        } else if (caller === 'clientService') {
+          let resultClientService
+
+          const requiredFields = ['name', 'service_key', 'enable']
+
+          let allFieldsValid = true
+          requiredFields.forEach((field) => {
+            if (!item[field]) {
+              displayError(`${field} é obrigatório`)
+              allFieldsValid = false
+            }
+          })
+
+          if (allFieldsValid) {
+            if (item.isNew) {
+              resultClientService = ClientServiceTable.postClientService(
+                item,
+                client[0]?.id,
+              )
+            } else {
+              resultClientService = ClientServiceTable.putClientService(
+                item,
+                client[0]?.id,
+                item.id,
+              )
+            }
+          }
+          if (!resultClientService) {
+            shouldFetchData = false
+          } else {
+            displaySuccess('Client Service salvo com sucesso!')
+          }
+          return resultClientService
+        } else if (caller === 'techData') {
+          let resultTechData
+
+          const requiredFields = ['key', 'data', 'client_id', 'type']
+
+          let allFieldsValid = true
+          requiredFields.forEach((field) => {
+            if (!item[field]) {
+              displayError(`${field} é obrigatório`)
+              allFieldsValid = false
+            }
+          })
+
+          if (allFieldsValid) {
+            if (item.isNew) {
+              resultTechData = TechData.postTechData(item)
+            } else {
+              resultTechData = TechData.putTechData(item, item.id)
+            }
+          }
+          if (!resultTechData) {
+            shouldFetchData = false
+          } else {
+            displaySuccess('Tech Data salvo com sucesso!')
+          }
+          return resultTechData
         }
       })
       await Promise.all(promises)
@@ -610,6 +852,34 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
               selectedRow.toString(),
             )
             displaySuccess('Client Product Request deletado com sucesso!')
+            await fetchData({ caller: caller })
+          } else if (caller === 'clientProductRequestId') {
+            await ClientProductRequestService.deleteClientProductRequest(
+              client[0]?.id,
+              selectedRow.toString(),
+            )
+            displaySuccess('Client Product Request deletado com sucesso!')
+            window.location.reload()
+          } else if (caller === 'clientFunction') {
+            await ClientFunctionService.deleteClientFunction(
+              client[0]?.id,
+              selectedRow.toString(),
+            )
+            displaySuccess('Client Function deletado com sucesso!')
+            await fetchData({ caller: caller })
+          } else if (caller === 'clientFunctionEdit') {
+            await ClientFunctionService.deleteClientFunction(
+              client[0]?.id,
+              selectedRow.toString(),
+            )
+            displaySuccess('Client Function deletado com sucesso!')
+            window.location.reload()
+          } else if (caller === 'clientService') {
+            await ClientServiceTable.deleteClientService(
+              client[0]?.id,
+              selectedRow.toString(),
+            )
+            displaySuccess('Client Service deletado com sucesso!')
             await fetchData({ caller: caller })
           }
         } catch (error) {
@@ -740,8 +1010,27 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
 
       fetchWorkflow()
       fetchWorkflowForm()
+    } else if (caller === 'clientProductRequestId') {
+      const fetchClient = async () => {
+        const response =
+          await ClientProductRequestService.getClientProductRequest(
+            client[0]?.id.toString(),
+          )
+        setClientProductRequestEdit(response.data)
+      }
+
+      fetchClient()
+    } else if (caller === 'clientFunctionEdit') {
+      const fetchClient = async () => {
+        const response = await ClientFunctionService.getClientFunction(
+          client[0]?.id.toString(),
+        )
+        setClientFunctionEdit(response.data)
+      }
+
+      fetchClient()
     }
-  }, [workflowGroupId, caller, workflowId, workflowStepId, fetchData])
+  }, [workflowGroupId, caller, workflowId, workflowStepId, fetchData, client])
 
   useEffect(() => {
     if (workflowStepId) {
@@ -782,7 +1071,17 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
                             ? 'Workflow Form Group'
                             : caller === 'clientProductRequest'
                               ? 'Client Product Request'
-                              : ''}
+                              : caller === 'clientProductRequestId'
+                                ? 'Client Product Request'
+                                : caller === 'clientFunction'
+                                  ? 'Client Function'
+                                  : caller === 'clientFunctionEdit'
+                                    ? 'Client Function'
+                                    : caller === 'clientService'
+                                      ? 'Client Service'
+                                      : caller === 'techData'
+                                        ? 'Tech Data'
+                                        : ''}
           </span>
           <input
             className={style.filterText}
@@ -952,6 +1251,68 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
             </div>
           </>
         )}
+        {caller === 'clientProductRequestId' && (
+          <>
+            <div className={style.AsideSelectMainworkflowStepForm}>
+              <div className={style.AsideSelectworkflowStepForm}>
+                <span className={style.filterLabelRota}>
+                  CLIENT PRODUCT REQUEST
+                </span>
+
+                <CreatableSelect
+                  className={style.AsideSelectGroupId}
+                  options={clientProductRequestEdit.map((cli) => ({
+                    value: cli.id,
+                    label: `${cli.id}- ${cli.product_key}`,
+                  }))}
+                  isSearchable
+                  onChange={(selectedOption) =>
+                    selectedOption
+                      ? setClientProductRequestEditId(selectedOption.value)
+                      : null
+                  }
+                  placeholder='Selecione um cliente product request para fazer a busca'
+                  styles={{
+                    control: (provided) => ({
+                      ...provided,
+                      width: 650,
+                    }),
+                  }}
+                />
+              </div>
+            </div>
+          </>
+        )}
+        {caller === 'clientFunctionEdit' && (
+          <>
+            <div className={style.AsideSelectMainworkflowStepForm}>
+              <div className={style.AsideSelectworkflowStepForm}>
+                <span className={style.filterLabelRota}>CLIENT FUNCTION</span>
+
+                <CreatableSelect
+                  className={style.AsideSelectGroupId}
+                  options={clientFunctionEdit.map((cli) => ({
+                    value: cli.id,
+                    label: `${cli.id}- ${cli.title}`,
+                  }))}
+                  isSearchable
+                  onChange={(selectedOption) =>
+                    selectedOption
+                      ? setClientFunctionEditId(selectedOption.value)
+                      : null
+                  }
+                  placeholder='Selecione um cliente function para fazer a busca'
+                  styles={{
+                    control: (provided) => ({
+                      ...provided,
+                      width: 650,
+                    }),
+                  }}
+                />
+              </div>
+            </div>
+          </>
+        )}
         <div className={style.containerTableTwo}>
           <Table columnOrder={columnOrder}>
             <TableRow
@@ -972,27 +1333,48 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
           <div className={style.espaço} />
         </div>
         <div className={style.buttonContainer}>
-          <button className={style.buttonSave} onClick={handleSave}>
+          <button
+            className={`style.buttonSave ${caller === 'clientService' ? style.buttonDisabled : style.buttonSave}`}
+            onClick={handleSave}
+            disabled={caller === 'clientService'}
+          >
             <FiSave />
           </button>
-          <button className={style.buttonAtualizar} onClick={handleAtt}>
+          <button
+            className={`style.buttonAtualizar ${caller === 'clientService' ? style.buttonDisabled : style.buttonAtualizar}`}
+            onClick={handleAtt}
+            disabled={caller === 'clientService'}
+          >
             <FiRefreshCcw />
           </button>
           <button
-            className={style.buttonDeletar}
+            className={`style.buttonDeletar ${caller === 'clientService' ? style.buttonDisabled : style.buttonDeletar}`}
             onClick={handleDeleteOrConfirm}
+            disabled={caller === 'clientService'}
           >
             {deleteMode ? 'Confirmar' : <VscRemove />}
           </button>
           {deleteMode && (
-            <button className={style.buttonCancelar} onClick={handleCancel}>
+            <button
+              className={`style.buttonCancelar ${caller === 'clientService' ? style.buttonDisabled : style.buttonCancelar}`}
+              onClick={handleCancel}
+              disabled={caller === 'clientService'}
+            >
               Cancelar
             </button>
           )}
-          <button className={style.buttonAdd} onClick={handleAdd}>
+          <button
+            className={`style.buttonAdd ${caller === 'clientService' ? style.buttonDisabled : style.buttonAdd}`}
+            onClick={handleAdd}
+            disabled={caller === 'clientService'}
+          >
             <IoMdAdd />
           </button>
-          <button className={style.buttonAdd} onClick={handleDuplicate}>
+          <button
+            className={`style.buttonAdd ${caller === 'clientService' ? style.buttonDisabled : style.buttonAdd}`}
+            onClick={handleDuplicate}
+            disabled={caller === 'clientService'}
+          >
             <BiAddToQueue />
           </button>
         </div>

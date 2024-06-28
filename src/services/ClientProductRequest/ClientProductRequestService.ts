@@ -11,6 +11,11 @@ class ClientProductRequestService {
   private static endpoints = {
     getClientProductRequest: (client_id: string) =>
       `/client/${client_id}/client-product-request`,
+    getClientProductRequestId: (
+      client_id: string,
+      client_product_request_id: string,
+    ) =>
+      `/client/${client_id}/client-product-request/${client_product_request_id}`,
     postClientProductRequest: (client_id: string) =>
       `/client/${client_id}/client-product-request`,
     putClientProductRequest: (
@@ -32,6 +37,20 @@ class ClientProductRequestService {
       await ProcessAutomationApi.get<ListClientProductRequestData>(
         ClientProductRequestService.endpoints.getClientProductRequest(
           client_id,
+        ),
+      )
+    return data
+  }
+
+  public static async getClientProductRequestId(
+    client_id: string,
+    client_product_request_id: string,
+  ): Promise<ListClientProductRequestData> {
+    const { data } =
+      await ProcessAutomationApi.get<ListClientProductRequestData>(
+        ClientProductRequestService.endpoints.getClientProductRequestId(
+          client_id,
+          client_product_request_id,
         ),
       )
     return data
