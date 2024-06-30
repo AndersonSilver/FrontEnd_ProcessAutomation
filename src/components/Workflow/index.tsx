@@ -243,30 +243,19 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
         clientProductRequestEditIdData = Array.isArray(response)
           ? response
           : [response]
-        console.log(
-          'clientProductRequestEditIdData',
-          clientProductRequestEditIdData,
-        )
         data = clientProductRequestEditIdData
-        console.log('data', data)
       } else if (caller === 'clientFunctionEdit') {
         clientProductRequestEditIdData = Array.isArray(response)
           ? response
           : [response]
-        console.log(
-          'clientProductRequestEditIdData',
-          clientProductRequestEditIdData,
-        )
         data = clientProductRequestEditIdData
         console.log('data', data)
       } else {
         data = response.data || []
-        console.log('data', data)
       }
       if (data.length > 0) {
         setter(data)
         setWorkflowList(data)
-        console.log('data', data)
       }
     },
     [
