@@ -503,6 +503,11 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
           let resultworkflowStepForm
           const requiredFields = ['index']
 
+          if (typeof item.has_next_workflow_form === 'string') {
+            item.has_next_workflow_form =
+              item.has_next_workflow_form.toLowerCase() === 'true'
+          }
+
           let allFieldsValid = true
           requiredFields.forEach((field) => {
             if (!item[field]) {
