@@ -349,6 +349,10 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
             }
           })
 
+          if (typeof item.optional_config === 'string') {
+            item.optional_config = JSON.parse(item.optional_config)
+          }
+
           if (allFieldsValid) {
             if (item.isNew) {
               resultworkflow = WorkflowService.postWorkflows(item)
