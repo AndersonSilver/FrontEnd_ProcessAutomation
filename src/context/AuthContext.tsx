@@ -23,6 +23,7 @@ type SignInPropsWebApp = {
   clientServices: string
   email: string
   password: string
+  user_account_name: string
 }
 
 export type LoggedInUserProps = {
@@ -30,6 +31,7 @@ export type LoggedInUserProps = {
   clientServices: string
   email: string
   access_token: string
+  name: string
 }
 
 type AuthProviderProps = {
@@ -77,6 +79,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         client: credentials.client,
         clientServices: credentials.clientServices,
         email: credentials.email,
+        name: credentials.user_account_name,
         ...response,
       }
 

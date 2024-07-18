@@ -18,10 +18,10 @@ export function Header() {
       <div className={style.headerContent}>
         <div className={style.divName}>
           <Link to='/dashboard'>
-            <img src='/assets/tech.png' width={190} height={60} />
+            <img src='/assets/logo-full.png' />
           </Link>
           <div className={style.infoCompany}>
-            <h5>DESENVOLVIMENTO WEBAPP - {clientName}</h5>
+            <h5>Desenvolvimento - {clientName}</h5>
           </div>
         </div>
       </div>
