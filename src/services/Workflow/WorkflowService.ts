@@ -5,14 +5,28 @@ import {
   PostWorkflowData,
   WorkflowRequestBody,
   DeleteWorkflowData,
+  PublishWorkflowData,
+  WorkflowRequestMessage,
 } from './dto/WorkflowDto'
 
 class WorkflowService {
   private static endpoints = {
     getWorkflows: () => '/techforms/workflow',
     postWorkflows: () => '/techforms/workflow',
+    publishWorkflow: (id: string) => `/techforms/workflow/${id}/publish`,
     putWorkflows: (id: string) => `/techforms/workflow/${id}`,
     deleteWorkflows: (id: string) => `/techforms/workflow/${id}`,
+  }
+
+  public static async publishWorkflow(
+    id: string,
+    body: WorkflowRequestMessage,
+  ): Promise<PublishWorkflowData> {
+    const { data } = await ProcessAutomationApi.post<PublishWorkflowData>(
+      WorkflowService.endpoints.publishWorkflow(id),
+      body,
+    )
+    return data
   }
 
   public static async getWorkflows(): Promise<ListWorkflowData> {

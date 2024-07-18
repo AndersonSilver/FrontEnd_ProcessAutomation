@@ -126,6 +126,13 @@ export interface PostWorkflowData {
   record_count: number
 }
 
+export interface PublishWorkflowData {
+  data: Workflow[]
+  last_page: number
+  page: number
+  record_count: number
+}
+
 export interface DeleteWorkflowData {
   data: Workflow[]
   last_page: number
@@ -136,7 +143,13 @@ export interface DeleteWorkflowData {
 export interface WorkflowRequestBody {
   name: string
   description: string
+  message: string
 }
+
+export interface WorkflowRequestMessage {
+  commentary: string
+}
+
 export interface WorkflowItem {
   id: string
   [key: string]: unknown

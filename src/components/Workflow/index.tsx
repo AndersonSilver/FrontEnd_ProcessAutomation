@@ -24,6 +24,7 @@ import { BiAddToQueue } from 'react-icons/bi'
 import { FiRefreshCcw, FiSave } from 'react-icons/fi'
 import { VscRemove } from 'react-icons/vsc'
 import { IoMdAdd } from 'react-icons/io'
+import { MdPublishedWithChanges } from 'react-icons/md'
 import { v4 as uuidv4 } from 'uuid'
 import {
   displayError,
@@ -342,6 +343,11 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
           const requiredFields = ['title', 'description']
 
           let allFieldsValid = true
+
+          if (typeof item.enabled === 'string') {
+            item.enabled = item.enabled.toLowerCase() === 'true'
+          }
+
           requiredFields.forEach((field) => {
             if (!item[field]) {
               displayError(`${field} é obrigatório`)
@@ -928,6 +934,20 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
     window.location.reload()
   }
 
+  const handlePublish = async () => {
+    try {
+      const body = { commentary: 'Publicação esteira' }
+      if (selectedRow === null) {
+        return
+      }
+      await WorkflowService.publishWorkflow(selectedRow.toString(), body)
+      displaySuccess('Workflow publicado com sucesso!')
+    } catch (error) {
+      displayError('Erro ao publicar!')
+      console.error('Erro ao publicar:', error)
+    }
+  }
+
   useEffect(() => {
     let list = [...workflowList]
     if (filter) {
@@ -1335,6 +1355,7 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
             className={`style.buttonSave ${caller === 'clientService' ? style.buttonDisabled : style.buttonSave}`}
             onClick={handleSave}
             disabled={caller === 'clientService'}
+            title='Salvar'
           >
             <FiSave />
           </button>
@@ -1342,6 +1363,7 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
             className={`style.buttonAtualizar ${caller === 'clientService' ? style.buttonDisabled : style.buttonAtualizar}`}
             onClick={handleAtt}
             disabled={caller === 'clientService'}
+            title='Atualizar'
           >
             <FiRefreshCcw />
           </button>
@@ -1349,6 +1371,7 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
             className={`style.buttonDeletar ${caller === 'clientService' ? style.buttonDisabled : style.buttonDeletar}`}
             onClick={handleDeleteOrConfirm}
             disabled={caller === 'clientService'}
+            title='Deletar'
           >
             {deleteMode ? 'Confirmar' : <VscRemove />}
           </button>
@@ -1365,6 +1388,7 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
             className={`style.buttonAdd ${caller === 'clientService' ? style.buttonDisabled : style.buttonAdd}`}
             onClick={handleAdd}
             disabled={caller === 'clientService'}
+            title='Adicionar'
           >
             <IoMdAdd />
           </button>
@@ -1372,9 +1396,19 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
             className={`style.buttonAdd ${caller === 'clientService' ? style.buttonDisabled : style.buttonAdd}`}
             onClick={handleDuplicate}
             disabled={caller === 'clientService'}
+            title='Duplicar'
           >
             <BiAddToQueue />
           </button>
+          {caller === 'workflow' && (
+            <button
+              className={`style.buttonPublish ${caller === 'workflow' ? style.buttonPublish : style.buttonPublish}`}
+              onClick={handlePublish}
+              title='Publicar Workflow'
+            >
+              <MdPublishedWithChanges />
+            </button>
+          )}
         </div>
       </div>
     </aside>

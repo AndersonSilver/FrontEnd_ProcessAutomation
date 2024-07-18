@@ -12,10 +12,29 @@
   max-height: auto;
 }
 
+.buttonPublish {
+  background-color: #80993a;
+  border-radius: 2px;
+  border: none;
+  color: white;
+  padding: 10px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 15px 2px;
+  cursor: pointer;
+  transition-duration: 0.4s;
+
+  &:hover {
+    background-color: hsla(76, 45%, 41%, 0.39);
+  }
+}
+
 .buttonDisabled {
   opacity: 0.5; /* Reduz a opacidade para ofuscar o botão */
   cursor: not-allowed;
-  background-color: #4caf50;
+  background-color: #4caf4f;
   border-radius: 2px;
   border: none;
   color: white;
@@ -92,7 +111,7 @@
   transition-duration: 0.4s;
 
   &:hover {
-    background-color: #45a049;
+    background-color: #45a04988;
   }
 }
 
@@ -111,7 +130,7 @@
   transition-duration: 0.4s;
 
   &:hover {
-    background-color: #45a049;
+    background-color: #45a04981;
   }
 }
 
@@ -130,7 +149,7 @@
   transition-duration: 0.4s;
 
   &:hover {
-    background-color: #45a049;
+    background-color: #45a0497a;
   }
 }
 
@@ -150,7 +169,7 @@
   transition-duration: 0.4s;
 
   &:hover {
-    background-color: #45a049;
+    background-color: #45a04979;
   }
 }
 
@@ -170,7 +189,7 @@
   transition-duration: 0.4s;
 
   &:hover {
-    background-color: #da190b;
+    background-color: #da190b85;
   }
 }
 
