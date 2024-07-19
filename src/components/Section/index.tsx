@@ -1,5 +1,6 @@
 import { Link, useLocation } from 'react-router-dom'
 import style from './styles.module.scss'
+import Button from '@material-ui/core/Button'
 
 export function Section() {
   const { pathname } = useLocation()
@@ -7,17 +8,17 @@ export function Section() {
   const webAppEsteiras = [
     { href: '/Workflow', label: 'WorkFlow' },
     { href: '/WorkflowGroup', label: 'Workflow Group' },
-    { href: '/WorkflowGroupItem', label: 'Workflow Group Itens' },
+    { href: '/WorkflowGroupItem', label: 'Workflow G. Itens' },
     { href: '/WorkflowProduct', label: 'Workflow Product' },
     { href: '/WorkflowStep', label: 'Workflow Step' },
-    { href: '/WorkflowStepForm', label: 'Workflow Step Form' },
+    { href: '/WorkflowStepForm', label: 'Workflow S. Form' },
     { href: '/WorkflowForm', label: 'Workflow Form' },
-    { href: '/WorkflowFormGroup', label: 'Workflow Form Group' },
+    { href: '/WorkflowFormGroup', label: 'Workflow F. Group' },
     // { href: '', label: 'Workflow File' },
   ]
   const webAppClient = [
     { href: '/ClientProductRequest', label: 'Listagem CPR' },
-    { href: '/ClientProductRequestId', label: 'Editar Function CPR' },
+    { href: '/ClientProductRequestId', label: 'Editar CPR' },
     { href: '/ClientFunction', label: 'Listagem CF' },
     { href: '/ClientFunctionEdit', label: 'Editar CF' },
     { href: '/ClientService', label: 'Client Services' },
@@ -33,13 +34,15 @@ export function Section() {
           </div>
           {webAppEsteiras.map((button) => (
             <Link to={button.href} key={button.label}>
-              <button
+              <Button
                 className={`${style.button} ${
                   pathname === button.href ? style.buttonActive : ''
                 }`}
+                color='primary'
+                variant='outlined'
               >
                 {button.label}
-              </button>
+              </Button>
             </Link>
           ))}
         </div>
@@ -51,13 +54,13 @@ export function Section() {
           </div>
           {webAppClient.map((button) => (
             <Link to={button.href} key={button.label}>
-              <button
+              <Button
                 className={`${style.button} ${
                   pathname === button.href ? style.buttonActive : ''
                 }`}
               >
                 {button.label}
-              </button>
+              </Button>
             </Link>
           ))}
         </div>
