@@ -32,6 +32,8 @@ import {
 } from '../../utils/functions/messageToast'
 import { useEffect, useCallback } from 'react'
 import CreatableSelect from 'react-select/creatable'
+import clickSound from '/assets/som.mp3'
+
 type WorkflowProtocolProps = {
   caller:
     | 'workflow'
@@ -902,6 +904,11 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
     setDeleteMode(false)
   }
 
+  const playSound = () => {
+    const sound = new Audio(clickSound)
+    sound.play()
+  }
+
   const handleAdd = () => {
     if (workflowList.length > 0) {
       const firstItem = workflowList[0]
@@ -1352,7 +1359,10 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
         <div className={style.buttonContainer}>
           <button
             className={`style.buttonSave ${caller === 'clientService' ? style.buttonDisabled : style.buttonSave}`}
-            onClick={handleSave}
+            onClick={() => {
+              playSound()
+              handleSave()
+            }}
             disabled={caller === 'clientService'}
             title='Salvar'
           >
@@ -1360,7 +1370,10 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
           </button>
           <button
             className={`style.buttonAtualizar ${caller === 'clientService' ? style.buttonDisabled : style.buttonAtualizar}`}
-            onClick={handleAtt}
+            onClick={() => {
+              playSound()
+              handleAtt()
+            }}
             disabled={caller === 'clientService'}
             title='Atualizar'
           >
@@ -1368,7 +1381,10 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
           </button>
           <button
             className={`style.buttonDeletar ${caller === 'clientService' ? style.buttonDisabled : style.buttonDeletar}`}
-            onClick={handleDeleteOrConfirm}
+            onClick={() => {
+              playSound()
+              handleDeleteOrConfirm()
+            }}
             disabled={caller === 'clientService'}
             title='Deletar'
           >
@@ -1377,7 +1393,10 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
           {deleteMode && (
             <button
               className={`style.buttonCancelar ${caller === 'clientService' ? style.buttonDisabled : style.buttonCancelar}`}
-              onClick={handleCancel}
+              onClick={() => {
+                playSound()
+                handleCancel()
+              }}
               disabled={caller === 'clientService'}
             >
               Cancelar
@@ -1385,7 +1404,10 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
           )}
           <button
             className={`style.buttonAdd ${caller === 'clientService' ? style.buttonDisabled : style.buttonAdd}`}
-            onClick={handleAdd}
+            onClick={() => {
+              playSound()
+              handleAdd()
+            }}
             disabled={caller === 'clientService'}
             title='Adicionar'
           >
@@ -1393,7 +1415,10 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
           </button>
           <button
             className={`style.buttonAdd ${caller === 'clientService' ? style.buttonDisabled : style.buttonAdd}`}
-            onClick={handleDuplicate}
+            onClick={() => {
+              playSound()
+              handleDuplicate()
+            }}
             disabled={caller === 'clientService'}
             title='Duplicar'
           >
@@ -1402,7 +1427,10 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
           {caller === 'workflow' && (
             <button
               className={`style.buttonPublish ${caller === 'workflow' ? style.buttonPublish : style.buttonPublish}`}
-              onClick={handlePublish}
+              onClick={() => {
+                playSound()
+                handlePublish()
+              }}
               title='Publicar Workflow'
             >
               <MdPublishedWithChanges />

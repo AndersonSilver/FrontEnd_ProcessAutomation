@@ -129,6 +129,7 @@ export default function TableItem({
             lineHeight: '20px',
             overflow: 'hidden',
             borderRadius: '15px',
+            boxShadow: '5px 5px 5px rgba(255, 255, 255, 0.2)',
           },
         }}
       >

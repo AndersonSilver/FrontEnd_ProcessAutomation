@@ -7,19 +7,19 @@ export function Section() {
 
   const webAppEsteiras = [
     { href: '/Workflow', label: 'WorkFlow' },
-    { href: '/WorkflowGroup', label: 'Workflow Group' },
-    { href: '/WorkflowGroupItem', label: 'Workflow G. Itens' },
-    { href: '/WorkflowProduct', label: 'Workflow Product' },
-    { href: '/WorkflowStep', label: 'Workflow Step' },
-    { href: '/WorkflowStepForm', label: 'Workflow S. Form' },
-    { href: '/WorkflowForm', label: 'Workflow Form' },
-    { href: '/WorkflowFormGroup', label: 'Workflow F. Group' },
+    { href: '/WorkflowGroup', label: 'Group' },
+    { href: '/WorkflowGroupItem', label: 'Group Itens' },
+    { href: '/WorkflowProduct', label: 'Product' },
+    { href: '/WorkflowStep', label: 'Step' },
+    { href: '/WorkflowStepForm', label: 'Step Form' },
+    { href: '/WorkflowForm', label: 'Form' },
+    { href: '/WorkflowFormGroup', label: 'Form Group' },
     // { href: '', label: 'Workflow File' },
   ]
   const webAppClient = [
-    { href: '/ClientProductRequest', label: 'Listagem CPR' },
+    { href: '/ClientProductRequest', label: 'Client P. Request' },
     { href: '/ClientProductRequestId', label: 'Editar CPR' },
-    { href: '/ClientFunction', label: 'Listagem CF' },
+    { href: '/ClientFunction', label: 'Client Function' },
     { href: '/ClientFunctionEdit', label: 'Editar CF' },
     { href: '/ClientService', label: 'Client Services' },
     { href: '/TechData', label: 'Tech Data' },
@@ -30,7 +30,7 @@ export function Section() {
       <div className={style.sectionContentEsteiras}>
         <div className={style.sectionContentButton}>
           <div className={style.sectionContentFerramenta}>
-            <h2>Esteiras</h2>
+            <h2>Workflow</h2>
           </div>
           {webAppEsteiras.map((button) => (
             <Link to={button.href} key={button.label}>
@@ -58,6 +58,8 @@ export function Section() {
                 className={`${style.button} ${
                   pathname === button.href ? style.buttonActive : ''
                 }`}
+                color='primary'
+                variant='outlined'
               >
                 {button.label}
               </Button>
