@@ -35,7 +35,6 @@ import { useEffect, useCallback } from 'react'
 import CreatableSelect from 'react-select/creatable'
 import clickSound from '/assets/som.mp3'
 import { CiLink } from 'react-icons/ci'
-import { LinkUserAccountData } from '@/services/UserAccount/dto/UserAccountDto'
 
 type WorkflowProtocolProps = {
   caller:
