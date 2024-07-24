@@ -174,5 +174,7 @@ export interface LinkUserAccountData {
   last_page: number
   page: number
   record_count: number
-  url: string
+  url: {
+    url: string
+  }
 }

@@ -1004,11 +1004,17 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
         return
       }
       const body = { user_account_id: selectedRow.toString() }
-      const linkUserAccountData: LinkUserAccountData =
-        await UserAccount.linkUserAccount(body)
-      const url = linkUserAccountData.url
-      displaySuccess('Link criado com sucesso!')
-      window.open(url, '_blank')
+
+      const url = (await UserAccount.linkUserAccount(body)) as unknown as string
+
+      console.log('url', url)
+
+      if (url) {
+        displaySuccess('Link criado com sucesso!')
+        window.open(url, '_blank')
+      } else {
+        displayError('URL não encontrada no objeto retornado!')
+      }
     } catch (error) {
       displayError('Erro ao criar link!')
       console.error('Erro ao criar link:', error)
