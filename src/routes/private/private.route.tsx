@@ -13,6 +13,7 @@ import { ClientFunctionPage } from '@/pages/clientFunction/clientFunction.page'
 import { ClientFunctionEditPage } from '@/pages/clientFunctionEdit/clientFunctionEdit.page'
 import { ClientServicePage } from '@/pages/clientService/clientService.page'
 import { TechDataPage } from '@/pages/techData/techData.page'
+import { UserAccountPage } from '@/pages/userAccount/userAccount.page'
 
 export const PRIVATE_ROUTES = [
   {
@@ -74,5 +75,9 @@ export const PRIVATE_ROUTES = [
   {
     path: '/techData',
     element: <TechDataPage />,
+  },
+  {
+    path: '/useraccount',
+    element: <UserAccountPage />,
   },
 ]

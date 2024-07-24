@@ -25,6 +25,13 @@ export function Section() {
     { href: '/TechData', label: 'Tech Data' },
   ]
 
+  const webAppAuthentication = [
+    { href: '/UserAccount', label: 'User Account' },
+    { href: '/', label: 'User Account Type' },
+    { href: '/', label: 'Access Session' },
+    { href: '/', label: 'SSO' },
+  ]
+
   return (
     <section className={style.sectionContainer}>
       <div className={style.sectionContentEsteiras}>
@@ -60,6 +67,31 @@ export function Section() {
                 }`}
                 color='primary'
                 variant='outlined'
+              >
+                {button.label}
+              </Button>
+            </Link>
+          ))}
+        </div>
+      </div>
+      <div className={style.sectionContentClient}>
+        <div className={style.sectionContentButton}>
+          <div className={style.sectionContentFerramenta}>
+            <h2>Autenticação</h2>
+          </div>
+          {webAppAuthentication.map((button) => (
+            <Link to={button.href} key={button.label}>
+              <Button
+                className={`${style.button} ${
+                  pathname === button.href ? style.buttonActive : ''
+                }`}
+                color='primary'
+                variant='outlined'
+                disabled={
+                  button.label === 'SSO' ||
+                  button.label === 'User Account Type' ||
+                  button.label === 'Access Session'
+                }
               >
                 {button.label}
               </Button>

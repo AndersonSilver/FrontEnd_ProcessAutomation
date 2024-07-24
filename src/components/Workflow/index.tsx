@@ -15,6 +15,7 @@ import ClientFunctionService from '@/services/ClientFunction/ClientFunctionServi
 import ClientFunctionEditService from '@/services/ClientFunctionEdit/ClientFunctionEditService'
 import ClientServiceTable from '@/services/ClientService/ClientService'
 import TechData from '@/services/TechData/TechData'
+import UserAccount from '@/services/UserAccount/UserAccountService'
 import { Workflow, Filter } from '@/services/Workflow/dto/WorkflowDto'
 import { KeyboardEvent, useMemo, useState } from 'react'
 import Table from '../Table/Table'
@@ -33,6 +34,7 @@ import {
 import { useEffect, useCallback } from 'react'
 import CreatableSelect from 'react-select/creatable'
 import clickSound from '/assets/som.mp3'
+import { CiLink } from 'react-icons/ci'
 
 type WorkflowProtocolProps = {
   caller:
@@ -50,6 +52,7 @@ type WorkflowProtocolProps = {
     | 'clientFunctionEdit'
     | 'clientService'
     | 'techData'
+    | 'userAccount'
 }
 
 export type WorkflowData = {
@@ -182,6 +185,10 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
       service: TechData.getTechData,
       setter: setWorkflow,
     },
+    userAccount: {
+      service: UserAccount.getUserAccount,
+      setter: setWorkflowList,
+    },
   }
 
   const fetchData = useCallback(
@@ -232,6 +239,8 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
         case 'techData':
           break
         case 'workflowForm':
+          break
+        case 'userAccount':
           break
         default:
           break
@@ -326,7 +335,6 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
           }
         }
 
-        // Adicione este bloco de código
         if (caller === 'workflowForm') {
           item.workflow_form_fields = item.workflow_form_fields?.map(
             (field: { length: number | null }) => {
@@ -791,6 +799,37 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
             displaySuccess('Tech Data salvo com sucesso!')
           }
           return resultTechData
+        } else if (caller === 'userAccount') {
+          let resultUserAccount
+
+          const requiredFields = [
+            'name',
+            'email',
+            'enabled',
+            'access_profile_id',
+          ]
+
+          let allFieldsValid = true
+          requiredFields.forEach((field) => {
+            if (!item[field]) {
+              displayError(`${field} é obrigatório`)
+              allFieldsValid = false
+            }
+          })
+
+          if (allFieldsValid) {
+            if (item.isNew) {
+              resultUserAccount = UserAccount.postUserAccount(item)
+            } else {
+              resultUserAccount = UserAccount.putUserAccount(item, item.id)
+            }
+          }
+          if (!resultUserAccount) {
+            shouldFetchData = false
+          } else {
+            displaySuccess('User Account salvo com sucesso!')
+          }
+          return resultUserAccount
         }
       })
       await Promise.all(promises)
@@ -886,6 +925,10 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
             )
             displaySuccess('Client Service deletado com sucesso!')
             await fetchData({ caller: caller })
+          } else if (caller === 'userAccount') {
+            await UserAccount.deleteUserAccount(selectedRow.toString())
+            displaySuccess('User Account deletado com sucesso!')
+            await fetchData({ caller: caller })
           }
         } catch (error) {
           displayError('Erro ao deletar!')
@@ -951,6 +994,21 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
     } catch (error) {
       displayError('Erro ao publicar!')
       console.error('Erro ao publicar:', error)
+    }
+  }
+
+  const handleLinkAcess = async () => {
+    try {
+      if (selectedRow === null) {
+        return
+      }
+      const body = { user_account_id: selectedRow.toString() }
+      const url = await UserAccount.linkUserAccount(body)
+      displaySuccess('Link criado com sucesso!')
+      window.open(url, '_blank')
+    } catch (error) {
+      displayError('Erro ao criar link!')
+      console.error('Erro ao criar link:', error)
     }
   }
 
@@ -1105,7 +1163,9 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
                                       ? 'Client Service'
                                       : caller === 'techData'
                                         ? 'Tech Data'
-                                        : ''}
+                                        : caller === 'userAccount'
+                                          ? 'User Account'
+                                          : ''}
           </span>
           <input
             className={style.filterText}
@@ -1434,6 +1494,18 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
               title='Publicar Workflow'
             >
               <MdPublishedWithChanges />
+            </button>
+          )}
+          {caller === 'userAccount' && (
+            <button
+              className={`style.buttonPublish ${caller === 'userAccount' ? style.buttonPublish : style.buttonPublish}`}
+              onClick={() => {
+                playSound()
+                handleLinkAcess()
+              }}
+              title='Gerar link para acesso'
+            >
+              <CiLink />
             </button>
           )}
         </div>
