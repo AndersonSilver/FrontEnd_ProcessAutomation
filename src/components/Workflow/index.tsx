@@ -35,6 +35,7 @@ import { useEffect, useCallback } from 'react'
 import CreatableSelect from 'react-select/creatable'
 import clickSound from '/assets/som.mp3'
 import { CiLink } from 'react-icons/ci'
+import { LinkUserAccountData } from '@/services/UserAccount/dto/UserAccountDto'
 
 type WorkflowProtocolProps = {
   caller:
@@ -1003,7 +1004,9 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
         return
       }
       const body = { user_account_id: selectedRow.toString() }
-      const url = await UserAccount.linkUserAccount(body)
+      const linkUserAccountData: LinkUserAccountData =
+        await UserAccount.linkUserAccount(body)
+      const url = linkUserAccountData.url
       displaySuccess('Link criado com sucesso!')
       window.open(url, '_blank')
     } catch (error) {
