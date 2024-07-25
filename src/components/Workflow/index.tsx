@@ -132,72 +132,75 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
     fetchClient()
   }, [])
 
-  const serviceMap = {
-    workflow: {
-      service: WorkflowService.getWorkflows,
-      setter: setWorkflowList,
-    },
-    workflowGroup: {
-      service: WorkflowGroupService.getWorkflowsGroup,
-      setter: setWorkflowList,
-    },
-    workflowGroupItems: {
-      service: WorkflowGroupItemService.getWorkflowsGroupItem,
-      setter: setWorkflowList,
-    },
-    workflowProduct: {
-      service: WorkflowProductService.getWorkflowsProduct,
-      setter: setWorkflowList,
-    },
-    workflowStep: {
-      service: WorkflowStepService.getWorkflowStep,
-      setter: setWorkflowList,
-    },
-    workflowStepForm: {
-      service: WorkflowStepFormService.getWorkflowStepForm,
-      setter: setWorkflowList,
-    },
-    workflowForm: {
-      service: WorkflowFormService.getWorkflowForm,
-      setter: setWorkflowList,
-    },
-    workflowFormGroup: {
-      service: WorkflowFormGroupService.getWorkflowFormGroup,
-      setter: setWorkflowList,
-    },
-    clientProductRequest: {
-      service: ClientProductRequestService.getClientProductRequest,
-      setter: setWorkflowList,
-    },
-    clientProductRequestId: {
-      service: ClientProductRequestService.getClientProductRequestId,
-      setter: setWorkflowList,
-    },
-    clientFunction: {
-      service: ClientFunctionService.getClientFunction,
-      setter: setWorkflowList,
-    },
-    clientFunctionEdit: {
-      service: ClientFunctionEditService.getClientFunctionEdit,
-      setter: setWorkflowList,
-    },
-    clientService: {
-      service: ClientServiceTable.getClientService,
-      setter: setWorkflowList,
-    },
-    techData: {
-      service: TechData.getTechData,
-      setter: setWorkflow,
-    },
-    userAccount: {
-      service: UserAccount.getUserAccount,
-      setter: setWorkflowList,
-    },
-    userAccountType: {
-      service: UserAccountTypeService.getUserAccountType,
-      setter: setWorkflowList,
-    },
-  }
+  const serviceMap = useMemo(
+    () => ({
+      workflow: {
+        service: WorkflowService.getWorkflows,
+        setter: setWorkflowList,
+      },
+      workflowGroup: {
+        service: WorkflowGroupService.getWorkflowsGroup,
+        setter: setWorkflowList,
+      },
+      workflowGroupItems: {
+        service: WorkflowGroupItemService.getWorkflowsGroupItem,
+        setter: setWorkflowList,
+      },
+      workflowProduct: {
+        service: WorkflowProductService.getWorkflowsProduct,
+        setter: setWorkflowList,
+      },
+      workflowStep: {
+        service: WorkflowStepService.getWorkflowStep,
+        setter: setWorkflowList,
+      },
+      workflowStepForm: {
+        service: WorkflowStepFormService.getWorkflowStepForm,
+        setter: setWorkflowList,
+      },
+      workflowForm: {
+        service: WorkflowFormService.getWorkflowForm,
+        setter: setWorkflowList,
+      },
+      workflowFormGroup: {
+        service: WorkflowFormGroupService.getWorkflowFormGroup,
+        setter: setWorkflowList,
+      },
+      clientProductRequest: {
+        service: ClientProductRequestService.getClientProductRequest,
+        setter: setWorkflowList,
+      },
+      clientProductRequestId: {
+        service: ClientProductRequestService.getClientProductRequestId,
+        setter: setWorkflowList,
+      },
+      clientFunction: {
+        service: ClientFunctionService.getClientFunction,
+        setter: setWorkflowList,
+      },
+      clientFunctionEdit: {
+        service: ClientFunctionEditService.getClientFunctionEdit,
+        setter: setWorkflowList,
+      },
+      clientService: {
+        service: ClientServiceTable.getClientService,
+        setter: setWorkflowList,
+      },
+      techData: {
+        service: TechData.getTechData,
+        setter: setWorkflow,
+      },
+      userAccount: {
+        service: UserAccount.getUserAccount,
+        setter: setWorkflowList,
+      },
+      userAccountType: {
+        service: UserAccountTypeService.getUserAccountType,
+        setter: setWorkflowList,
+      },
+    }),
+    [],
+  )
 
   const fetchData = useCallback(
     async ({ caller }: WorkflowProtocolProps) => {
@@ -287,6 +290,7 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
       client,
       clientProductRequestEditId,
       clientFunctionEditId,
+      serviceMap,
     ],
   )
 
