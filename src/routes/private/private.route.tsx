@@ -14,6 +14,7 @@ import { ClientFunctionEditPage } from '@/pages/clientFunctionEdit/clientFunctio
 import { ClientServicePage } from '@/pages/clientService/clientService.page'
 import { TechDataPage } from '@/pages/techData/techData.page'
 import { UserAccountPage } from '@/pages/userAccount/userAccount.page'
+import { UserAccountTypePage } from '@/pages/userAccountType/userAccountType.page'
 
 export const PRIVATE_ROUTES = [
   {
@@ -79,5 +80,9 @@ export const PRIVATE_ROUTES = [
   {
     path: '/useraccount',
     element: <UserAccountPage />,
+  },
+  {
+    path: '/userAccountType',
+    element: <UserAccountTypePage />,
   },
 ]

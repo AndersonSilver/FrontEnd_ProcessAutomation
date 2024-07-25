@@ -27,9 +27,7 @@ export function Section() {
 
   const webAppAuthentication = [
     { href: '/UserAccount', label: 'User Account' },
-    { href: '/', label: 'User Account Type' },
-    { href: '/', label: 'Access Session' },
-    { href: '/', label: 'SSO' },
+    { href: '/UserAccountType', label: 'User Account Type' },
   ]
 
   return (
@@ -88,9 +86,7 @@ export function Section() {
                 color='primary'
                 variant='outlined'
                 disabled={
-                  button.label === 'SSO' ||
-                  button.label === 'User Account Type' ||
-                  button.label === 'Access Session'
+                  button.label === 'SSO' || button.label === 'Access Session'
                 }
               >
                 {button.label}

@@ -142,35 +142,28 @@ export interface WorkflowItem {
   [key: string]: unknown
 }
 
-export interface ListClientProductRequestData {
+export interface ListUserAccountTypeData {
   data: Workflow[]
   last_page: number
   page: number
   record_count: number
 }
 
-export interface PutClientProductRequestData {
+export interface PutUserAccountTypeData {
   data: Workflow[]
   last_page: number
   page: number
   record_count: number
 }
 
-export interface PostClientProductRequestData {
+export interface PostUserAccountTypeData {
   data: Workflow[]
   last_page: number
   page: number
   record_count: number
 }
 
-export interface DeleteClientProductRequestData {
-  data: Workflow[]
-  last_page: number
-  page: number
-  record_count: number
-}
-
-export interface PublishClientProductRequestData {
+export interface DeleteUserAccountTypeData {
   data: Workflow[]
   last_page: number
   page: number

@@ -14,6 +14,7 @@ import ClientService from '@/services/Client/ClientService'
 import ClientFunctionService from '@/services/ClientFunction/ClientFunctionService'
 import ClientFunctionEditService from '@/services/ClientFunctionEdit/ClientFunctionEditService'
 import ClientServiceTable from '@/services/ClientService/ClientService'
+import UserAccountTypeService from '@/services/UserAccountType/UserAccountTypeService'
 import TechData from '@/services/TechData/TechData'
 import UserAccount from '@/services/UserAccount/UserAccountService'
 import { Workflow, Filter } from '@/services/Workflow/dto/WorkflowDto'
@@ -53,6 +54,7 @@ type WorkflowProtocolProps = {
     | 'clientService'
     | 'techData'
     | 'userAccount'
+    | 'userAccountType'
 }
 
 export type WorkflowData = {
@@ -191,6 +193,10 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
       service: UserAccount.getUserAccount,
       setter: setWorkflowList,
     },
+    userAccountType: {
+      service: UserAccountTypeService.getUserAccountType,
+      setter: setWorkflowList,
+    },
   }
 
   const fetchData = useCallback(
@@ -243,6 +249,8 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
         case 'workflowForm':
           break
         case 'userAccount':
+          break
+        case 'userAccountType':
           break
         default:
           break
@@ -832,6 +840,36 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
             displaySuccess('User Account salvo com sucesso!')
           }
           return resultUserAccount
+        } else if (caller === 'userAccountType') {
+          let resultUserAccountType
+
+          const requiredFields = ['description', 'user_account_type_key']
+
+          let allFieldsValid = true
+          requiredFields.forEach((field) => {
+            if (!item[field]) {
+              displayError(`${field} é obrigatório`)
+              allFieldsValid = false
+            }
+          })
+
+          if (allFieldsValid) {
+            if (item.isNew) {
+              resultUserAccountType =
+                UserAccountTypeService.postUserAccountType(item)
+            } else {
+              resultUserAccountType = UserAccountTypeService.putUserAccountType(
+                item,
+                item.id,
+              )
+            }
+          }
+          if (!resultUserAccountType) {
+            shouldFetchData = false
+          } else {
+            displaySuccess('User Account Type salvo com sucesso!')
+          }
+          return resultUserAccountType
         }
       })
       await Promise.all(promises)
@@ -930,6 +968,12 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
           } else if (caller === 'userAccount') {
             await UserAccount.deleteUserAccount(selectedRow.toString())
             displaySuccess('User Account deletado com sucesso!')
+            await fetchData({ caller: caller })
+          } else if (caller === 'userAccountType') {
+            await UserAccountTypeService.deleteUserAccountType(
+              selectedRow.toString(),
+            )
+            displaySuccess('User Account Type deletado com sucesso!')
             await fetchData({ caller: caller })
           }
         } catch (error) {
@@ -1032,6 +1076,22 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
       window.open(link, '_blank')
     } else {
       displayError('Link não gerado!')
+    }
+  }
+
+  const handlePublishClientProductRequest = async () => {
+    try {
+      if (selectedRow === null) {
+        return
+      }
+      await ClientProductRequestService.publishClientProductRequest(
+        client[0]?.id,
+        selectedRow.toString(),
+      )
+      displaySuccess('Client Product Request publicado com sucesso!')
+    } catch (error) {
+      displayError('Erro ao publicar!')
+      console.error('Erro ao publicar:', error)
     }
   }
 
@@ -1188,7 +1248,9 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
                                         ? 'Tech Data'
                                         : caller === 'userAccount'
                                           ? 'User Account'
-                                          : ''}
+                                          : caller === 'userAccountType'
+                                            ? 'User Account Type'
+                                            : ''}{' '}
           </span>
           <input
             className={style.filterText}
@@ -1553,6 +1615,18 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
                 </div>
               )}
             </>
+          )}
+          {caller === 'clientProductRequest' && (
+            <button
+              className={`style.buttonPublish ${caller === 'clientProductRequest' ? style.buttonPublish : style.buttonPublish}`}
+              onClick={() => {
+                playSound()
+                handlePublishClientProductRequest()
+              }}
+              title='Publicar Client Product Request'
+            >
+              <MdPublishedWithChanges />
+            </button>
           )}
         </div>
       </div>

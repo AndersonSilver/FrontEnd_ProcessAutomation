@@ -3,6 +3,7 @@ import {
   ListClientProductRequestData,
   PutClientProductRequestData,
   PostClientProductRequestData,
+  PublishClientProductRequestData,
   WorkflowRequestBody,
   DeleteClientProductRequestData,
 } from './dto/ClientProductRequestDto'
@@ -28,15 +29,34 @@ class ClientProductRequestService {
       client_product_request_id: string,
     ) =>
       `/client/${client_id}/client-product-request/${client_product_request_id}`,
+    publishClientProductRequest: (
+      client_id: string,
+      client_product_request_id: string,
+    ) =>
+      `/client/${client_id}/client-product-request/${client_product_request_id}/publish`,
+  }
+
+  public static async publishClientProductRequest(
+    client_id: string,
+    client_product_request_id: string,
+  ): Promise<PublishClientProductRequestData> {
+    const { data } =
+      await ProcessAutomationApi.post<PublishClientProductRequestData>(
+        ClientProductRequestService.endpoints.publishClientProductRequest(
+          client_id,
+          client_product_request_id,
+        ),
+      )
+    return data
   }
 
   public static async getClientProductRequest(
-    client_id: string,
+    client_product_request_id: string,
   ): Promise<ListClientProductRequestData> {
     const { data } =
       await ProcessAutomationApi.get<ListClientProductRequestData>(
         ClientProductRequestService.endpoints.getClientProductRequest(
-          client_id,
+          client_product_request_id,
         ),
       )
     return data
