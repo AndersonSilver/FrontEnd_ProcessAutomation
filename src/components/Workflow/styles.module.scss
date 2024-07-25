@@ -31,6 +31,10 @@
   }
 }
 
+.buttonGeral {
+  display: flex;
+}
+
 .buttonDisabled {
   opacity: 0.5; /* Reduz a opacidade para ofuscar o botão */
   cursor: not-allowed;
@@ -94,6 +98,47 @@
 .containerTableTwo {
   overflow-y: auto;
   max-height: 550px;
+}
+
+.buttonCopiarLink {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  padding: 0.2rem;
+  gap: 20px;
+}
+
+.inputLink {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  padding: 0.2rem;
+  gap: 20px;
+  width: 92vh;
+  border: 0.5px solid #ffffff;
+  background-color: #29292959;
+  color: #fff;
+}
+
+.buttonCopiar {
+  background-color: #4caf50;
+  border-radius: 2px;
+  border: none;
+  color: white;
+  padding: 5px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 15px 2px;
+  cursor: pointer;
+  transition-duration: 0.4s;
+
+  &:hover {
+    background-color: #45a04988;
+  }
 }
 
 .buttonAdd {
@@ -273,6 +318,7 @@
 
 .buttonContainer {
   margin-top: 20px;
+  flex-direction: column;
 }
 
 .table {

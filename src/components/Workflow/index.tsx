@@ -92,6 +92,8 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
     useState<string>('')
 
   const [client, setClient] = useState<WorkflowData[]>([])
+  const [link, setLink] = useState('')
+  const [linkGerado, setLinkGerado] = useState(false)
 
   useEffect(() => {
     const fetchCacheKeys = async () => {
@@ -1006,17 +1008,30 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
 
       const url = (await UserAccount.linkUserAccount(body)) as unknown as string
 
-      console.log('url', url)
-
       if (url) {
         displaySuccess('Link criado com sucesso!')
-        window.open(url, '_blank')
+        setLink(url)
+        setLinkGerado(true)
+        // window.open(url, '_blank')
       } else {
         displayError('URL não encontrada no objeto retornado!')
       }
     } catch (error) {
       displayError('Erro ao criar link!')
       console.error('Erro ao criar link:', error)
+    }
+  }
+
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(link)
+    displaySuccess('Link copiado com sucesso!')
+  }
+
+  const abrirToClipboard = () => {
+    if (link) {
+      window.open(link, '_blank')
+    } else {
+      displayError('Link não gerado!')
     }
   }
 
@@ -1505,16 +1520,39 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
             </button>
           )}
           {caller === 'userAccount' && (
-            <button
-              className={`style.buttonPublish ${caller === 'userAccount' ? style.buttonPublish : style.buttonPublish}`}
-              onClick={() => {
-                playSound()
-                handleLinkAcess()
-              }}
-              title='Gerar link para acesso'
-            >
-              <CiLink />
-            </button>
+            <>
+              <button
+                className={`style.buttonPublish ${caller === 'userAccount' ? style.buttonPublish : style.buttonPublish}`}
+                onClick={handleLinkAcess}
+                title='Gerar link para acesso'
+              >
+                <CiLink />
+              </button>
+              {linkGerado && (
+                <div className={style.buttonGeral}>
+                  <div className={style.buttonCopiarLink}>
+                    <button
+                      className={style.buttonCopiar}
+                      onClick={copyToClipboard}
+                    >
+                      Copiar
+                    </button>
+                    <button
+                      className={style.buttonCopiar}
+                      onClick={abrirToClipboard}
+                    >
+                      Abrir
+                    </button>
+                    <input
+                      type='text'
+                      value={link}
+                      readOnly
+                      className={style.inputLink}
+                    />
+                  </div>
+                </div>
+              )}
+            </>
           )}
         </div>
       </div>
