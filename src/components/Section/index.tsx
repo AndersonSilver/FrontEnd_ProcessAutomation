@@ -1,6 +1,6 @@
 import { Link, useLocation } from 'react-router-dom'
 import style from './styles.module.scss'
-import Button from '@material-ui/core/Button'
+import Button from '@mui/material/Button'
 
 export function Section() {
   const { pathname } = useLocation()
