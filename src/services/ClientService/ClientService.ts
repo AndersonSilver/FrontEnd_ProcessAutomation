@@ -17,6 +17,20 @@ class ClientServiceTable {
       `/client/${client_id}/client-Service/${client_Service_id}`,
     deleteClientService: (client_id: string, client_Service_id: string) =>
       `/client/${client_id}/client-Service/${client_Service_id}`,
+    publishClientService: (client_id: string, client_Service_id: string) =>
+      `/client/client//${client_id}/client-Service/${client_Service_id}/publish`,
+  }
+
+  public static async publishClientService(
+    client_id: string,
+    client_Service_id: string,
+  ): Promise<void> {
+    const url = ClientServiceTable.endpoints.publishClientService(
+      client_id,
+      client_Service_id,
+    )
+    console.log('URL:', url)
+    await ProcessAutomationApi.post(url)
   }
 
   public static async getClientService(

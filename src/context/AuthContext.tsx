@@ -1,4 +1,4 @@
-import ProcessAutomationApi from '@/config/api'
+import ProcessAutomationApi, { setApiBaseUrl } from '@/config/api'
 import { SESSION_KEY } from '@/constants/session'
 import SessionService from '@/services/Session/SessionService'
 import { displayError, displaySuccess } from '@/utils/functions/messageToast'
@@ -23,6 +23,7 @@ type SignInPropsWebApp = {
   clientServices: string
   email: string
   password: string
+  environment: string
 }
 
 export type LoggedInUserProps = {
@@ -64,6 +65,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   async function signIn(credentials: SignInPropsWebApp) {
     try {
+      setApiBaseUrl(credentials.environment)
       const response = await SessionService.getAuthentication(
         credentials.client,
         credentials.clientServices,
@@ -71,6 +73,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
           login: credentials.email,
           password: credentials.password,
         },
+        credentials.environment,
       )
 
       const loggedInUserProps = {

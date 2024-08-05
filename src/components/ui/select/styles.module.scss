@@ -1,0 +1,19 @@
+// @/components/ui/Select.module.scss
+.select {
+  width: 100%;
+  padding: 8px;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  transition: border-color 0.3s;
+
+  &:focus {
+    border-color: #007bff;
+    outline: none;
+  }
+}
+
+.option {
+  padding: 8px;
+  font-size: 16px;
+}

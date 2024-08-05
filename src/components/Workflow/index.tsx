@@ -1099,6 +1099,22 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
     }
   }
 
+  const handlePublishClientService = async () => {
+    try {
+      if (selectedRow === null) {
+        return
+      }
+      await ClientServiceTable.publishClientService(
+        client[0]?.id,
+        selectedRow.toString(),
+      )
+      displaySuccess('Client Service publicado com sucesso!')
+    } catch (error) {
+      displayError('Erro ao publicar!')
+      console.error('Erro ao publicar:', error)
+    }
+  }
+
   useEffect(() => {
     let list = [...workflowList]
     if (filter) {
@@ -1628,6 +1644,18 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
                 handlePublishClientProductRequest()
               }}
               title='Publicar Client Product Request'
+            >
+              <MdPublishedWithChanges />
+            </button>
+          )}
+          {caller === 'clientService' && (
+            <button
+              className={`style.buttonPublish ${caller === 'clientService' ? style.buttonPublish : style.buttonPublish}`}
+              onClick={() => {
+                playSound()
+                handlePublishClientService()
+              }}
+              title='Publicar Client Service'
             >
               <MdPublishedWithChanges />
             </button>

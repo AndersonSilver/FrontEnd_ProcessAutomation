@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/input'
+import { Select } from '@/components/ui/select' // Importar o componente Select
 import { FormEvent, useState } from 'react'
 import { toast } from 'react-toastify'
 
@@ -14,11 +15,25 @@ export function LoginPage() {
   const [loading, setLoading] = useState(false)
   const [client, setClient] = useState('')
   const [clientServices, setclientServices] = useState('')
+  const [environment, setEnvironment] = useState('PROD') // Novo estado para o ambiente
 
   const [rememberPassword, setRememberPassword] = useState(false)
 
   async function handleLogin(event: FormEvent) {
     event.preventDefault()
+
+    if (environment === '') {
+      toast.warn('Preencha o ambiente!', {
+        position: 'top-right',
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: 'colored',
+      })
+      return
+    }
 
     if (client === '') {
       toast.warn('Preencha o cliente!', {
@@ -79,6 +94,7 @@ export function LoginPage() {
       clientServices,
       email,
       password,
+      environment,
     }
 
     signIn(data)
@@ -116,6 +132,16 @@ export function LoginPage() {
           </div>
           <div className={styles.login}>
             <form onSubmit={handleLogin}>
+              <h4>Ambiente</h4>
+              <Select
+                options={[
+                  { value: 'PROD', label: 'Produção' },
+                  { value: 'HOMOL', label: 'Homologação' },
+                  { value: 'DEV', label: 'Desenvolvimento' },
+                ]}
+                value={environment}
+                onChange={setEnvironment}
+              />
               <h4>Client</h4>
               <Input
                 placeholder='Cliente'
@@ -164,7 +190,7 @@ export function LoginPage() {
           </div>
         </div>
         <p>© 2024 Process Automation - Tech4humans.</p>
-        <a>v1.0.0</a>
+        <a>v1.2.1</a>
       </div>
     </>
   )
