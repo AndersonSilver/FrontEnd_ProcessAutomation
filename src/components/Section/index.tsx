@@ -13,7 +13,7 @@ export function Section() {
     { href: '/WorkflowStep', label: 'Step' },
     { href: '/WorkflowStepForm', label: 'Step Form' },
     { href: '/WorkflowForm', label: 'Form' },
-    { href: '/WorkflowFormGroup', label: 'Form Group' },
+    // { href: '/WorkflowFormGroup', label: 'Form Group' },
     // { href: '', label: 'Workflow File' },
   ]
   const webAppClient = [

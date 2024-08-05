@@ -52,10 +52,8 @@ export default function TableItem({
   }
 
   const handleDoubleClick = () => {
-    if (keyName !== 'id') {
-      setValue(item[keyName as keyof Workflow] as string)
-      setModalIsOpen(true)
-    }
+    setValue(item[keyName as keyof Workflow] as string)
+    setModalIsOpen(true)
   }
 
   const handleModalClose = () => {
