@@ -15,7 +15,7 @@ export function LoginPage() {
   const [loading, setLoading] = useState(false)
   const [client, setClient] = useState('')
   const [clientServices, setclientServices] = useState('')
-  const [environment, setEnvironment] = useState('PROD') // Novo estado para o ambiente
+  const [environment, setEnvironment] = useState('')
 
   const [rememberPassword, setRememberPassword] = useState(false)
 

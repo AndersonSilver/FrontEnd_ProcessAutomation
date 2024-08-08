@@ -1,4 +1,4 @@
-import ProcessAutomationApi, { setApiBaseUrl } from '@/config/api'
+import { getProcessAutomationApi } from '@/config/api'
 import { SESSION_KEY } from '@/constants/session'
 import SessionService from '@/services/Session/SessionService'
 import { displayError, displaySuccess } from '@/utils/functions/messageToast'
@@ -31,6 +31,7 @@ export type LoggedInUserProps = {
   clientServices: string
   email: string
   access_token: string
+  environment: 'DEV' | 'HOMOL' | 'PROD'
 }
 
 type AuthProviderProps = {
@@ -65,7 +66,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   async function signIn(credentials: SignInPropsWebApp) {
     try {
-      setApiBaseUrl(credentials.environment)
+      const api = getProcessAutomationApi(credentials.environment)
       const response = await SessionService.getAuthentication(
         credentials.client,
         credentials.clientServices,
@@ -80,11 +81,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
         client: credentials.client,
         clientServices: credentials.clientServices,
         email: credentials.email,
+        environment: credentials.environment,
         ...response,
       }
 
-      ProcessAutomationApi.defaults.headers.common = {
-        ...ProcessAutomationApi.defaults.headers.common,
+      api.defaults.headers.common = {
+        ...api.defaults.headers.common,
         Authorization: `Bearer ${response?.access_token}`,
       }
 
@@ -99,7 +101,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   function signOut() {
     try {
-      ProcessAutomationApi.defaults.headers.common = {}
+      const api = getProcessAutomationApi('')
+      api.defaults.headers.common = {}
       setUser(null)
       localStorage.clear()
       navigate('/')
@@ -117,8 +120,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
     else {
       localStorage.setItem(SESSION_KEY, JSON.stringify(userParsed))
 
-      ProcessAutomationApi.defaults.headers.common = {
-        ...ProcessAutomationApi.defaults.headers.common,
+      const api = getProcessAutomationApi(userParsed.environment)
+      api.defaults.headers.common = {
+        ...api.defaults.headers.common,
         Authorization: `Bearer ${userParsed?.access_token}`,
       }
 

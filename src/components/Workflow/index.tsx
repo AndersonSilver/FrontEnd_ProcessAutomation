@@ -65,7 +65,9 @@ export type WorkflowData = {
     [key: string]: any
   }
 
-export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
+export function WorkflowComponent({
+  caller: initialCaller,
+}: WorkflowProtocolProps) {
   const [workflowList, setWorkflowList] = useState<WorkflowData[]>([])
   const [filter, setFilter] = useState<Filter | null>(null)
   const [filteredWorkflowList, setFilteredWorkflowList] = useState<any[]>([])
@@ -123,14 +125,14 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
     clearCache()
   }, [cacheKeys])
 
-  useEffect(() => {
-    const fetchClient = async () => {
-      const response = await ClientService.getClient()
-      setClient(response.data)
-    }
+  // useEffect(() => {
+  //   const fetchClient = async () => {
+  //     const response = await ClientService.getClient()
+  //     setClient(response.data)
+  //   }
 
-    fetchClient()
-  }, [])
+  //   fetchClient()
+  // }, [])
 
   const serviceMap = useMemo(
     () => ({
@@ -227,10 +229,10 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
           shouldFetch = !!workflowId && !!workflowFormId
           params = [workflowId, workflowFormId]
           break
-        case 'clientProductRequest':
-          shouldFetch = client && client.length > 0 && !!client[0].id
-          params = [client[0]?.id.toString(), '']
-          break
+        // case 'clientProductRequest':
+        //   shouldFetch = client && client.length > 0 && !!client[0].id
+        //   params = [client[0]?.id.toString(), '']
+        //   break
         case 'clientProductRequestId':
           shouldFetch = !!clientProductRequestEditId
           params = [client[0]?.id.toString(), clientProductRequestEditId]
@@ -262,6 +264,7 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
       if (!shouldFetch) return
 
       const response = await service(...params)
+      console.log('DATABRENO', data)
 
       if (caller === 'clientProductRequestId') {
         clientProductRequestEditIdData = Array.isArray(response)
@@ -277,6 +280,7 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
       } else {
         data = response.data || []
       }
+      console.log('DATABRENOANTESIF', data)
       if (data.length > 0) {
         setter(data)
         setWorkflowList(data)
@@ -293,10 +297,6 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
       serviceMap,
     ],
   )
-
-  useEffect(() => {
-    fetchData({ caller: caller })
-  }, [workflowGroupId, caller, fetchData, workflowId])
 
   const columnOrder = useMemo(
     () => Object?.keys?.(workflowList?.[0] ?? {}),
@@ -349,7 +349,7 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
           }
         }
 
-        if (caller === 'workflowForm') {
+        if (initialCaller === 'workflowForm') {
           item.workflow_form_fields = item.workflow_form_fields?.map(
             (field: { length: number | null }) => {
               if (field.length === null) {
@@ -360,7 +360,7 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
           )
         }
 
-        if (caller === 'workflow') {
+        if (initialCaller === 'workflow') {
           let resultworkflow
 
           const requiredFields = ['title', 'description']
@@ -395,7 +395,7 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
             displaySuccess('workflow salvo com sucesso!')
           }
           return resultworkflow
-        } else if (caller === 'workflowGroup') {
+        } else if (initialCaller === 'workflowGroup') {
           let resultworkflowGroup
           const requiredFields = ['title', 'filters', 'workflow_group_key']
 
@@ -424,7 +424,7 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
             displaySuccess('workflow Group Form salvo com sucesso!')
           }
           return resultworkflowGroup
-        } else if (caller === 'workflowGroupItems') {
+        } else if (initialCaller === 'workflowGroupItems') {
           let resultworkflowGroupItem
           const requiredFields = ['workflow_id', 'workflow_group_id']
 
@@ -458,7 +458,7 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
             displaySuccess('workflow Group Items Form salvo com sucesso!')
           }
           return resultworkflowGroupItem
-        } else if (caller === 'workflowProduct') {
+        } else if (initialCaller === 'workflowProduct') {
           let resultworkflowProduct
           const requiredFields = [
             'title',
@@ -491,7 +491,7 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
             displaySuccess('workflow Product Form salvo com sucesso!')
           }
           return resultworkflowProduct
-        } else if (caller === 'workflowStep') {
+        } else if (initialCaller === 'workflowStep') {
           let resultworkflowStep
           const requiredFields = [
             'title',
@@ -528,7 +528,7 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
             displaySuccess('workflow Step salvo com sucesso!')
           }
           return resultworkflowStep
-        } else if (caller === 'workflowStepForm') {
+        } else if (initialCaller === 'workflowStepForm') {
           if (!workflowId || !workflowStepId) {
             console.error('workflowId ou workflowStepId não estão definidos')
             return
@@ -573,7 +573,7 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
             displaySuccess('workflow Step Form salvo com sucesso!')
           }
           return resultworkflowStepForm
-        } else if (caller === 'workflowForm') {
+        } else if (initialCaller === 'workflowForm') {
           let resultworkflowForm
 
           if (typeof item.multiple_responses === 'string') {
@@ -619,7 +619,7 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
             displaySuccess('workflow Form salvo com sucesso!')
           }
           return resultworkflowForm
-        } else if (caller === 'clientProductRequest') {
+        } else if (initialCaller === 'clientProductRequest') {
           let resultClientProductRequest
 
           const requiredFields = ['title', 'product_key', 'request_function']
@@ -654,7 +654,7 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
             displaySuccess('Client Product Request salvo com sucesso!')
           }
           return resultClientProductRequest
-        } else if (caller === 'clientProductRequestId') {
+        } else if (initialCaller === 'clientProductRequestId') {
           let resultClientProductRequestEdit
 
           const requiredFields = ['title', 'product_key', 'request_function']
@@ -689,7 +689,7 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
             displaySuccess('Client Product Request salvo com sucesso!')
           }
           return resultClientProductRequestEdit
-        } else if (caller === 'clientFunction') {
+        } else if (initialCaller === 'clientFunction') {
           let resultClientFunction
 
           const requiredFields = ['title', 'description', 'function', 'type']
@@ -722,7 +722,7 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
             displaySuccess('Client Function salvo com sucesso!')
           }
           return resultClientFunction
-        } else if (caller === 'clientFunctionEdit') {
+        } else if (initialCaller === 'clientFunctionEdit') {
           let resultClientFunctionEdit
 
           const requiredFields = ['title', 'description', 'function', 'type']
@@ -754,7 +754,7 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
             displaySuccess('Client Function salvo com sucesso!')
           }
           return resultClientFunctionEdit
-        } else if (caller === 'clientService') {
+        } else if (initialCaller === 'clientService') {
           let resultClientService
 
           const requiredFields = ['name', 'service_key', 'enable']
@@ -787,7 +787,7 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
             displaySuccess('Client Service salvo com sucesso!')
           }
           return resultClientService
-        } else if (caller === 'techData') {
+        } else if (initialCaller === 'techData') {
           let resultTechData
 
           const requiredFields = ['key', 'data', 'client_id', 'type']
@@ -813,7 +813,7 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
             displaySuccess('Tech Data salvo com sucesso!')
           }
           return resultTechData
-        } else if (caller === 'userAccount') {
+        } else if (initialCaller === 'userAccount') {
           let resultUserAccount
 
           const requiredFields = [
@@ -844,7 +844,7 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
             displaySuccess('User Account salvo com sucesso!')
           }
           return resultUserAccount
-        } else if (caller === 'userAccountType') {
+        } else if (initialCaller === 'userAccountType') {
           let resultUserAccountType
 
           const requiredFields = ['description', 'user_account_type_key']
@@ -879,7 +879,7 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
       await Promise.all(promises)
 
       if (shouldFetchData) {
-        fetchData({ caller: caller })
+        fetchData({ caller: initialCaller })
         setEditedItems([])
       }
     } catch (error) {
@@ -892,93 +892,93 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
       setDeleteRowIndex(selectedRow !== null ? selectedRow.toString() : null)
       if (selectedRow !== null) {
         try {
-          if (caller === 'workflow') {
+          if (initialCaller === 'workflow') {
             await WorkflowService.deleteWorkflows(selectedRow.toString())
             displaySuccess('workflow deletado com sucesso!')
-            await fetchData({ caller: caller })
-          } else if (caller === 'workflowGroup') {
+            await fetchData({ caller: initialCaller })
+          } else if (initialCaller === 'workflowGroup') {
             await WorkflowGroupService.deleteWorkflowsGroup(
               selectedRow.toString(),
             )
             displaySuccess('workflow Group deletado com sucesso!')
-            await fetchData({ caller: caller })
-          } else if (caller === 'workflowGroupItems') {
+            await fetchData({ caller: initialCaller })
+          } else if (initialCaller === 'workflowGroupItems') {
             await WorkflowGroupItemService.deleteWorkflowsGroupItem(
               workflowGroupId,
               selectedRow.toString(),
             )
             displaySuccess('workflow Group Item deletado com sucesso!')
-            await fetchData({ caller: caller })
-          } else if (caller === 'workflowProduct') {
+            await fetchData({ caller: initialCaller })
+          } else if (initialCaller === 'workflowProduct') {
             await WorkflowProductService.deleteWorkflowsProduct(
               selectedRow.toString(),
             )
             displaySuccess('workflow Product deletado com sucesso!')
-            await fetchData({ caller: caller })
-          } else if (caller === 'workflowStep') {
+            await fetchData({ caller: initialCaller })
+          } else if (initialCaller === 'workflowStep') {
             await WorkflowStepService.deleteWorkflowStep(
               workflowId,
               selectedRow.toString(),
             )
             displaySuccess('workflow Step deletado com sucesso!')
-            await fetchData({ caller: caller })
-          } else if (caller === 'workflowStepForm') {
+            await fetchData({ caller: initialCaller })
+          } else if (initialCaller === 'workflowStepForm') {
             await WorkflowStepFormService.deleteWorkflowStepForm(
               workflowId,
               workflowStepId,
               selectedRow.toString(),
             )
             displaySuccess('workflow Step Form deletado com sucesso!')
-            await fetchData({ caller: caller })
-          } else if (caller === 'workflowForm') {
+            await fetchData({ caller: initialCaller })
+          } else if (initialCaller === 'workflowForm') {
             await WorkflowFormService.deleteWorkflowForm(selectedRow.toString())
             displaySuccess('workflow Form deletado com sucesso!')
-            await fetchData({ caller: caller })
-          } else if (caller === 'clientProductRequest') {
+            await fetchData({ caller: initialCaller })
+          } else if (initialCaller === 'clientProductRequest') {
             await ClientProductRequestService.deleteClientProductRequest(
               client[0]?.id,
               selectedRow.toString(),
             )
             displaySuccess('Client Product Request deletado com sucesso!')
-            await fetchData({ caller: caller })
-          } else if (caller === 'clientProductRequestId') {
+            await fetchData({ caller: initialCaller })
+          } else if (initialCaller === 'clientProductRequestId') {
             await ClientProductRequestService.deleteClientProductRequest(
               client[0]?.id,
               selectedRow.toString(),
             )
             displaySuccess('Client Product Request deletado com sucesso!')
             window.location.reload()
-          } else if (caller === 'clientFunction') {
+          } else if (initialCaller === 'clientFunction') {
             await ClientFunctionService.deleteClientFunction(
               client[0]?.id,
               selectedRow.toString(),
             )
             displaySuccess('Client Function deletado com sucesso!')
-            await fetchData({ caller: caller })
-          } else if (caller === 'clientFunctionEdit') {
+            await fetchData({ caller: initialCaller })
+          } else if (initialCaller === 'clientFunctionEdit') {
             await ClientFunctionService.deleteClientFunction(
               client[0]?.id,
               selectedRow.toString(),
             )
             displaySuccess('Client Function deletado com sucesso!')
             window.location.reload()
-          } else if (caller === 'clientService') {
+          } else if (initialCaller === 'clientService') {
             await ClientServiceTable.deleteClientService(
               client[0]?.id,
               selectedRow.toString(),
             )
             displaySuccess('Client Service deletado com sucesso!')
-            await fetchData({ caller: caller })
-          } else if (caller === 'userAccount') {
+            await fetchData({ caller: initialCaller })
+          } else if (initialCaller === 'userAccount') {
             await UserAccount.deleteUserAccount(selectedRow.toString())
             displaySuccess('User Account deletado com sucesso!')
-            await fetchData({ caller: caller })
-          } else if (caller === 'userAccountType') {
+            await fetchData({ caller: initialCaller })
+          } else if (initialCaller === 'userAccountType') {
             await UserAccountTypeService.deleteUserAccountType(
               selectedRow.toString(),
             )
             displaySuccess('User Account Type deletado com sucesso!')
-            await fetchData({ caller: caller })
+            await fetchData({ caller: initialCaller })
           }
         } catch (error) {
           displayError('Erro ao deletar!')
@@ -1115,6 +1115,53 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
     }
   }
 
+  const fetchClientProductRequest = useCallback(async () => {
+    if (client.length > 0) return
+
+    const responseClient = await ClientService.getClient()
+
+    const response = await ClientProductRequestService.getClientProductRequest(
+      responseClient.data[0]?.id.toString(),
+    )
+    setClientProductRequestEdit(response.data)
+    setClient(responseClient.data)
+  }, [client.length])
+
+  const fetchClientFunctionRequest = useCallback(async () => {
+    if (client.length > 0) return
+
+    const responseClient = await ClientService.getClient()
+
+    const response = await ClientFunctionService.getClientFunction(
+      responseClient.data[0]?.id.toString(),
+    )
+    setClientFunctionEdit(response.data)
+    setClient(responseClient.data)
+  }, [client.length])
+
+  const fetchClientId = useCallback(
+    async ({ caller }: WorkflowProtocolProps) => {
+      if (client.length > 0) return
+
+      const { service, setter } = serviceMap[caller]
+
+      const responseClient = await ClientService.getClient()
+      const clientData = responseClient.data[0]
+
+      setClient(responseClient.data)
+
+      const response = await service(...[clientData?.id.toString(), ''])
+
+      const data = response.data || []
+
+      if (data.length > 0) {
+        setter(data)
+        setWorkflowList(data)
+      }
+    },
+    [serviceMap, client.length],
+  )
+
   useEffect(() => {
     let list = [...workflowList]
     if (filter) {
@@ -1133,40 +1180,26 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
       )
     }
     setFilteredWorkflowList(list)
-  }, [workflowList, filter, fetchData])
+  }, [workflowList, filter])
 
   useEffect(() => {
-    if (caller === 'workflowGroupItems') {
+    if (initialCaller === 'workflowGroupItems') {
       const fetchWorkflowGroups = async () => {
         const response = await WorkflowGroupService.getWorkflowsGroup()
         setWorkflowGroups(response.data)
       }
 
       fetchWorkflowGroups()
-    } else if (caller === 'workflowStep') {
+      fetchData({ caller: initialCaller })
+    } else if (initialCaller === 'workflowStep') {
       const fetchWorkflow = async () => {
         const response = await WorkflowService.getWorkflows()
         setWorkflow(response.data)
       }
 
       fetchWorkflow()
-    } else if (caller === 'workflowStepForm') {
-      const fetchWorkflow = async () => {
-        const response = await WorkflowService.getWorkflows()
-        setWorkflow(response.data)
-      }
-
-      const fetchWorkflowStep = async () => {
-        if (!workflowId) {
-          return
-        }
-        const response = await WorkflowStepService.getWorkflowStep(workflowId)
-        setWorkflowStep(response.data)
-      }
-
-      fetchWorkflow()
-      fetchWorkflowStep()
-    } else if (caller === 'workflowForm') {
+      fetchData({ caller: initialCaller })
+    } else if (initialCaller === 'workflowStepForm') {
       const fetchWorkflow = async () => {
         const response = await WorkflowService.getWorkflows()
         setWorkflow(response.data)
@@ -1182,7 +1215,25 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
 
       fetchWorkflow()
       fetchWorkflowStep()
-    } else if (caller === 'workflowFormGroup') {
+      fetchData({ caller: 'workflowStepForm' })
+    } else if (initialCaller === 'workflowForm') {
+      const fetchWorkflow = async () => {
+        const response = await WorkflowService.getWorkflows()
+        setWorkflow(response.data)
+      }
+
+      const fetchWorkflowStep = async () => {
+        if (!workflowId) {
+          return
+        }
+        const response = await WorkflowStepService.getWorkflowStep(workflowId)
+        setWorkflowStep(response.data)
+      }
+
+      fetchWorkflow()
+      fetchWorkflowStep()
+      fetchData({ caller: 'workflowForm' })
+    } else if (initialCaller === 'workflowFormGroup') {
       const fetchWorkflow = async () => {
         const response = await WorkflowService.getWorkflows()
         setWorkflow(response.data)
@@ -1195,80 +1246,75 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
 
       fetchWorkflow()
       fetchWorkflowForm()
-    } else if (caller === 'clientProductRequestId') {
-      const fetchClient = async () => {
-        const response =
-          await ClientProductRequestService.getClientProductRequest(
-            client[0]?.id.toString(),
-          )
-        setClientProductRequestEdit(response.data)
-      }
-
-      fetchClient()
-    } else if (caller === 'clientFunctionEdit') {
-      const fetchClient = async () => {
-        const response = await ClientFunctionService.getClientFunction(
-          client[0]?.id.toString(),
-        )
-        setClientFunctionEdit(response.data)
-      }
-
-      fetchClient()
+      fetchData({ caller: 'workflowFormGroup' })
+    } else if (initialCaller === 'clientProductRequestId') {
+      fetchClientProductRequest()
+      fetchData({ caller: initialCaller })
+    } else if (initialCaller === 'clientFunctionEdit') {
+      fetchClientFunctionRequest()
+      fetchData({ caller: initialCaller })
+    } else if (
+      initialCaller === 'workflow' ||
+      initialCaller === 'workflowGroup' ||
+      initialCaller === 'workflowProduct'
+    ) {
+      fetchData({ caller: initialCaller })
+    } else if (
+      initialCaller === 'clientProductRequest' ||
+      initialCaller === 'clientFunction' ||
+      initialCaller === 'clientService' ||
+      initialCaller === 'techData' ||
+      initialCaller === 'userAccount' ||
+      initialCaller === 'userAccountType'
+    ) {
+      fetchClientId({ caller: initialCaller })
     }
-  }, [workflowGroupId, caller, workflowId, workflowStepId, fetchData, client])
-
-  useEffect(() => {
-    if (workflowStepId) {
-      if (caller === 'workflowStepForm') {
-        fetchData({ caller: 'workflowStepForm' })
-      } else if (caller === 'workflowForm') {
-        fetchData({ caller: 'workflowForm' })
-      }
-    } else if (workflowFormId) {
-      if (caller === 'workflowFormGroup') {
-        if (workflowFormId) {
-          fetchData({ caller: 'workflowFormGroup' })
-        }
-      }
-    }
-  }, [workflowStepId, caller, workflowFormId, fetchData])
+  }, [
+    workflowId,
+    initialCaller,
+    client,
+    fetchData,
+    fetchClientId,
+    fetchClientProductRequest,
+    fetchClientFunctionRequest,
+  ])
 
   return (
     <aside className={style.AsideContainer}>
       <div className={style.containerTable}>
         <div className={style.menuFiltro}>
           <span className={style.filterLabel}>
-            {caller === 'workflowGroupItems'
+            {initialCaller === 'workflowGroupItems'
               ? 'Workflow Group Items'
-              : caller === 'workflowGroup'
+              : initialCaller === 'workflowGroup'
                 ? 'Workflow Group'
-                : caller === 'workflow'
+                : initialCaller === 'workflow'
                   ? 'Workflow'
-                  : caller === 'workflowProduct'
+                  : initialCaller === 'workflowProduct'
                     ? 'Workflow Product'
-                    : caller === 'workflowStep'
+                    : initialCaller === 'workflowStep'
                       ? 'Workflow Step'
-                      : caller === 'workflowStepForm'
+                      : initialCaller === 'workflowStepForm'
                         ? 'Workflow Step Form'
-                        : caller === 'workflowForm'
+                        : initialCaller === 'workflowForm'
                           ? 'Workflow Form'
-                          : caller === 'workflowFormGroup'
+                          : initialCaller === 'workflowFormGroup'
                             ? 'Workflow Form Group'
-                            : caller === 'clientProductRequest'
+                            : initialCaller === 'clientProductRequest'
                               ? 'Client Product Request'
-                              : caller === 'clientProductRequestId'
+                              : initialCaller === 'clientProductRequestId'
                                 ? 'Client Product Request'
-                                : caller === 'clientFunction'
+                                : initialCaller === 'clientFunction'
                                   ? 'Client Function'
-                                  : caller === 'clientFunctionEdit'
+                                  : initialCaller === 'clientFunctionEdit'
                                     ? 'Client Function'
-                                    : caller === 'clientService'
+                                    : initialCaller === 'clientService'
                                       ? 'Client Service'
-                                      : caller === 'techData'
+                                      : initialCaller === 'techData'
                                         ? 'Tech Data'
-                                        : caller === 'userAccount'
+                                        : initialCaller === 'userAccount'
                                           ? 'User Account'
-                                          : caller === 'userAccountType'
+                                          : initialCaller === 'userAccountType'
                                             ? 'User Account Type'
                                             : ''}{' '}
           </span>
@@ -1279,7 +1325,7 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
             placeholder=''
           />
         </div>
-        {caller === 'workflowGroupItems' && (
+        {initialCaller === 'workflowGroupItems' && (
           <>
             <div className={style.AsideSelectMainworkflowStepForm}>
               <div className={style.AsideSelectworkflowStepForm}>
@@ -1308,7 +1354,7 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
             </div>
           </>
         )}
-        {caller === 'workflowStep' && (
+        {initialCaller === 'workflowStep' && (
           <>
             <div className={style.AsideSelectMainworkflowStepForm}>
               <div className={style.AsideSelectworkflowStepForm}>
@@ -1335,7 +1381,7 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
             </div>
           </>
         )}
-        {caller === 'workflowStepForm' && (
+        {initialCaller === 'workflowStepForm' && (
           <>
             <div className={style.AsideSelectMainworkflowStepForm}>
               <div className={style.AsideSelectworkflowStepForm}>
@@ -1388,7 +1434,7 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
             </div>
           </>
         )}
-        {caller === 'workflowFormGroup' && (
+        {initialCaller === 'workflowFormGroup' && (
           <>
             <div className={style.AsideSelectMainworkflowStepForm}>
               <div className={style.AsideSelectworkflowStepForm}>
@@ -1440,7 +1486,7 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
             </div>
           </>
         )}
-        {caller === 'clientProductRequestId' && (
+        {initialCaller === 'clientProductRequestId' && (
           <>
             <div className={style.AsideSelectMainworkflowStepForm}>
               <div className={style.AsideSelectworkflowStepForm}>
@@ -1472,7 +1518,7 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
             </div>
           </>
         )}
-        {caller === 'clientFunctionEdit' && (
+        {initialCaller === 'clientFunctionEdit' && (
           <>
             <div className={style.AsideSelectMainworkflowStepForm}>
               <div className={style.AsideSelectworkflowStepForm}>
@@ -1523,75 +1569,75 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
         </div>
         <div className={style.buttonContainer}>
           <button
-            className={`style.buttonSave ${caller === 'clientService' ? style.buttonDisabled : style.buttonSave}`}
+            className={`style.buttonSave ${initialCaller === 'clientService' ? style.buttonDisabled : style.buttonSave}`}
             onClick={() => {
               playSound()
               handleSave()
             }}
-            disabled={caller === 'clientService'}
+            disabled={initialCaller === 'clientService'}
             title='Salvar'
           >
             <FiSave />
           </button>
           <button
-            className={`style.buttonAtualizar ${caller === 'clientService' ? style.buttonDisabled : style.buttonAtualizar}`}
+            className={`style.buttonAtualizar ${initialCaller === 'clientService' ? style.buttonDisabled : style.buttonAtualizar}`}
             onClick={() => {
               playSound()
               handleAtt()
             }}
-            disabled={caller === 'clientService'}
+            disabled={initialCaller === 'clientService'}
             title='Atualizar'
           >
             <FiRefreshCcw />
           </button>
           <button
-            className={`style.buttonDeletar ${caller === 'clientService' ? style.buttonDisabled : style.buttonDeletar}`}
+            className={`style.buttonDeletar ${initialCaller === 'clientService' ? style.buttonDisabled : style.buttonDeletar}`}
             onClick={() => {
               playSound()
               handleDeleteOrConfirm()
             }}
-            disabled={caller === 'clientService'}
+            disabled={initialCaller === 'clientService'}
             title='Deletar'
           >
             {deleteMode ? 'Confirmar' : <VscRemove />}
           </button>
           {deleteMode && (
             <button
-              className={`style.buttonCancelar ${caller === 'clientService' ? style.buttonDisabled : style.buttonCancelar}`}
+              className={`style.buttonCancelar ${initialCaller === 'clientService' ? style.buttonDisabled : style.buttonCancelar}`}
               onClick={() => {
                 playSound()
                 handleCancel()
               }}
-              disabled={caller === 'clientService'}
+              disabled={initialCaller === 'clientService'}
             >
               Cancelar
             </button>
           )}
           <button
-            className={`style.buttonAdd ${caller === 'clientService' ? style.buttonDisabled : style.buttonAdd}`}
+            className={`style.buttonAdd ${initialCaller === 'clientService' ? style.buttonDisabled : style.buttonAdd}`}
             onClick={() => {
               playSound()
               handleAdd()
             }}
-            disabled={caller === 'clientService'}
+            disabled={initialCaller === 'clientService'}
             title='Adicionar'
           >
             <IoMdAdd />
           </button>
           <button
-            className={`style.buttonAdd ${caller === 'clientService' ? style.buttonDisabled : style.buttonAdd}`}
+            className={`style.buttonAdd ${initialCaller === 'clientService' ? style.buttonDisabled : style.buttonAdd}`}
             onClick={() => {
               playSound()
               handleDuplicate()
             }}
-            disabled={caller === 'clientService'}
+            disabled={initialCaller === 'clientService'}
             title='Duplicar'
           >
             <BiAddToQueue />
           </button>
-          {caller === 'workflow' && (
+          {initialCaller === 'workflow' && (
             <button
-              className={`style.buttonPublish ${caller === 'workflow' ? style.buttonPublish : style.buttonPublish}`}
+              className={`style.buttonPublish ${initialCaller === 'workflow' ? style.buttonPublish : style.buttonPublish}`}
               onClick={() => {
                 playSound()
                 handlePublish()
@@ -1601,10 +1647,10 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
               <MdPublishedWithChanges />
             </button>
           )}
-          {caller === 'userAccount' && (
+          {initialCaller === 'userAccount' && (
             <>
               <button
-                className={`style.buttonPublish ${caller === 'userAccount' ? style.buttonPublish : style.buttonPublish}`}
+                className={`style.buttonPublish ${initialCaller === 'userAccount' ? style.buttonPublish : style.buttonPublish}`}
                 onClick={handleLinkAcess}
                 title='Gerar link para acesso'
               >
@@ -1636,9 +1682,9 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
               )}
             </>
           )}
-          {caller === 'clientProductRequest' && (
+          {initialCaller === 'clientProductRequest' && (
             <button
-              className={`style.buttonPublish ${caller === 'clientProductRequest' ? style.buttonPublish : style.buttonPublish}`}
+              className={`style.buttonPublish ${initialCaller === 'clientProductRequest' ? style.buttonPublish : style.buttonPublish}`}
               onClick={() => {
                 playSound()
                 handlePublishClientProductRequest()
@@ -1648,9 +1694,9 @@ export function WorkflowComponent({ caller }: WorkflowProtocolProps) {
               <MdPublishedWithChanges />
             </button>
           )}
-          {caller === 'clientService' && (
+          {initialCaller === 'clientService' && (
             <button
-              className={`style.buttonPublish ${caller === 'clientService' ? style.buttonPublish : style.buttonPublish}`}
+              className={`style.buttonPublish ${initialCaller === 'clientService' ? style.buttonPublish : style.buttonPublish}`}
               onClick={() => {
                 playSound()
                 handlePublishClientService()

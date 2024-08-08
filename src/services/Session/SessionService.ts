@@ -1,4 +1,4 @@
-import ProcessAutomationApi, { setApiBaseUrl } from '@/config/api'
+import { getProcessAutomationApi } from '@/config/api'
 import { Session } from './dto/SessionDto'
 
 class SessionService {
@@ -13,10 +13,10 @@ class SessionService {
     payload: Record<string, string>,
     environment: string, // Adiciona o parâmetro environment
   ): Promise<Session> {
-    // Define a URL base da API conforme o ambiente selecionado
-    setApiBaseUrl(environment)
+    // Obtém a instância da API configurada conforme o ambiente selecionado
+    const api = getProcessAutomationApi(environment)
 
-    const { data } = await ProcessAutomationApi.post<Session>(
+    const { data } = await api.post<Session>(
       this.endpoints.authentication(client, clientService),
       {
         ...payload,
